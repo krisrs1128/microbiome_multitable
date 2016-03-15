@@ -1,0 +1,702 @@
+\documentclass{scrartcl}\usepackage{graphicx, color}
+\usepackage{eulervm}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\definecolor{fgcolor}{rgb}{0.2, 0.2, 0.2}
+\newcommand{\hlnumber}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlfunctioncall}[1]{\textcolor[rgb]{0.501960784313725,0,0.329411764705882}{\textbf{#1}}}%
+\newcommand{\hlstring}[1]{\textcolor[rgb]{0.6,0.6,1}{#1}}%
+\newcommand{\hlkeyword}[1]{\textcolor[rgb]{0,0,0}{\textbf{#1}}}%
+\newcommand{\hlargument}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hlcomment}[1]{\textcolor[rgb]{0.180392156862745,0.6,0.341176470588235}{#1}}%
+\newcommand{\hlroxygencomment}[1]{\textcolor[rgb]{0.43921568627451,0.47843137254902,0.701960784313725}{#1}}%
+\newcommand{\hlformalargs}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hleqformalargs}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hlassignement}[1]{\textcolor[rgb]{0,0,0}{\textbf{#1}}}%
+\newcommand{\hlpackage}[1]{\textcolor[rgb]{0.588235294117647,0.709803921568627,0.145098039215686}{#1}}%
+\newcommand{\hlslot}[1]{\textit{#1}}%
+\newcommand{\hlsymbol}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlprompt}[1]{\textcolor[rgb]{0.2,0.2,0.2}{#1}}%
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+
+\usepackage{alltt}
+% ------------------------------------------------------------------------
+% Packages
+% ------------------------------------------------------------------------
+\usepackage{amsmath,amssymb,amsfonts,graphicx,mathtools,setspace}
+\usepackage[body={7in, 9in},left=1in,right=1in]{geometry}
+\usepackage{url}
+\usepackage[colorlinks]{hyperref}
+
+% ------------------------------------------------------------------------
+% Macros
+% ------------------------------------------------------------------------
+%~~~~~~~~~~~~~~~
+% List shorthand
+%~~~~~~~~~~~~~~~
+\newcommand{\BIT}{\begin{itemize}}
+\newcommand{\EIT}{\end{itemize}}
+\newcommand{\BNUM}{\begin{enumerate}}
+\newcommand{\ENUM}{\end{enumerate}}
+%~~~~~~~~~~~~~~~
+% Text with quads around it
+%~~~~~~~~~~~~~~~
+\newcommand{\qtext}[1]{\quad\text{#1}\quad}
+%~~~~~~~~~~~~~~~
+% Shorthand for math formatting
+%~~~~~~~~~~~~~~~
+\newcommand\mbb[1]{\mathbb{#1}}
+\newcommand\mbf[1]{\mathbf{#1}}
+\def\mc#1{\mathcal{#1}}
+\def\mrm#1{\mathrm{#1}}
+%~~~~~~~~~~~~~~~
+% Common sets
+%~~~~~~~~~~~~~~~
+\def\reals{\mathbb{R}} % Real number symbol
+\def\integers{\mathbb{Z}} % Integer symbol
+\def\rationals{\mathbb{Q}} % Rational numbers
+\def\naturals{\mathbb{N}} % Natural numbers
+\def\complex{\mathbb{C}} % Complex numbers
+%~~~~~~~~~~~~~~~
+% Common functions
+%~~~~~~~~~~~~~~~
+\renewcommand{\exp}[1]{\operatorname{exp}\left(#1\right)} % Exponential
+\def\indic#1{\mbb{I}\left({#1}\right)} % Indicator function
+\providecommand{\argmax}{\mathop\mathrm{arg max}} % Defining math symbols
+\providecommand{\argmin}{\mathop\mathrm{arg min}}
+\providecommand{\maximize}{\mathop\mathrm{maximize\quad}} % Defining math symbols
+\providecommand{\minimize}{\mathop\mathrm{minimize\quad}} % Defining math symbols
+\providecommand{\arccos}{\mathop\mathrm{arccos}}
+\providecommand{\dom}{\mathop\mathrm{dom}} % Domain
+\providecommand{\range}{\mathop\mathrm{range}} % Range
+\providecommand{\diag}{\mathop\mathrm{diag}}
+\providecommand{\tr}{\mathop\mathrm{tr}}
+\providecommand{\abs}{\mathop\mathrm{abs}}
+\providecommand{\card}{\mathop\mathrm{card}}
+\providecommand{\sign}{\mathop\mathrm{sign}}
+\def\rank#1{\mathrm{rank}({#1})}
+\def\supp#1{\mathrm{supp}({#1})}
+%~~~~~~~~~~~~~~~
+% Common probability symbols
+%~~~~~~~~~~~~~~~
+\def\E{\mathbb{E}} % Expectation symbol
+\def\Earg#1{\E\left[{#1}\right]}
+\def\Esubarg#1#2{\E_{#1}\left[{#2}\right]}
+\def\P{\mathbb{P}} % Probability symbol
+\def\Parg#1{\P\left({#1}\right)}
+\def\Psubarg#1#2{\P_{#1}\left[{#2}\right]}
+\def\Cov{\mrm{Cov}} % Covariance symbol
+\def\Covarg#1{\Cov\left[{#1}\right]}
+\def\Covsubarg#1#2{\Cov_{#1}\left[{#2}\right]}
+\def\Var{\mrm{Var}}
+\def\Vararg#1{\Var\left(#1\right)}
+\def\Varsubarg#1#2{\Var_{#1}\left(#2\right)}
+\newcommand{\family}{\mathcal{P}} % probability family
+\newcommand{\eps}{\epsilon}
+\def\absarg#1{\left|#1\right|}
+\def\msarg#1{\left(#1\right)^{2}}
+\def\logarg#1{\log\left(#1\right)}
+%~~~~~~~~~~~~~~~
+% Distributions
+%~~~~~~~~~~~~~~~
+\def\Gsn{\mathcal{N}}
+\def\Ber{\textnormal{Ber}}
+\def\Bin{\textnormal{Bin}}
+\def\Unif{\textnormal{Unif}}
+\def\Mult{\textnormal{Mult}}
+\def\NegMult{\textnormal{NegMult}}
+\def\Dir{\textnormal{Dir}}
+\def\Bet{\textnormal{Beta}}
+\def\Poi{\textnormal{Poi}}
+\def\HypGeo{\textnormal{HypGeo}}
+\def\GEM{\textnormal{GEM}}
+\def\BP{\textnormal{BP}}
+\def\DP{\textnormal{DP}}
+\def\BeP{\textnormal{BeP}}
+%~~~~~~~~~~~~~~~
+% Theorem-like environments
+%~~~~~~~~~~~~~~~
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{theorem}{Theorem}
+
+%-----------------------
+% Probability sets
+%-----------------------
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+%-----------------------
+% vector notation
+%-----------------------
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\xbar}{\overline{x}}
+\newcommand{\Xbar}{\overline{X}}
+\newcommand{\tolaw}{\xrightarrow{\mathcal{L}}}
+\newcommand{\toprob}{\xrightarrow{\mathbb{P}}}
+\newcommand{\laweq}{\overset{\mathcal{L}}{=}}
+\newcommand{\F}{\mathcal{F}}
+\renewenvironment{knitrout}{\begin{singlespace}}{\end{singlespace}}
+%-----------------------
+% Math environments
+%-----------------------
+%\newcommand{\ba}{\begin{align}}
+%\newcommand{\ea}{\end{align}}
+%\newcommand{\ba}{\begin{align}}
+
+<<echo = FALSE>>=
+library("knitr")
+library("ggplot2")
+library("grid")
+opts_chunk$set(cache = TRUE, fig.width = 4, fig.height = 4, fig.align = "center")
+
+scale_colour_discrete <- function(...)
+  scale_colour_brewer(..., palette="Set2")
+small_theme <- function(base_size = 7, base_family = "Helvetica") {
+  theme_bw(base_size = base_size, base_family = base_family) %+replace%
+  theme(axis.title = element_text(size = rel(0.8)),
+        legend.title = element_text(size = rel(0.8)),
+        legend.text = element_text(size = rel(0.8)),
+        plot.title = element_text(size = rel(1.1)),
+        plot.margin = unit(c(0.1, .1, .1, .1), "lines")
+        )
+}
+
+#read_chunk()
+@
+
+\linespread{1.5}
+
+\begin{document}
+
+\subsection{Classical Multivariate Methods}
+
+Methods from classical multivariate statistics have become a mainstay
+of single-table microbiome data analysis, so it is natural to revisit
+this literature to identify extensions to the multitable
+setting. Here we describe a few of the classically studied multitable
+methods that fit nicely into the modern microbiome data analysis
+toolbox. We first describe a naive approach based on Principal
+Components Analysis (PCA) -- naive because it lifts a single-table
+method to the multiple table setting without any special
+considerations --  before studying approaches that directly
+characterize covariation across several tables: Canonical Correlation
+Analysis (CCA), Multiple Factor Analysis (MFA), and Principal
+Component Analysis with Instrumental Variables (PCA-IV).
+
+But first, a comment on the setting in which these methods
+emerged. The earliest multitable method (CCA) was published in 1936,
+where the motivating data analysis problem was to relate prices of
+groups of commodities \cite{hotelling1936relations}. There are two notable
+aspects of data analysis in this classical paradigm which no longer
+hold in modern statistics:
+\begin{itemize}
+  \item Even when many samples could be collected, there were
+    typically only a few features for each sample, and it was
+    straightforwards to study all of them simultaneously. In the last
+    few decades, it has become possible to automatically collect a
+    large number of features for each sample.
+  \item Before electronic computers had been invented, it was
+    important that all statistical quantities be relatively easy to
+    calculate. This is no longer a restriction in an environment with
+    rich computational resources.
+\end{itemize}
+
+These changes have motivated the need for high-dimensional methods and
+facilitated the adoption of iterative, more computationally-intensive
+approaches, respectively, some of which are described in the
+description below.
+
+Nonetheless, it is important to review these original approaches, both to
+understand the context for many modern techniques, as well as to have
+an easy starting point for practical data analysis. Indeed, these more
+established, tend to be the most readily available through statistical
+computing packages and can often provide a benchmark with which to
+compare more elaborate, modern methods.
+
+\subsubsection{PCA}
+\label{sec:pca}
+
+The simplest approach to dealing with multiple tables is to combine
+them into one and apply a single-table method, for example, PCA. That
+is, write
+\begin{align}
+X = \left[X^{(1)} \vert \dots \vert X^{(L)}\right] \in \reals^{n \times p},
+\end{align}
+where $p = \sum_{l = 1}^{L}p_{l}$, and compute the SVD\footnote{An
+  equivalent procedure is to eigenanalyze the empirical covariance
+  matrix $\frac{1}{n}X^{T}X$.}, $X = UDV^{T}$. The $k$-principal
+component directions as the first $k$ columns $V\left[, 1:k\right]$,
+while the associated scores $\left(UD\right)\left[, 1:k\right]$.
+
+While this does not account for the multitable structure of the data,
+it does accomplish two goals,
+\begin{enumerate}
+\item Through the principal component scores, it provides a
+  visualization of the relationships between
+  samples, based on all features.
+\item Through the principal component directions, it gives a way of
+  relating features within and across the multiple tables.
+\end{enumerate}
+
+However, two important drawbacks of this approach are
+\begin{enumerate}
+  \item It does not provide a summary of the relationship between the
+    sets of variables defining the tables -- it can only relate pairs
+    of variables. \label{bullet:pca_drawback_one}
+  \item If some tables have many more variable than others, they can
+    dominate the resulting ordination. \label{bullet:pca_drawback_two}
+\end{enumerate}
+
+These limitations are addressed by CCA and MFA.
+
+There are many ways to motivate the procedure behind PCA, two standard
+ones come from a geometric and a statistical point of view. The
+geometric motivation is that, if each row $x_{i}$ of $X$ is viewed as
+a point in $p$-dimensional space, then the principal component
+directions provide the best $k$-dimensional approximation to the
+data. Formally, recall that $VV^{T}x_{i}$ is the projection of $x_{i}$
+onto the subspace spanned by the columns of $V$. PCA identifies the
+orthogonal matrix $V$ such that
+\begin{align}
+\sum_{i = 1}^{n}\|x_{i} - VV^{T} x_{i}\|_{2}^{2}
+\end{align}
+is minimized. The principal component scores are then the coordinate
+of the projected points with respect to this subspace.
+
+The second interpretation is that PCA finds a low-dimensional
+representation of the $x_{i}$ such that the resulting points have
+maximal variance. Speaking qualitatively, this is a desirable
+property, because it means that the (simpler) representation
+``preserves most of the variation'' present in the original
+data. Formally, suppose that the $x_{i}\in\reals^{p}$ are drawn
+independently from some distribution $\P$, so that the variance is
+$\Covsubarg{\P}{x_{i}} = \Sigma$ . Consider an arbitrary
+linear combination of $x_{i}$'s $p$ coordinates: $z_{i} := c^{T}x_{i}$
+for some $c \in \reals^{p}$. The first PCA direction gives the $c$
+such that the variance of this coordinate, $\Covsubarg{\P}{z_{i}} =
+c^{T}\Sigma c$, is maximal. The second direction gives the linear
+combination that maximizes variance, subject to being orthogonal to
+the first, and so forth.
+
+While our description of the method of concatenating multiple tables
+into a single one has focused on PCA, we note as an aside that other
+methods could be applied. For example, it is possible to define a new
+distance between samples as a mixture of distances based on several
+tables. This can be useful if there are different types of data across
+the different tables: Jaccard, chi-squared, and euclidean distsances
+can be applied to binary, count, and real valued tables, for
+example. The combined distance can then be input into any
+distance-based procedure, like multidimensional scaling (MDS) or
+hierarchical clustering. The primary downside of this approach is that
+the resulting distance only allows a comparison across samples, but
+not between features.
+
+PCA is a very widely used technique, and some standard references
+include (Mardia) (Pages) and (ESL).
+
+\subsubsection{CCA}
+
+Canonical Correlation Analysis is a close relative of PCA that
+explicitly compares sets of features across multiple tables. While it
+continues to provide low-dimensional representations of samples, as in
+PCA, it remedies the problem \ref{bullet:pca_drawback_one} associated
+with the naive approach of performing PCA on concatenated data.
+
+Suppose for now that there are only two tables, $X^{(1)}$ and $X^{(2)}$,
+upon which we want to base an ordination. The CCA procedure is
+described in Algorithm 1.
+
+Let $\hat{\Sigma}_{ll^{\prime}} = \frac{1}{n}X^{(l) T}X^{(l^{\prime})}$
+be the empirical covariance between tables $l$ and $l^{\prime}$. Take
+the SVD,
+$\Sigma_{11}^{-\frac{1}{2}}\Sigma_{12}\Sigma_{22}^{-\frac{1}{2}} =
+USM^{T}$. The canonical correlation directions associated with the two
+tables are $v_{k}^{(1)} = \Sigma_{11}^{-\frac{1}{2}}u_{k} \in \reals^{p_{1}}$ and
+$v_{k}^{(2)} = \Sigma_{22}^{-\frac{1}{2}}m_{k} \in
+\reals^{p_{2}}$. These directions give two low-dimensional
+representations for each sample, one for each table: $z_{k}^{(1)} =
+X^{(1)}_{\cdot k}v^{(1)}_{k}$ and $z_{k}^{(2)} = X^{(2)}_{\cdot k}
+v_{k}^{(2)}$. If the two tables are very closely related,
+then the $z_{k}^{(1)}$ and $z_{k}^{(2)}$ should be very
+correlated. The singular values $s_{k}$ are called the canonical
+correlation coefficients. Like the eigenvalues in PCA, they
+characterize the amount of covariation across tables that can be
+captured by the first $k$ recovered directions.
+
+As in PCA, there are geometric, statistical, and probabilistic
+interpretations for this procedure. Unlike the geometric
+interpretation for PCA, the geometric interpretation for CCA identifies
+each feature with a point, not each sample. Specifically, the $j^{th}$
+column of the $l^{th}$ table $X^{(l)}_{j}$ with a point in
+$\reals^{n}$. Consider the two subspaces defined as the spans of the
+columns of $X^{(1)}$ and $X^{(2)}$, respectively. These subspaces
+correspond to the linear combinations of features within each
+table. Consider the two circles that lie on the respective
+subspaces, whose radius depends on the covariance of each table (todo:
+clarify this, or assume whitened). The first canonical correlation
+directions are the pair of points, one lying on each circle, such that
+the angle from the origin to those two points is smallest. In this
+sense, it finds a pair of linear combinations of features within the
+two tables so that the two tables appear ``close'' to one another. The
+second pair of canonical correlation directions identify a pair of
+points with similar interpretation, except they are required to be
+orthogonal to the first pair, with respect to the inner product
+induced by the covariances for each table.
+
+For the statistical interpretation, the idea of CCA is to find the
+low-dimensional representations of the two tables with maximal
+covariance; this is analogous to PCA, which finds the low-dimensional
+representation of one table with maximal variance. Formally, let
+$x_{i}^{(1)}$ and $x_{i}^{(2)}$ samples from $\P^{(1)}$ and (independently)
+$\P^{(2)}$. The rows of the two tables are imagined to be iid draws
+from $\P^{(1)}$ and $\P^{(2)}$, respectively. Consider arbitrary
+linear combinations $\tilde{z}_{1}^{(1)} = c^{(1) T}_{1} x_{i}^{(1)}$ and
+$\tilde{z}_{1}^{(2)} = c^{(2) T}_{1}x_{i}^{(2)}$ of the columns in the
+two tables. The first pair of CCA directions $z_{1}^{(1)}$ and
+$z_{1}^{(2)}$ are defined as the optimal $c_{1}^{(2)}$ and
+$c_{1}^{(2)}$ to the following problem, after population covariances
+are replaced with their empirical estimates,
+\begin{align}
+  \maximize_{c_{1}^{(1)} \in \reals^{p_{1}}, c_{1}^{(2)} \in \reals^{p_{2}}} &\Covsubarg{\P^{(1)}, \P^{(2)}}{c_{1}^{(1) T}x_{i}^{(1)},
+    c_{1}^{(2) T} x_{i}^{(2)}}, \\
+  \text{subject to,}\\
+  &\Varsubarg{\P^{(1)}}{x_{i}^{(1)}} =
+  \Varsubarg{\P^{(2)}}{x_{i}^{(2)}} = 1. \label{eq:cancor_optim}
+\end{align}
+
+The next pair of directions $z_{2}^{(1)}$ and $z_{2}^{(2)}$ must
+satisfy the orthogonality constraints, $z_{2}^{(1)
+  T}\Varsubarg{\P^{(1)}}{x_{i}^{(1)}} z_{1}^{(1)} = 0$ and $z_{2}^{(2)
+  T}\Varsubarg{\P^{(2)}}{x_{i}^{(2)}} z_{1}^{(2)} = 0$.
+
+A probabilistic interpretation of this procedure views it as
+estimating the factors in an implicit latent variable model. In
+particular, \cite{bach2005probabilistic} supposed that $x_{i}^{(1)}$
+and $x_{i}^{(2)}$ were drawn iid from the following model,
+\begin{align}
+  \xi_{i} &\sim \Gsn\left(0, I_{d}\right) \\
+  x_{i}^{(1)} \vert \xi_{i} &\sim \Gsn\left(W_{1}\xi_{i} + \mu_{1},
+    \Psi_{1}\right) \\
+  x_{i}^{(2)} \vert \xi_{i} &\sim \Gsn\left(W_{2}\xi_{i} + \mu_{2}, \Psi_{2}\right).
+\end{align}
+That is, each sample is associated with a $k$-dimensional latent
+variable $\xi_{i}$, drawn from a spherical normal prior. The two tables
+give features $x_{i}^{(1)}$ and $x_{i}^{(2)}$ associated with this
+sample, which are thought to be different noisy linear combinations of
+this latent variable. The authors demonstrated that the posterior
+expectations of the latent $\xi_{i}$ given the observed tables must lie
+on the subspace defined by the CCA directions. More precisely,
+\begin{align}
+  \Earg{\xi_{i} \mid x_{i}^{(1)}} \in \text{span}\left(z_{1}^{(1)},
+    \dots, z_{k}^{(1)}\right),
+\end{align}
+and
+\begin{align}
+  \Earg{\xi_{i} \mid x_{i}^{(2)}} \in \text{span}\left(z_{1}^{(2)},
+    \dots, z_{k}^{(2)}\right).
+\end{align}
+
+(todo: I'm not so sure about this anymore, see page 409 of Murphy)
+
+Finally, we observe that the logic for CCA generalizes to an arbitrary
+number $L$ of tables, by summing all pairwise covariances. That is,
+the instead of finding directions $c_{k}^{(1)}$ and $c_{k}^{(2)}$
+maximizing $\Covsubarg{\P^{(1)}, \P^{(2)}}{c_{k}^{(1)T}x_{i}^{(1)},
+  c_{k}^{(2)T}x_{i}^{(2)}}$ subject to normalization and orthogonality
+constraints, we seek directions $c_{k}^{(1)}, \dots, c_{k}^{(L)}$ that
+maximize the sum of cross-covariances $\sum_{l,l^{\prime} = 1}^{L}
+\Covsubarg{\P^{(l)}, \P^{(l^{\prime})}}{c_{k}^{(l) T}x_{i}^{(l)},
+  c_{k}^{(l^{\prime})}x_{i}^{(l^{\prime})}}$.
+
+\subsection{Co-Inertia Analysis}
+
+Co-Inertia Analysis (CoIA) was motivated by the same problem as
+Canonical Correspondence Analysis, where the main question is how
+groups of species become more or less abundant depending on the
+environmental conditions at the sites they were observed
+\cite{doledec1994co}. It can be viewed as a slight
+modification\footnote{I might even call it a simplification.} of
+Canonical Correlation Analysis. Again, we seek sets of orthonormal
+directions $\left(u_{k}\right)_{k = 1}^{K}$ and $\left(v_{k}\right)_{k
+  = 1}^{K}$ such that the associated projections $X^{(1)}u_{k}$ and
+$X^{(2)}v_{k}$ explain most of the covariation between the
+tables. Unlike Canonical Correlation Analysis, the approach is to
+maximize the covariance between the scores, not the
+correlation. Formally, it chooses the first directions $u_{1}$ and
+$v_{1}$ as the solutions to
+\begin{align}
+\maximize_{u \in \reals^{p_{1}}, v \in \reals^{p_{2}}} &u^{T}X^{T}Yv \\
+\text{ such that}\medspace &\|u\| = \|v\| = 1,
+\end{align}
+and subsequent directions by the same optimization, with the
+additional constraint that they are orthogonal to the previously
+derived directions, $u_{k^{\prime}} \perp
+\text{span}\left(\left(u_{k}\right)_{k = 1}^{k^{\prime} - 1}\right)$
+and $v_{k^{\prime}} \perp \text{span}\left(\left(v_{k}\right)_{k =
+    1}^{k^{\prime} - 1}\right)$.
+
+Comparing with the CCA formulation \ref{eq:cancor_optim}, we see that
+the only difference is that the norm constraint is imposed on $u$ and
+$v$ directly, rather than their projections. Indeed, forcing their
+projections to be length one makes the CCA objective the correlation
+between scores, while in CoIA it is only the covariance.
+
+The solutions $\left(u_{k}\right)_{k = 1}^{K}$ and
+$\left(v_{k}\right)_{k = 1}^{K}$ can be obtained as the first $K$ left
+and right eigenvectors from the SVD of $X^{T}Y$, as opposed to the
+first $K$ generalized eigenvectors, as in CCA. By essentially the
+same argument as in CCA, but we include it for completeness. To derive
+the first pair $u_{1}, v_{1}$, first write
+\begin{align}
+X^{T}Y = UDV^{T} = \sum_{k = 1}^{p_{1} \wedge p_{2}}
+d_{k}u_{k}v_{k}^{T}.
+\end{align}
+Note that any $\xi$ and $\nu$ of length one, we can find $w_{u}$ and $w_{v}$ such
+that $\xi = Uw_{u}, \nu = Vw_{v}$, since $U$ and $V$ are both
+orthonormal bases. Further, since they are length one,
+$1 = \|\xi\|^{2}_{2} = w_{u}^{T}U^{T}Uw_{u} = \|w_{u}\|_{2}^{2}$ and
+similarly $\|w_{v}\|_{2}^{2} = 1$. The CoIA objective can be bounded by
+\begin{align}
+\xi^{T}X^{T}Y\nu &= w_{u}^{T}U^{T}UDV^{T}Vw_{v} \\
+&=  w_{u}^{T}Dw_{v} \\
+&= \sum_{k = 1}^{p_{1} \wedge p_{2}} d_{k}w_{uk}w_{vk} \\
+&\leq d_{1} \sum_{k = 1}^{p_{1} \wedge p_{2}} w_{uk}w_{vk} \\
+&\leq d_{1} \|w_{u}\|\|w_{v}\| = d_{1},
+\end{align}
+and this maximum is attained when $w_{u}$ and $w_{v}$ both put all
+their weight on the first coordinate, that is $\xi = u_{1}$ and $\nu =
+  v_{1}$. For subsequent directions, we repeat the argument but
+  require that $w_{u}$ and $w_{v}$ have zero weight on the first
+  columns of $U$ and $V$.
+
+\subsubsection{MFA}
+
+Multiple factor analysis gives an alternative approach to producing
+scores and relating features across multiple
+tables\cite{pages2014multiple}. It can be understood as a reweighted
+version of the concatenated PCA described in section \ref{sec:pca}
+that reweights tables in a way that avoids issues
+\ref{bullet:pca_drawback_one} and
+\ref{bullet:pca_drawback_two}. Specifically, perform PCA on the matrix
+\begin{align}
+X := \left[\frac{1}{\lambda_{1}\left(X^{(1)}\right)}X^{(1)} \vert \dots
+  \vert \frac{1}{\lambda_{1}\left(X^{(L)}\right)}X^{(L)}\right],
+\end{align}
+which reweights each table by its largest eigenvalue. This procedure
+is the multitable analog of the standard practice of standardizing
+variables before performing PCA, and it resolves issue
+\ref{bullet:pca_drawback_two}.
+
+The resulting MFA directions and scores can be interpreted in the same
+way as those from PCA. That is, the MFA directions still specify the
+relationship between measured features, and the position of each
+sample's projection describes the relative weight of each feature for
+that sample. Moreover, MFA gives a way of comparing full tables to
+each other, called a ``canonical analysis'' in the MFA literature
+\cite{pages2004multiple}. A $K$-dimensional representation of the
+$l^{th}$ group is given by
+\begin{align}
+\left[\mathcal{L}\left(z_{1}, X^{(l)}\right) \dots,
+  \mathcal{L}\left(z_{K}, X^{(l)}\right)\right]
+\end{align}
+where $z_{k} = d_{k}u_{k} \in \reals^{n}$ are the $k^{th}$ column of
+principal component scores and
+\begin{align}
+  \mathcal{L}\left(z_{k}, X^{(l)}\right) =
+  \frac{\lambda_{k}\left(X\right)}{\lambda_{1}\left(X^{(l)}\right)}\tr\left(X^{(l)}X^{(l)
+      T} z_{k}z_{k}^{T}\right) =
+  \frac{\lambda_{k}\left(X\right)}{\lambda_{1}\left(X^{(l)}\right)}\|X^{(l)
+  T} u_{k}\|^{2}_{2}
+\end{align}
+is a measure of aggregate similarity between the coordinates in the
+$l^{th}$ table and the $k^{th}$ column of scores. In this definition,
+if the samples, as represented by the $l^{th}$ table, have high
+correlation with the $k^{th}$ dimension of scores, then the summary
+for that group will be projected far in the $k^{th}$ direction.
+
+\subsubsection{PCA-IV}
+
+Principal components with instrumental variables (PCA-IV)
+\cite{rao1964use} adapts the dimension reduction ideas of PCA to
+multivariate regression setting. It can also be viewed as a
+version of PCA that chooses a dimension reduction of $X^{(2)}$ in
+light of its ability to predict $X^{(1)}$, a kind of supervised
+version of CCA. In this sense, it anticipates methods like partial
+least squares, canonical correspondence analysis, the curd \& whey
+procedure, and various approaches to multitask learning, see the
+discussion below.
+
+For the formal setup, suppose we are predicting $x_{i}^{(1)}
+\in \reals^{p_{1}}$ from $x_{i}^{(2)} \in \reals^{p_{2}}$. Since
+$p_{2}$ may be large, it might be useful to work with a
+lower-dimensional representation $z_{i} = V^{T}x^{(2)}_{i} \in
+\reals^{K}$, that is potentially more interpretable and is still
+predictive of $x^{(1)}$. As in PCA, we want the columns of $V$ to be
+orthonormal.
+
+The criterion that PCA-IV uses to identify the weights $V$ and
+scores $Z$ is similar to the maximum variance view of PCA. Instead of
+choosing $V$ to maximize the variance of the $z_{i}$, we choose it to
+minimize the residual covariance of $x_{i}^{(1)}$ given $z_{i}$. That
+is, suppose that $x_{i}^{(1)}$ and $x_{i}^{(2)}$ are normal with mean
+0 (we can always center the data) and joint covariance
+\begin{align}
+\Var_{\P}\begin{pmatrix}x_{i}^{(1)} \\ x_{i}^{(2)}\end{pmatrix} &=
+\begin{pmatrix}
+  \Sigma_{11} & \Sigma_{12} \\
+  \Sigma_{21} & \Sigma_{22}
+\end{pmatrix}.
+\end{align}
+
+If $z_{i} = V^{T}x_{i}^{(2)}$, then the joint covariance of
+$x_{i}^{(1)}$ and $z_{i}$ is
+\begin{align}
+  \Var_{\P}\begin{pmatrix} x_{i}^{(1)} \\ z_{i} \end{pmatrix} &=
+  \begin{pmatrix}
+    \Sigma_{11} & \Sigma_{12}V \\
+    V^{T}\Sigma_{21} & V^{T}\Sigma_{22}V
+  \end{pmatrix},
+\end{align}
+and the residual covariance of $x_{i}^{(1)}$ given $z_{i}$ is
+\begin{align}
+  \Sigma_{11} -
+  \Sigma_{12}V\left(V^{T}\Sigma_{22}V\right)^{-1}V^{T}\Sigma_{21}. \label{eq:pca_iv_resid_cov}
+\end{align}
+There are several ways to measure the size of this matrix, but
+\cite{rao1964use} uses the trace. The true population covariances are
+unknown to us, so we replace them by their empirical estimates. The
+formal optimization for PCA-IV then becomes
+\begin{align}
+  \minimize_{V\in \reals^{p_{2} \times K} \text{ orthonormal}}
+  \tr\left(\hat{\Sigma}_{11} -
+    \hat{\Sigma}_{12}V\left(V^{T}\hat{\Sigma}_{22}V\right)^{-1}V^{T}\hat{\Sigma}_{21}\right). \label{eq:pca_iv_obj},
+\end{align}
+or, equivalently,
+\begin{align}
+  \maximize_{V\in \reals^{p_{2} \times K} \text{ orthonormal}}
+  \tr\left(\hat{\Sigma}_{12}V\left(V^{T}\hat{\Sigma}_{22}V\right)^{-1}V^{T}\hat{\Sigma}_{21}\right). \label{eq:pca_iv_obj_2},
+\end{align}
+
+The optimal $V$ are the top $k$ generalized eigenvectors of
+$\hat{\Sigma}_{21}\hat{\Sigma}_{12}$ with respect to $\hat{\Sigma}_{22}$,
+that is, the orthonormal set of $\left(v_{k}\right)$ satisfying
+\begin{align}
+\hat{\Sigma}_{21}\hat{\Sigma}_{12}v_{k} &= \lambda_{k}
+\hat{\Sigma}_{22}v_{k},
+\end{align}
+which can be written more concisely as
+\begin{align}
+\hat{\Sigma}_{21}\hat{\Sigma}_{12}V &= \left( \lambda_{1}
+  \hat{\Sigma}_{22}v_{1} \vert \dots \vert
+  \lambda_{k}\hat{\Sigma}_{22}v_{k}\right) =
+\hat{\Sigma}_{22}V\Lambda,
+\end{align}
+where $\Lambda = \diag\left(\lambda_{k}\right) \in \reals^{K \times K}$. In
+particular, $\hat{\Sigma}_{21}\hat{\Sigma}_{12}$ has generalized
+eigendecomposition $\hat{\Sigma}_{21}\hat{\Sigma}_{12} = \hat{\Sigma}_{22} V\Lambda V^{T}$.
+
+To see why this is optimal, first consider $k = 1$. Then, for any
+$\tilde{v}$, the objective \ref{eq:pca_iv_obj_2} has the form
+\begin{align}
+  \tr\left(\hat{\Sigma}_{12}\tilde{v}\left(\tilde{v}\hat{\Sigma}_{22}\tilde{v}\right)^{-1}
+    \left(\hat{\Sigma}_{12}\tilde{v}\right)^{T}\right) &=
+  \frac{\tilde{v}^{T}\Sigma_{21}\Sigma_{12}\tilde{v}}{\tilde{v}^{T}\Sigma_{22}\tilde{v}} \label{eq:gev_opt_1}\\
+  &=
+  \frac{\tilde{w}^{T}\Sigma_{22}^{-\frac{1}{2}}\Sigma_{21}\Sigma_{12}\Sigma_{22}^{-\frac{1}{2}}\tilde{w}}{\|\tilde{w}\|_{2}^{2}}, \label{eq:gev_opt_2}
+\end{align}
+where we change variables $\tilde{w} =
+\Sigma_{22}^{\frac{1}{2}}\tilde{v}$. But to maximize
+  \ref{eq:gev_opt_2}, just choose $\tilde{w}$ to be the top
+  eigenvector of
+  $\Sigma_{21}^{-\frac{1}{2}}\Sigma_{21}\Sigma_{12}\Sigma_{21}^{-frac{1}{2}}$,
+which implies that $\tilde{v}$ is the top generalized eigenvector of
+$\Sigma_{21}\Sigma_{12}$ with respect to $\Sigma_{22}$. Indeed, in
+this case,
+\begin{align}
+  \Sigma_{21}\Sigma_{12}\tilde{v}
+  =\Sigma_{21}\Sigma_{12}\Sigma_{22}^{-\frac{1}{2}}\tilde{w} =
+  \Sigma_{22}^{\frac{1}{2}} \Sigma_{22}^{-\frac{1}{2}}\Sigma_{21}\Sigma_{12} \Sigma_{22}^{\frac{1}{2}}\tilde{w}
+  = \Sigma_{22}^{\frac{1}{2}}\lambda_{1}\tilde{w}
+  = \lambda_{1}\Sigma_{22}\tilde{v}.
+\end{align}
+
+So indeed, the criterion is maximized by the top generalized
+eigenvector, in the case that $K = 1$. For larger $K$, recall that the
+problem of maximizing $\frac{v^{T}Av}{\|v\|^{2}}$ over $v$ subject to
+being orthogonal to the first $k - 1$ eigenvectors of $A$ is solved by
+the $k^{th}$ eigenvector of $A$, so applying this fact in step
+\ref{eq:gev_opt_2} of the argument above gives the result for general
+$K$.
+
+For a geometric interpretation of PCA-IV\footnote{I haven't read
+  anything about this so (1) I'm a little proud I came up with
+  something and (2) everything here might be wrong.}, consider each
+column $x_{\cdot j}^{(1)}$ in $X^{(1)}$ and $x_{\cdot j}^{(2)}$ in
+$X^{(2)}$ as a point in $\reals^{n}$. The $\left(x_{\cdot
+    j}^{(2)}\right)_{j = 1}^{p_{2}}$ span some $p^{(2)}$-dimensional
+subspace (we assume full rank). The $\left(x_{\cdot j}^{(1)}\right)$
+are $p^{(1)}$ points in this same space. A set of independent
+regressions of columns of $X^{(2)}$ onto $X^{(1)}$ simply projects the
+$x_{\cdot j}^{(1)}$ onto the span of $\left(x_{\cdot j}^{(2)}\right)$,
+and the residuals are the distance to this span. The PCA-IV procedure
+is an attempt to find a further $K$-dimensional subspace within the
+span of the $\left(x_{\cdot j}^{(2)}\right)$ such that the residuals
+of the regressions from $x_{\cdot j}^{(1)}$ onto this further subspace
+is not much worse.
+
+Indeed, write the usual estimates for the covariance matrices of
+interest,
+\begin{align}
+  \Sigma_{11} = \frac{1}{n}X^{(1) T}X^{(1)} \\
+  \Sigma_{12} = \frac{1}{n}X^{(1) T}X^{(2)} \\
+  \Sigma_{22} = \frac{1}{n}X^{(2) T}X^{(2)},
+\end{align}
+and observe that the residual covariance \ref{eq:pca_iv_resid_cov} can
+be expressed
+\begin{align}
+  &\frac{1}{n}\left[X^{(1) T}X^{(1)} - X^{(1)
+      T}X^{(2)}V\left(V^{T}X^{(2) T}X^{(2)}V\right)^{-1}V^{T}X^{(2)
+      T}X^{(1)}\right] \\
+  = &\frac{1}{n}\left[X^{(1) T}X^{(T)} - X^{(1)
+      T}Z\left(Z^{T}Z\right)^{-1}Z^{T} X^{(1)}\right] \\
+  = &X^{(1)}\left(I - P_{Z}\right)X^{(1)},
+\end{align}
+where $P_{Z} = Z\left(Z^{T}Z\right)^{-1}Z^{T}$ is the projection
+operator onto the columns of $Z$. Now, minimizing the trace of this
+matrix is equivalent to minimizing
+\begin{align}
+  \tr\left(X^{(1) T}\left(I - P_{Z}\right)X^{(1)}\right) &=
+  \tr\left(X^{(1) T}\left(I - P_{Z}\right)^{T}\left(I -
+      P_{Z}\right)X^{(1)}\right) \\
+  &= \|\left(I - P_{Z}\right)X^{(1)}\|_{F}^{2} \\
+  &= \sum_{j = 1}^{p_{1}}\|\left(I - P_{j}\right)x_{\cdot j}^{(1)}\|^{2}_{2},
+\end{align}
+which is exactly the sum of squared residuals from the columns of
+$X^{(1)}$ onto the span of the PCA-IV subspace, justifying the
+geometric picture described earlier.
+
+\subsection{Costatis and  Statico}
+
+\subsection{Curds and Whey}
+
+\bibliographystyle{unsrt}
+\bibliography{microbiome_multitable}
+
+\end{document}
