@@ -417,7 +417,7 @@ v^{T}X^{T}u$, we see that the PMD solutions $u$ and $v$ in
 \begin{align}
 \label{eq:pmd_reform}  \maximize_{u \in \reals^{n}, v \in \reals^{p}} &u^{T}X^{T}v \\
   \text{subject to } &\|u\|_{2}^{2} = \|v\|_{2}^{2} \\
-  &\text{Pen}_{1}\left(u\right) \leq mu_{1} \\
+  &\text{Pen}_{1}\left(u\right) \leq \mu_{1} \\
   &\text{Pen}_{2}\left(v\right) \leq \mu_{2}
 \end{align}
 
@@ -444,26 +444,25 @@ CCA. Recall the maximal-covariance interpretation of CCA,
 which in practice is approximated by
 \begin{align}
   \maximize_{c_{1}^{(1)} \in \reals^{p_{1}}, c_{1}^{(2)} \in
-    \reals^{p_{2}}} &\frac{1}{n}c_{1}^{(1) T}X^{(1) T}X^{(2)}
-  c_{1}^{(2)} \\
-  \text{subject to } &\frac{1}{n}c_{1}^{(1) T}X^{(1) T}X^{(1)} c_{1}^{(1)} =
-  \frac{1}{n}c_{1}^{(2) T}X^{(2) T}X^{(2)} c_{1}^{(2)} = 1.
+    \reals^{p_{2}}} & c_{1}^{(1) T}\hat{\Sigma}_{12}c_{1}^{(2)} \\
+  \text{subject to } &c_{1}^{(1) T}\hat{\Sigma}_{11} c_{1}^{(1)} =
+  c_{1}^{(2) T}\hat{\Sigma}_{22}c_{1}^{(2)} = 1.
 \end{align}
 
 \cite{witten2009penalized} argues for diagonalized CCA, in which the
-variance constraints are replaced by unit norm constraints, as well as
-the addition of sparsity-inducing $\ell^{1}$ constraints,
+variance constraints are replaced by unit norm constraints, and
+sparsity-inducing $\ell^{1}$ constraints are added,
 \begin{align}
   \maximize_{c_{1}^{(1)} \in \reals^{p_{1}}, c_{1}^{(2)} \in
-    \reals^{p_{2}}} &\frac{1}{n}c_{1}^{(1) T}X^{(1) T}X^{(2)}
+    \reals^{p_{2}}} & c_{1}^{(1) T}\hat{\Sigma}_{12}
   c_{1}^{(2)} \\
   \text{subject to } &\|c_{1}^{(1)}\|_{2}^{2} = \|c_{1}^{(2)}\|_{2}^{2} = 1 \\
   &\|c_{1}^{(1)}\|_{1} \leq \mu_{1} \\
-  &\|c_{1}^{(2)}\|_{1} \leq \mu_{2} \\
+  &\|c_{1}^{(2)}\|_{1} \leq \mu_{2}
 \end{align}
-which is exactly in the form \ref{eq:pmd_reform} where $X = X^{(1)
-  T}X^{(2)}$, so indeed the PMD framework includes this form of sparse
-CCA.
+which is exactly in the form \ref{eq:pmd_reform} where $X =
+\hat{\Sigma}_{12}$, so indeed the PMD framework includes this form of
+sparse CCA.
 
 Multiple CCA can also be described in this framework, by replacing
 the objective with the sum over all pairwise covariances, $\sum_{l,
