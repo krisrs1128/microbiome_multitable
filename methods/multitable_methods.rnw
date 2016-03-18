@@ -1,4 +1,5 @@
-\documentclass{scrartcl}\usepackage{graphicx, color}
+\documentclass{scrartcl}
+\usepackage{graphicx, color}
 \usepackage{eulervm}
 %% maxwidth is the original width if it is less than linewidth
 %% otherwise use linewidth (to make sure the graphics do not exceed the margin)
@@ -100,9 +101,11 @@
 \def\P{\mathbb{P}} % Probability symbol
 \def\Parg#1{\P\left({#1}\right)}
 \def\Psubarg#1#2{\P_{#1}\left[{#2}\right]}
+\def\Corr{\mrm{Corr}} % Correlation symbol
 \def\Cov{\mrm{Cov}} % Covariance symbol
 \def\Covarg#1{\Cov\left[{#1}\right]}
 \def\Covsubarg#1#2{\Cov_{#1}\left[{#2}\right]}
+\def\Corrsubarg#1#2{\Corr_{#1}\left[{#2}\right]}
 \def\Var{\mrm{Var}}
 \def\Vararg#1{\Var\left(#1\right)}
 \def\Varsubarg#1#2{\Var_{#1}\left(#2\right)}
@@ -139,6 +142,7 @@
 % Probability sets
 %-----------------------
 \newcommand{\X}{\mathcal{X}}
+\newcommand{\D}{\mathcal{D}}
 \newcommand{\Y}{\mathcal{Y}}
 %-----------------------
 % vector notation
@@ -185,7 +189,7 @@ small_theme <- function(base_size = 7, base_family = "Helvetica") {
 
 \begin{document}
 
-\subsection{Classical Multivariate Methods}
+\section{Classical multivariate methods}
 
 Methods from classical multivariate statistics have become a mainstay
 of single-table microbiome data analysis, so it is natural to revisit
@@ -230,7 +234,7 @@ established, tend to be the most readily available through statistical
 computing packages and can often provide a benchmark with which to
 compare more elaborate, modern methods.
 
-\subsubsection{PCA}
+\subsection{PCA}
 \label{sec:pca}
 
 The simplest approach to dealing with multiple tables is to combine
@@ -309,10 +313,10 @@ the resulting distance only allows a comparison across samples, but
 not between features.
 
 PCA is a very widely used technique, and some standard references
-include \cite{friedman2001elements}, \cite{mardia1980multivariate},
-and \cite{pages2014multiple}.
+include \cite{friedman2001elements, mardia1980multivariate,
+  pages2014multiple}.
 
-\subsubsection{CCA}
+\subsection{CCA}
 
 Canonical Correlation Analysis is a close relative of PCA that
 explicitly compares sets of features across multiple tables. While it
@@ -512,7 +516,7 @@ $\left(v_{k}\right)_{k = 1}^{K}$ can be obtained as the first $K$ left
 and right eigenvectors from the SVD of $X^{T}Y$, as opposed to the
 first $K$ generalized eigenvectors, as in CCA. By essentially the
 same argument as in CCA, but we include it for completeness.
-\subsubsection{MFA}
+\subsection{MFA}
 
 Multiple factor analysis gives an alternative approach to producing
 scores and relating features across multiple
@@ -557,7 +561,7 @@ if the samples, as represented by the $l^{th}$ table, have high
 correlation with the $k^{th}$ dimension of scores, then the summary
 for that group will be projected far in the $k^{th}$ direction.
 
-\subsubsection{PCA-IV}
+\subsection{PCA-IV}
 
 Principal components with instrumental variables (PCA-IV)
 \cite{rao1964use} adapts the dimension reduction ideas of PCA to
@@ -718,7 +722,7 @@ which is exactly the sum of squared residuals from the columns of
 $X^{(1)}$ onto the span of the PCA-IV subspace, justifying the
 geometric picture described earlier.
 
-\subsubsection{Partial Triadic Analysis}
+\subsection{Partial Triadic Analysis}
 
 Partial Triadic Analysis (PTA) gives an approach to working with
 $L$-table data ``cubes'' \cite{thioulouse2011simultaneous}. That is,
@@ -840,7 +844,7 @@ Perhaps the reason for avoiding this approach is that, compared to the
 PTA objective, this approach requires inverting an $Ln \times p$
 matrix.
 
-\subsubsection{Statico and Costatis}
+\subsection{Statico and costatis}
 
 In the multivariate ecology literature, it is common to have pairs of
 data cubes, where one gives species counts at a set of sites
@@ -877,7 +881,8 @@ order between the CoIA and the PTA. Indeed, this is reflected in the
 names of the methods: statis is an abbreviation for a PTA, and Statico
 performs a CoIA before a statis while Costatis reverses the order.
 
-\subsubsection{Reduced-Rank Regression}
+\subsection{Reduced-rank regression}
+\label{sec:rr-reg}
 
 Reduced-rank regression is an approach to multiresponse regression
 which ties the different responses together. Compared to treating each
@@ -990,7 +995,224 @@ projecting these pooled $Y$ onto the span of the $X$. If the $Y$ had not
 been pooled, then the projection onto the span of the $X$'s is exactly the usual
 independent linear regressions described earlier.
 
-\subsubsection{Curds \& Whey (C \& W)}
+\subsection{Modern multivariate methods}
+
+\subsection{Partial Least Squares (PLS)}
+
+PLS is a procedure for sequentially deriving a set of mutually
+orthogonal features $\left(z_{k}\right)_{k = 1}^{K}$ which summarize
+the relationship between two tables, $X^{(1)}$ and $X^{(2)}$
+\cite{wold1985partial}. To obtain the first PLS direction, $z_{1}$,
+compute the first left singular vector $u_{1}$ of the cross-covariance
+matrix between the two tables, $\hat{\Sigma}_{12} =
+\frac{1}{n}X^{(1)T}X^{(2)}$. Then, for each of the $p_{2}$ columns of
+$X^{(2)}$, compute the univariate (i.e., partial) regression coefficient
+$\hat{\varphi}_{j}$ from the model $u_{1i} = \alpha_{0j} +
+\varphi_{j}X^{(2)}_{ij}$, for $i = 1, \dots, j_{1}$. The first PLS
+direction is defined as $z_{1} = X^{(2)}\hat{\varphi}_{1}$. To
+generate subsequent directions, orthogonalize both $X^{(1)}$ and
+$X^{(2)}$ with respect to the current directions, and repeat the process.
+
+This procedure is appealing because, like PCA, it reduces a potentially
+high-dimensional matrix $X^{(2)}$ with many correlated columns into a
+smaller set of orthogonal directions. Moreover, it achieves this
+reduction in a way that accounts for correlation with columns in
+x$X^{(1)}$: columns of $X^{(2)}$ that are uncorrelated with $X^{(1)}$
+will have no contribution to the PLS directions, even if they account
+for a large proportion of variation in $X^{(2)}$.
+
+We have stated the procedure in the form it was originally
+proposed; its algorithmic nature makes it difficult to understand
+geometrically or probabilsitically. Subsequently, several authors have
+attempted to provide statistical interpretations for the PLS
+directions. \cite{frank1993statistical} \cite{stone1990continuum} studied
+the case where $p_{1} = 1$, so $X^{(1)}$ is a single column
+vector. They further suppose the rows of $X^{(1)}$ and $X^{(2)}$ are
+drawn iid from distributions $\P^{(1)}$ and $\P^{(2)}$. They found
+that the $k^{th}$ PLS direction $z_{k}$ is the $z$ that solves the
+optimization
+\begin{align}
+\max_{z} \medspace & \Corrsubarg{\P^{(1)} \times \P^{(2)}}{x_{i}^{(2) T}z_{k},
+x_{i}^{(1)}}\Varsubarg{\P^{(2)}}{z^{T}x_i^{(2)}} \\
+\text{such that }&z^{T}X^{(1) T}X^{(1)}z_{j} = 0 \text{ for all }j
+\leq k - 1 \text{ and }
+\|z\| = 1.
+\end{align}
+If the covariance term is ommitted, the optimization is identical to
+the maximum variance problem that gives the principal component
+directions based on $X^{(2)}$. This formulation makes precise the idea
+that PLS is a version of principal components that accounts for
+correlation with $X^{(1)}$.
+
+An alternative interptetation, due to
+\cite{gustafsson2001probabilistic}, is that PLS is the solution to a
+particular latent variable model. Suppose $\xi_{i} =
+\left(\xi_{i}^{shared}, \xi_{i}^{(2)}\right)$ are drawn iid from a $K_{1} +
+K_{2} = K$ dimensional spherical normal. The observed tables $X^{(1)}$
+and $X^{(2)}$ have rows drawn iid from
+\begin{align}
+x_{i}^{(1)} \mid \xi_{i} \sim \Gsn\left(W^{(1)}\xi_{i}^{(shared)} +
+  \mu^{(1)}, \sigma^{2}I_{p_{1}}\right) \\
+x_{i}^{(2)} \mid \xi_{i} \sim \Gsn\left(W^{(2)}\xi_{i}^{(shared)} + W^{(3)}\xi_{i}^{(2)} +
+  \mu^{(2)}, \sigma^{2}I_{p_{2}}\right).
+\end{align}
+
+That is, each table is the sum of two components, one that is a
+table-specific linear combination is a shared latent variable, and
+another that is an arbitrary linear combination of a table-specific
+latent variable. The shared feature $\xi^{shared}$ is the object of
+interest, and is what PLS implictly estimates.
+
+Compared to classical approaches, modern multivariate methods
+are typically designed for more the high-dimensional, heterogeneous
+settings. The two methods reviewed in this section are examples of
+this trend: partial least squares is well-suited for
+high-dimensional spectra (which explains its popularity in
+chemometrics), while canonical correspondence analysis was
+designed for joint analysis of the heterogeneous continuous / count
+data necessary to answer questions in ecology. Unlike traditional
+statistical methods, neither approach is explicitly model-based, and
+both are iterative, requiring more extensive computation than earlier
+techniques.
+
+\subsubsection{Canonical Correspondence Analysis (CCA)}
+
+CCA is a two table method designed to answer questions in ecology
+involving joint analysis of count and continuous data. For example
+$X^{(1)}$ might be a table whose rows are ecological sites, and whose
+columns are the counts of different species at those sites, while
+$X^{(2)}$ might describe environmental characteristics at those sites
+(e.g., historical rainfall and temperature measurements). A scientific
+goal might be to identify those species that are more abundant in
+sites with more rainfall or higher temperature. If these environmental
+variables were uncorrelated, it would be enough to fit a separate
+regression to each; this however is rarely the case, warranting the
+need for CCA.
+
+CCA produces low-dimensional representations for both the rows and
+columns of $X^{(1)}$ (the sites and species), as well as the latent
+subspaces onto which these representations are
+projected. Algorithmically, CCA proceeds first constructs the
+following matrices, where $1_{r}$ denotes a column vector of $r$ ones,
+\begin{enumerate}
+  \item An overall frequency matrix,
+    \begin{align}
+      F =
+    \frac{1}{n_{\cdot\cdot}^{(1)}} X^{(1)},
+  \end{align}
+  where $n_{\cdot\cdot}^{(1)}$ is the sum of all counts in matrix
+  $X^{(1)}$.
+\item A diagonal matrix of row (site) proportions,
+  \begin{align}
+    D_{r} &= diag\left(F 1_{p_{1}}\right) \in \reals^{n}.
+  \end{align}
+\item A diagonal matrix of column (species) proportions,
+  \begin{align}
+    D_{c} &= diag\left(F^{T}1_{n}\right) \in \reals^{p}.
+  \end{align}
+\item A projection onto the columns of the environmental matrix
+  $X^{(2)}$, reweighting sites according to their species counts,
+  \begin{align}
+    P_{X^{(2)}} &= D_{r}^{\frac{1}{2}}X^{(2)}\left(X^{(2)
+      T}D_{r}X^{(2)}\right)^{-1}X^{(2) T}D_{r}^{\frac{1}{2}} \in
+  \reals^{n \times n}.
+\end{align}
+\end{enumerate}
+
+With these variables set up, compute an SVD,
+\begin{align}
+D_{r}^{-\frac{1}{2}}\left(F - F
+  1_{p}1_{p}^{T}F\right)D_{c}^{-\frac{1}{2}}P_{X} = UDV^{T},
+\end{align}
+and define row and column scores $Z$ and $Q$ by
+\begin{align}
+  Z &= D_{r}^{-\frac{1}{2}} UD \\
+  Q &= D_{c}^{-\frac{1}{2}}V^{T}D.
+\end{align}
+
+There are several ways to interpret this procedure. The original
+proposal described CCA as a solution to a fixed-point iteration; they
+also demonstrated that this was the approximate MLE of a probability
+model \cite{ter1986canonical}. Later, \cite{greenacre1987geometric,
+  greenacre1984theory}, provided a geometric view, and
+\cite{zhu2005constrained} gave an exact probabilistic
+interpretation. Here, we describe the fixed-point iteration
+motivation, since it was originating idea for the method, and also the
+exact probabilistic interpretation, to continue the theme of
+describing implicit probability models behind different algorithmic
+dimensionality reduction procedures.
+
+The intuition for the reciprocal averaging procedure is simple: the
+scores for different sites should be a weighted average of the species
+scores, with larger weights for the species that are more common at
+those sites. That is,
+\begin{align}
+  z_{i} \propto \frac{1}{f_{i\cdot}}\sum_{j = 1}^{p_{1}}f_{ij}q_{ij} \\
+  q_{j} \propto \frac{1}{f_{\cdot j}} \sum_{i = 1}^{n} f_{ij}z_{ij},
+\end{align}
+or, in matrix form,
+\begin{align}
+Z \propto \diag\left(F 1_{p}\right)^{-1} F Q^{T} \\
+Q \propto \diag\left(F^{T} 1_{n}\right)^{-1} P.
+\end{align}
+This formulation suggests a method to obtain $Z$ and $Q$ --
+arbitrarily initialize one and iterate until convergence.
+
+As is, this is not quite the setup that leads to CCA\footnote{It in
+  fact gives the solution to the Correspondence Analysis problem (the
+  similarity is the reason for the name \textit{Canonical}
+  Correspondence Analysis).} -- it doesn't even use information in the
+environmental variables table $X^{(2)}$. To recover CCA, a projection
+step needs to be inserted before the calculation of row scores,
+\begin{enumerate}
+\item Arbitrarily initialize $Z$.
+\begin{enumerate}
+\item Solve $Q^{\prime} \propto \diag\left(F^{T}1_{n}\right)^{-1}F^{T}Z$.
+\item Project $Q = P_{X^{(2)}}Q^{\prime}$.
+\item Solve $Z \propto \diag\left(Z 1_{p}\right)^{-1} F Q^{T}$.
+\end{enumerate}
+\end{enumerate}
+
+The iteration now converges to the previously described CCA solution.
+
+A second, less widely appreciated, interpretation, is due to
+\cite{zhu2005constrained}. Suppose for now that we are only interested
+in a one-dimensional score for rows and columns. Suppose $\alpha$ is a
+latent environmental gradient, for example, between warm-dry and
+cold-wet sites. For each of the $p_{1}$ species, define a normal
+density over the environmental variables,
+$f_{j}\left(x_{i}^{(2)}\right) = \Gsn_{p_{(2)}}\left(\mu_{j},
+  \Sigma_{j}\right)$. The mode of this density represents the
+preferred environmental conditions for species $j$.  Next, project
+these densities onto the environmental gradient, giving a univariate
+$f_{j}^{\alpha}\left(z_{i}\right) = \Gsn\left(\alpha^{T}\mu_{j},
+  \alpha^{T} \Sigma_{j}\alpha\right)$ for each species. The $z_{i}$'s
+represent the scores for species $i$ along the environmental gradient
+$\alpha$.
+
+The generative model views each species-site pair one at a time. For
+each pair involving site $i$ and species $j$ we draw a score according
+to $f_{j}^{\alpha}\left(z_{i}\right)$. So, for each site $i$, we draw
+a species according to a $p_{1}$-class LDA model.
+
+To use this idea to estimate scores, we need to estimate the
+environmental gradient  $\alpha$ (which is also of interest in its own
+right). This is done by supposing equal covariances across species,
+$\Sigma_{j} = \Sigma$ for all $j$, and finding the $\alpha$ that
+maximizes the between vs. total variance across species,
+\begin{align}
+  \frac{\alpha^{T} \Sigma_{B} \alpha}{\alpha^{T} \Sigma \alpha},
+\end{align}
+where
+\begin{align}
+  \Sigma_{B} = \sum_{j = 1}^{p_{1}} f_{\cdot j}\left(\mu_{j} -
+    \bar{\mu}\right)\left(\mu_{j} - \bar{\mu}\right)^{T}.
+\end{align}
+
+Estimating $\hat{\alpha}$ in this way and writing $z_{i} =
+\hat{\alpha}^{T}x_{i}$ gives the original site scores from CCA.
+
+\subsection{Curds \& Whey (C \& W)}
 
 The C\&W procedure is a ``soft'' version of reduced-rank regression,
 differentially shrinking the OLS fits with respect to the response
@@ -1184,7 +1406,698 @@ $X$. In any case, we see that C\&W pools across regression problems
 through a soft shrinkage weighted along canonical response
 directions.
 
+\subsection{Methods from Machine Learning}
+
+Several different literatures within machine learning have each
+developed approaches to dimensionality reduction across multiple
+tables, each relying on the tools studied in that literature. In this
+section, we will study some methods that have arisen in the kernel
+learning, spectral clustering, regularized modeling, and probabilistic
+inference communities. A common theme across these methods is that
+they provide the scientist flexiblity in specifying the form of the
+data model; these literatures emphasize tools that can be adapted to
+the structure of a specific dataset, rather than algorithms that
+should be applied generally. However, as these methods have typically
+not been applied to ecological or microbiome studies, it is not yet
+clear what their overall utility will be.
+
+\subsubsection{Kernel Canonical Correlation Analysis (KCCA)}
+
+KCCA is a variant of CCA designed to be sensitive to nonlinear
+associations across tables \cite{akaho2006kernel, bach2003kernel}. It
+does this by implicitly lifting the original
+data to a richer feature space, with the hope that nonlinear
+associations in the original space become linear associations in the
+richer space. Informaly, KCCA is the algorithm that emerges after
+applying the kernel trick to CCA.
+
+More formally, let $\varphi^{\left(l\right)}: \reals^{p_{l}}\mapsto
+H^{(l)}$ be a mapping from the space associated with table $l$ to a
+richer Hilbert space. For example, $\varphi^{l}$ might map vectors
+into an expansion of all polynomial products of coordinates, up to
+some fixed kernel; this is mapping is called the polynomial
+kernel. As in CCA, let $\P^{(1)}$ and $\P^{(2)}$ denote the sampling
+distributions associated with the two tables; let $x_{i}^{(1)}$ and
+$x_{i}^{(2)}$ denote generic draws from these tables.
+
+In the same way that the first CCA direction maximizes the covariance
+between linear combinations $c_{1}^{(1) T}x_{i}^{(1)}$ and $c_{1}^{(2)
+  T}x_{i}^{(2)}$ (subject to a variance constraint), KCCA maximizes
+the correlation between linear functionals, $z_{i1}^{(1)} =
+\left<c_{1}^{(1)}, x_{i}^{(1)}\right>$ and $z_{i1}^{(2)} =
+\left<c_{1}^{(2)}, x_{i}^{(2)}\right>$.
+\begin{align}
+  \argmax_{c_{1}^{(1)} \in H^{(1)}, c_{1}^{(2)} \in H^{(2)}}
+  &\Covsubarg{\P^{(1)} \times \P^{(2)}}{z_{i1}^{(1)}, z_{i1}^{(2)}} \\
+\text{subject to }\Varsubarg{P^{(1)}}{z_{i1}^{(1)}} &=
+\Varsubarg{P^{(2)}}{z_{i1}^{(2)}} = 1. \label{eq:optim_kcca}
+\end{align}
+
+As is, the problem is not well-posed, and it is necessarily to
+regularize. The regularized Lagrangian associated with the
+optimization \ref{eq:optim_kcca} is
+\begin{align*}
+&\Covsubarg{\P^{(1)} \times \P^{(2)}}{z_{i1}^{(1)}, z_{i1}^{(2)}} - \\
+&\frac{\rho^{(1)}}{2}\Varsubarg{P^{(1)}}{z_{i1}^{(1)}} -
+\frac{\rho^{(2)}}{2}\Varsubarg{P^{(2)}}{z_{i1}^{(2)}} \\+
+&\frac{\lambda^{(1)}}{2}Pen\left(c_{1}^{(1)}\right) +
+\frac{\lambda^{(2)}}{2}Pen\left(c_{1}^{(2)}\right) \label{eq:lagrangian_kcca}
+\end{align*}
+
+Now, note that the optimal $c_{1}^{(1)}$ and $c_{1}^{(2)}$ must lie in
+the spans of $\left(\varphi^{(1)}\left(x_{i}\right)\right)_{i =1
+}^{n}$ and $\left(\varphi^{(2)}\left(x_{i}\right)\right)_{i =1 }^{n}$, respectively,
+since directions orthogonal to this subspace cannot improve the
+correlation in the objective. Therefore, we can write
+\begin{align}
+c_{1}^{(1)} &= \Phi^{(1)} \alpha^{(1)} \\
+c_{1}^{(2)} &= \Phi^{(2)} \alpha^{(2)},
+\end{align}
+where $\Phi^{(l)} \in \reals^{n \times
+  \text{dim}\left(H^{(l)}\right)}$ has $i^{th}$ row
+$\varphi^{(l)}\left(x_{i}\right)$.
+
+Substituting this into the Lagrangian \ref{eq:lagrangian_kcca}, it
+becomes clear that only the cross-products $\Phi^{(1) T}\Phi^{(1)}$,
+and $\Phi^{(2) T}\Phi^{(2)}$ appear. Since these inner products can be
+written as kernel matrices $K^{(l) (l)} \in \reals^{n \times n}$ with
+entries $\varphi^{(l)
+  T}\left(x^{(1)}_{i}\right)\varphi^{\left(l\right)}\left(x^{(2)}_{j}\right)$,
+we have that the optimization can be fully kernelized.  It can then be
+shown that the optimal $\alpha^{(1)}$ and $\alpha^{(2)}$ are the
+solutions to the generalized eigenvalue problem,
+\begin{align}
+  \begin{pmatrix}
+    0 & K^{(1)}K^{(2)} \\
+    K^{(2)}K^{(1)} & 0
+  \end{pmatrix}
+  \begin{pmatrix}
+    \alpha^{(1)} \\
+    \alpha^{(2)}
+  \end{pmatrix}
+&= \rho
+\begin{pmatrix}
+  \left(K^{(1)} + \lambda^{(1)}I_{p_{1}}\right)^{2} & 0 \\
+  0 & \left(K^{(2)} + \lambda^{(2)}I_{p_{2}}\right)^{2}
+\end{pmatrix}
+\begin{pmatrix}
+  \alpha^{(1)} \\
+  \alpha^{(2)}
+\end{pmatrix}.
+\end{align}
+
+The contribution of \cite{yamanishi2003extraction} was to extend this
+procedure to more than 2 tables. The approach is similar to the idea
+of average pairwise covariance, discussed in the section about
+CCA. Formally, if we let $z_{i1}^{(l)} = \left<c_{1}^{(l)|},
+  x_{i}^{(l)}\right>$ and try to optimize
+
+\begin{align*}
+&\sum_{l, l^{\prime} = 1}^{L}\Covsubarg{\P^{(l)} \times \P^{(l^{\prime})}}{z_{i1}^{(l)}, z_{i1}^{(l^{\prime})}} -
+\sum_{l = 1}^{L}\frac{\rho^{(l)}}{2}\Varsubarg{P^{(l)}}{z_{i1}^{(l)}} -
+ \sum_{l = 1}^{L} \frac{\lambda^{(1)}}{2}Pen\left(c_{1}^{(l)}\right) \label{eq:lagrangian_mkcca}
+\end{align*}
+
+Replacing the inner products $\Phi^{(l)}\Phi^{(l)}$ as before leads to
+an analogous generalized eigenvalue problem,
+\begin{align}
+\begin{pmatrix}
+0 & \dots & K_{1}K_{L} \\
+\vdots & \ddots & \vdots \\
+K_{L}K_{1} & \dots  & 0
+\end{pmatrix}
+\begin{pmatrix}
+  \alpha_{1} \\
+  \vdots \\
+  \alpha_{L}
+\end{pmatrix} &=
+\rho \begin{pmatrix}
+  \left(K_{1} + \lambda_{1}I_{p_{1}}\right)^{2} & \dots & 0 \\
+  \vdots & \ddots & \vdots \\
+  0 & \dots & \left(K_{L} + \lambda_{L}I_{p_{L}}\right)^{2}
+\end{pmatrix}
+\begin{pmatrix}
+  \alpha_{1} \\
+  \vdots \\
+  \alpha_{L}
+\end{pmatrix}
+\end{align}
+whose solution is called ``multiple kernel canonical correlation
+analysis'' by \cite{yamanishi2003extraction}.
+
+A geometric interpretation of Kernel CCA was described in
+\cite{kuss2003geometry}. The core idea is to translate the Euclidean
+picture associated with CCA to the more general RKHS setting. Often,
+however, KCCA results can be difficult to study, because the only
+output are the scores relating samples (eigenvectors are never
+computed in the Hilbert spaces $H^{(l)}$, so it's impossible to make a
+biplot). However, the KCCA scores can be interpreted using
+supplementary features, as in any other dimensionality reduction
+method.
+
+An complementary formulation of Kernel CCA was presented in
+\cite{lanckriet2004statistical} (todo: maybe describe this approach
+too?).
+
+\subsubsection{Penalized Matrix Decomposition}
+
+In high-dimensional settings, sparsity is a desirable property, both
+for interpretability and statistical stability. For example, in the
+regression setting, an $\ell^{1}$-penalty can be used to ensure that
+only a few coefficients are nonzero. A regression model using only a
+few features is easier to understand than one involving a linear
+combination of all possible features. Further, regularized models
+typically outperform their non-regularized counterparts; in fact, it
+is impossible to fit a non-regularized linear regression when the
+number of features is greater than the number of samples.
+
+The Penalized Matrix Decomposition (PMD) is a general approach for
+adapting the reguarlization machinery developed around regression to
+the multivariate analysis setting
+\cite{witten2009penalized}. Furthermore, a CCA and MultiCCA instance
+of the PMD has been well-studied \cite{witten2009penalized,
+  witten2013package}.
+
+The general setup is as follows. Suppose we only want a
+one-dimensional representation of samples, and are basing analysis on
+a single matrix $X \in \reals^{n \times p}$. Recall that the first
+$k$-eigenvectors recovered by PCA span a subspace that minimizes the
+$L^{2}$ distance from the original data (rows of $X$, viewed as points
+in $\reals^{p}$) to their projection onto that subspace. In
+particular, when $k = 1$, the associated PCA coordinates $u \in
+\reals^{n}$ and eigenvector $v$ can be \textit{defined} as the optimal
+values in the problem
+\begin{align}
+  \minimize_{u \in \reals^{n}, v \in \reals^{p}, d \in \reals} &\|X - duv^{T}\|_{2}^{2} \\
+  \text{subject to } &\|u\|_{2}^{2} = \|v\|_{2}^{2} = 1.
+\end{align}
+
+The PMD generalizes this formulation of rank-one PCA to enforce
+structure (e.g., sparsity) on $u$ and $v$. The PMD solutions $u$ and
+$v$ are defined to be the optimizers of
+\begin{align}
+\label{eq:pmd_opt} \minimize_{u \in \reals^{n}, v \in \reals^{p}, d
+  \in \reals} &\|X - duv^{T}\|_{2}^{2} \\
+  \text{subject to } &\|u\|_{2}^{2} = \|v\|_{2}^{2} = 1 \\
+  & \text{Pen}_{1}\left(u\right) \leq mu_{1} \\
+  & \text{Pen}_{2}\left(v\right) \leq \mu_{2}.
+\end{align}
+
+This only defines one dimensional approximations. To obtain a sequence
+of scores / eigenvectors $\left(u_{k}\right)_{k = 1}^{K}$ and
+$\left(v_{k}\right)_{k = 1}^{K}$, define $u_{k}$ and $v_{k}$ as the
+optimizers of the problem \ref{eq:pmd_opt} on the residual $X^{k}$
+obtained by subtracting out the previous approximation: $X^{k} := X^{k
+- 1} - d_{k - 1}u_{k - 1}v_{k - 1}^{T}$ where $d_{k} = u_{k}^{T}
+X^{k}v_{k}$ and $X^{1} = X$.
+
+(todo: geometric interpretation)
+(todo: generalized least squares / probabilistic interpretation
+\cite{allen2014generalized})
+
+This view can be specialized to develop regularized versions of a
+number of multivariate analysis problems; here consider applications
+to the CCA and Multiple CCA\footnote{CCA with $L$ tables, as in
+  multiple kernel CCA above.} problems.
+
+Using the fact that $\|A\|_{F}^{2} = \tr\left(A^{T}A\right)$ along
+with the linearity and the cyclic property of the trace, the objective
+in \ref{eq:pmd_opt} can be rewritten (using $\equiv$ to mean equality
+up to terms constant in $u$ and $v$),
+\begin{align}
+  \|X - duv^{T}\|_{F}^{2} &\equiv \tr\left(\left(X -
+      duv^{T}\right)^{T}\left(X - duv^{T}\right)\right) \\
+  &\equiv -2d\tr\left(X^{T}uv^{T}\right) + d^{2}tr\left(uv^{T}vu^{T}\right) \\
+  &\equiv -2d v^{T}X^{T}u + d^{2}
+\end{align}
+where for the last equivalence we used that $v^{T}v = u^{T}u = 1$.
+
+From this expression, and by partially minimizing out $d =
+v^{T}X^{T}u$, we see that the PMD solutions $u$ and $v$ in
+\ref{eq_pmd_opt} can be found as the optimizers of
+\begin{align}
+\label{eq:pmd_reform}  \maximize_{u \in \reals^{n}, v \in \reals^{p}} &u^{T}X^{T}v \\
+  \text{subject to } &\|u\|_{2}^{2} = \|v\|_{2}^{2} \\
+  &\text{Pen}_{1}\left(u\right) \leq \mu_{1} \\
+  &\text{Pen}_{2}\left(v\right) \leq \mu_{2}
+\end{align}
+
+Notice that, as long as the penalties are convex in $u$ and $v$, the
+optimization is biconvex, so a local maximum can be found by
+alternately maximizing over $u$ and $v$.
+
+It is not in general obvious how to choose the regularization
+parameters $\mu_{1}$ and $\mu_{2}$. For example, if the penalties are
+$\ell^{1}$-norms, then these parameters would control the overall
+sparsity of the underlying factors. The proposal in
+\cite{witten2009penalized} was to apply cross-validation on the
+reconstruction errors after holding out random entries in $X$.
+
+From this form, we can derive a PMD, sparsity-inducing version of
+CCA. Recall the maximal-covariance interpretation of CCA,
+\begin{align}
+  \maximize_{c_{1}^{(1)} \in \reals^{p_{1}}, c_{1}^{(2)} \in
+    \reals^{p_{2}}} &\Covsubarg{\P^{(1)}, \P^{(2)}}{c_{1}^{(1)
+      T}x_{i}^{(1)},
+    c_{1}^{(2) T} x_{i}^{(2)}}, \\
+  &\Varsubarg{\P^{(1)}}{x_{i}^{(1)}} = \Varsubarg{\P^{(2)}}{x_{i}^{(2)}} = 1,
+\end{align}
+which in practice is approximated by
+\begin{align}
+  \maximize_{c_{1}^{(1)} \in \reals^{p_{1}}, c_{1}^{(2)} \in
+    \reals^{p_{2}}} & c_{1}^{(1) T}\hat{\Sigma}_{12}c_{1}^{(2)} \\
+  \text{subject to } &c_{1}^{(1) T}\hat{\Sigma}_{11} c_{1}^{(1)} =
+  c_{1}^{(2) T}\hat{\Sigma}_{22}c_{1}^{(2)} = 1.
+\end{align}
+
+\cite{witten2009penalized} argues for diagonalized CCA, in which the
+variance constraints are replaced by unit norm constraints, and
+sparsity-inducing $\ell^{1}$ constraints are added,
+\begin{align}
+  \maximize_{c_{1}^{(1)} \in \reals^{p_{1}}, c_{1}^{(2)} \in
+    \reals^{p_{2}}} & c_{1}^{(1) T}\hat{\Sigma}_{12}
+  c_{1}^{(2)} \\
+  \text{subject to } &\|c_{1}^{(1)}\|_{2}^{2} = \|c_{1}^{(2)}\|_{2}^{2} = 1 \\
+  &\|c_{1}^{(1)}\|_{1} \leq \mu_{1} \\
+  &\|c_{1}^{(2)}\|_{1} \leq \mu_{2}
+\end{align}
+which is exactly in the form \ref{eq:pmd_reform} where $X =
+\hat{\Sigma}_{12}$, so indeed the PMD framework includes this form of
+sparse CCA.
+
+Multiple CCA can also be described in this framework, by replacing
+the objective with the sum over all pairwise covariances, $\sum_{l,
+  l^{\prime} = 1}^{L} c_{1}^{(l) T}X^{(l)
+  T}X^{(l^{\prime})}c_{1}^{(l)^{\prime}}$, and introducing constraints
+for each of the $c_{1}^{(l)}$.
+
+\subsubsection{Covariate-assisted Spectral Clustering}
+
+Spectral clustering is an approach to clustering samples using ideas
+from graph partitioning. A general question is whether supplmental
+data sources can be incorporated into a spectral clustering, while
+keeping the similarities defined by some primary dataset. The
+community has investigated several possibilities
+\cite{binkiewicz2014covariate, jiang2012transfer}; we will describe
+the approach in \cite{binkiewicz2014covariate}.
+
+Recall the spectral clustering algorithm. The first step is to build a
+weighted graph between all samples, where the edge weights give a
+similarity between the connected pair of samples, and call the
+associated adjacency matrix $A \in \reals^{n \times n}$. For example,
+a common choice is a Gaussian radial basis, $A_{ij} =
+\exp{-\frac{1}{2\sigma^{2}}\|x_{i} - x_{j}\|_{2}^{2}}$ for some
+variance $\sigma^{2}$; sometimes entries $A_{ij}$ smaller than $\eps$
+are thresholded to zero, to take advantage of computational speedups
+involved with sparse matrices. Let $D \in \reals^{n \times n}$ be a
+diagonal matrix whose elements sum the total edge-weight emanating
+from individual nodes, that is, $D_{ii} = \sum_{j = 1}^{n}
+A_{ij}$. Take the top $K$ eigenvectors\footnote{$K$ is the parameter
+  for the number of clusters to use, it must be chosen ahead of time.}
+of $L = D^{-\frac{1}{2}}A D^{-\frac{1}{2}}$, call them $U \in
+\reals^{n \times k}$. Then, normalize the rows of $U$ to unit length,
+and cluster these rows using $K$-means. These are the final clusters
+reported by spectral clustering. Note that, in practice, it is common
+to ``regularize'' $L$ by replacing $D$ with $D + \tau I_{n}$, where
+$\tau$ is a new tuning parameter.
+
+The essential step is the transformation to the space of eigenvectors
+of $L$. A nice interpretation of this transformation is think back to
+the weighted graph associated with $A$. Consider a random walk on this
+graph, which transitions from $i$ to to some $j \in \{1, \dots, n\}$
+with probability proportional to $A_{ij}$; this transition probability
+is exactly $L_{ij}$. Suppose the graph associated with $A$ has $K$
+separate components, which we write as $V = \cup_{k = 1}^{K}
+V\left(K\right)$. Then there are $K$ stationary distributions for this
+random walk, with the $k^{th}$ having support confined to
+$G\left(k\right)$. In particular, the vectors $u_{k}$ having $i^{th}$
+entry $\indic{i \in G\left(k\right)}$ are eigenvectors of $L$, each
+with eigenvalue 1. Hence, clustering based on the top $K$ eigenvectors
+will assign nodes based on their pattern of $0$'s and $1$'s, which
+corresponds to the components $G\left(k\right)$. The idea in spectral
+clustering is that, even if the graph is not exactly split across $K$
+components, if it is approximately split, then a similar pattern in
+the eigenvectors will emerge, and it will still be possible to cluster
+them.
+
+Note that spectral clustering is a two-step procedure, the first finds
+a low-dimensional representation that can be easily clustered, while
+the second performs the actual clustering in this space. To recover
+ordinations comparable to those describe elsewhere, it is possible to
+stop after the first step, this is sometimes called a ``diffusion
+map'' \cite{coifman2005geometric}.
+
+From a high-level, the approach in \cite{binkiewicz2014covariate} is
+to mix the transition matrix $L$ obtained from the original data with
+a similarity defined independently from the supplementary
+data. Specifically, first compute $L$ from similarities based on rows
+of $X^{(1)}$. Next, compute the top $K$ eigenvectors $U \in \reals^{n
+  \times K}$ of
+\begin{align}
+  LL^{T} + \alpha X^{(2)}X^{(2) T},
+\end{align}
+and then row-normalize and cluster as before. Extending the graph
+interpretation from before, the matrix $LL^{T}$ can be interpreted as
+a two-step transition matrix based on similarities in
+$X^{(1)}$. The matrix $X^{(2)}X^{(2) T}$ is an unnormalized empirical
+covariance between rows of $X^{(2)}$, and adding it to $LL^{T}$
+modifies the transition probabilities between nodes using the
+supplemental data. The parameter $\alpha$ trades off the importance of
+$X^{(1)}$ vs. $X^{(2)}$ in computing these similarities.
+
+\subsection{Multitask learning}
+
+Some of the ideas pioneered in reduced-rank regression and the curds-and-whey
+algorithm have experienced a revival in the machine learning and artificial
+intelligence communitiies, under the name multitask learning
+\cite{caruana1997multitask, thrun2012learning}. These developments
+were motivated by problems in robotics and computer vision, and unlike earlier
+statistical methods, rely more heavily on iterative optimization and sampling
+rather than analytical solutions.
+
+Unlike previous sections in this review, multitask learning is not an individual
+method but rather a general approach to sharing information across prediction
+problems, and there is a substantial literature exploring specific techniques.
+To ground the discussion, we review the main contributions from
+\cite{zhang2005learning, chen2010graph, argyriou2008convex}, though these by
+no means represent the breadth of techniques explored in multitask learning.
+
+\subsubsection{Bayesian multitask learning}
+
+\cite{zhang2005learning} formulates a general probabilistic approach to
+multitask learning. Their framework encapsulates both regression and
+classification, for simplicity we specialize to regression only. Like
+reduced-rank regression and C\&W, the main idea is to pool the coefficients
+across otherwise separate regression problems; here this is accomplished by
+prior specification.
+
+The data come from $p_{1}$ tasks. Within the $r^{th}$ task, we have features
+$x_{i}^{(r)} \in \reals^{p_{2}}$ and responses responses
+$y_{i}^{(r)} \in \reals$ for the $i^{th}$ sample. Note that the reduced-rank
+and C\&W procedures both assume that the features $x_{i}^{(r)}$ don't vary
+across the regression problems; this problem is applies to a wider range of
+problems. We use the shorthand
+$D = \left\{\left(x_{i}^{(r)}, y_i^{(r)}\right)_{i = 1}^{n_{r}}\right\}_{r = 1}^{p_{1}}$.
+
+The responses are assumed drawn i.i.d. from a linear model with
+problem-specific coefficient $\beta^{(r)}$,
+\begin{align}
+y_{i}^{(r)} \sim \Gsn\left(x_{i}^{(r) T}\beta^{(r)}, \sigma^{2}\right).
+\end{align}
+To tie the problems together, the $\beta^{(r)}$ are modeled using
+$K$-dimensional latent factors,
+\begin{align}
+  \beta^{(r)} \sim \Gsn\left(S w^{(r)}, \Psi\right), \label{eq:beta_r_zhang}
+\end{align}
+for some latent source matrix $S \in \reals^{p_{2} \times K}$ and mixing
+weights $w^{(r)}$. Different models come from choosing different priors on
+$w^{(r)}$; for now suppose the $w^{(r)}$ are drawn jointly from
+\begin{align}
+w^{(1)}, \dots, w^{(r)} \sim  p_{\Phi}\left(\left(w^{\left(r\right)}\right)_{r = 1}^{j_{1}}\right).
+\end{align}
+
+The nonrandom parameters in this model are
+$\theta := \{\sigma^{2}, S, \Psi, \Phi\}$. The weights and coefficients
+$w^{(r)}$ and $\beta^{(r)}$ are random parameters; for inference they will
+be treated as latent data.
+
+Note that the form of the $\beta^{(r)}$ in \ref{eq:beta_r_zhang} can
+equivalently be written as
+\begin{align}
+\beta^{(r)} &= Sw^{(r)} + \eta^{(r)},
+\end{align}
+where $\eta^{(r)} \sim \Gsn\left(0, \Psi\right)$. This clarifies what the latent
+factor model form of $\beta^{(r)}$ does: it decomposes the slope into a part
+that shares across all models, via $Sw^{(r)}$, and a part that is specific to
+the $r^{(th)}$ regression problem. Hence, different priors on
+  $\left(w^{(r)}\right)$ allow the modeler to trade-off the degree of sharing
+  across regression problems: setting $w^{(r)} \equiv 0$ decomposes the model
+  into independent regression problems, while enforcing that they have large
+  variance will ensure that they dominate the problem-specific component
+  $\eta^{(r)}$.
+
+The authors propose special cases corresponding to particular choices for the
+prior $p_{\Phi}\left(\left(w^{(r)}\right)_{r = 1}^{j_{1}}\right)$.
+
+\begin{enumerate}
+  \item $w^{(r)} \equiv 0$ decomposes the problem into independent regressions.
+  \item $w^{(r)} = 1$ turns the model into a "contaminated-signal"
+    model\footnote{Note the similarity to random effects.}, of the form
+    $\beta^{(r)} \sim \Gsn\left(\mu, \Psi\right)$.
+  \item Drawing $w^{(r)} \sim \Mult\left(1, \Phi\right)$ clusters the regression
+    problem into subproblems that each share the same coefficient.
+  \item Drawing $w^{(r)} \sim \text{Lap}\left(0, \Phi\right)$
+    encourages sparse weights. Though not technically a part of the
+    specification above, it is possible to put a similar prior on $S$
+    to induce sparsity on the shared sources.
+  \item Drawing $w^{(r)} \sim DP\left(\alpha, G_{0}\right)$ has a similar effect
+    as the clustered-regressions model, though now the number of clusters does
+    does not need to be explicitly specified in advance\footnote{The parameter
+      $\alpha$ does modulate the general number of clusters identified,
+      however.}.
+  \item Draw the $w^{(r)}$ jointly according to a dynamical system, for example
+    $w^{(r)} = \Phi w^{(r - 1)} + \eps_{r}$. Unlike the previous
+    descriptions, which draw the $w^{(r)}$ independently across
+    regression problems, this view can be used to model the evolution
+    of the regression coefficients. In general, prior information on
+    how the coefficients should be related can be incorporated by
+    correlating the $w^{(r)}$ across regression problems.
+\end{enumerate}
+
+To perform inference, the author employ a variational strategy. While inference
+of the true posterior jointly over
+$\left(z^{(r)}\right)_{r = 1}^{p_{1}} := \left(\beta^{(r)}, w^{(r)}\right)_{r = 1}^{p_{1}}$ is
+generally intractable\footnote{An exception is when $w^{(r)}$ are given standard
+  multivariate normal priors, in which case normal-normal conjugacy can be
+  used.}. However, it is possible to search for a distribution
+$q^{\ast}\left(\left(z^{(r)}\right)_{r = 1}^{p_{1}}\right)$ such that,
+informally, the likelihood of the observed data is large when $z \sim q$. More
+formally, we can find a point $q^{\ast}$ in a variational family
+$\left(q_{\gamma}\left(\cdot\right)\right)_{\gamma \in \Gamma}$ such that
+the expected complete data likelihood is large\footnote{The expected complete
+  data likelihood would be maximized by setting $q$ to the true posterior, but
+  as this is intractable, we have restricted attention to a smaller variational
+  family, which we hope is not too "far" from the true posterior.}, and this
+$q^{\ast}$ can be serve as a proxy for the true posterior.
+
+We try now to explain this more concretely. We think of the random parameters
+$z^{(r)}$ as latent data. If they were known, the loglikelihood of fixed
+parameters $\theta$ would have a simple form; as is, it involves an integration
+over the $z^{(r)}$, which is generally not available in closed form. The
+loglikelihood assuming that the latent $z^{(r)}$ are known is called the
+complete-data loglikelihood. In our multitask setting, this has the form
+\begin{align*}
+\ell_{c}\left(\theta\right) = &\sum_{r = 1}^{p_{1}}\sum_{i =1 }^{n_{r}} \log p_{\theta}\left(y^{(r)}_{i}, \beta^{(r)}, w^{(r)}\right) \\
+= &\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}} \log p_{\sigma^{2}}\left(y_{i}^{(r)} \mid \beta^{(r)}\right) + \log p_{\Lambda, \Psi}\left(\beta^{(r)} \mid w^{(r)}\right) + \log p_{\Phi}\left(w^{(r)}\right) \\
+  = &\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n} \log \Gsn\left(y_{i}^{(r)} \mid x_{i}^{(r) T}\beta^{(r)}, \sigma^{2}\right) + \sum_{r = 1}^{p_{1}} n_{r}\left[\log \Gsn\left(\beta^{(r)} \mid S w^{(r)}, \Psi\right) + \log p_{\Phi}\left(w^{(r)}\right)\right],
+\end{align*}
+where, for simplicity, we have assumed that the $w^{(r)}$ are independent in the
+prior across problems -- this covers most cases described in
+\cite{zhang2005learning}, though variations can be implemented in the case that
+they are not.
+
+Now, since the $\beta^{(r)}$ and $w^{(r)}$ are unknown,
+$\ell_{c}\left(\theta\right)$ cannot actually be evaluated. However, for
+different choices of $q_{\gamma}$, it may be possible to evaluate
+$\Esubarg{z^{(r)} \sim q_{\gamma}}{\ell_{c}\left(\theta\right)}$. Further,
+for a fixed choice of $\theta$, it may be possible to choose $\gamma$ to
+maximize this quantity, and vice versa. This is the variational EM strategy
+adopted by \cite{zhang2005learning} -- initialize $\theta^{0}$, then choose
+$\gamma^{1}$ to maximize
+$\Esubarg{z^{(r)} \sim q_{\gamma}}{\ell_{c}\left(\theta^{0}\right)}$, then
+find a $\theta^{1}$ to maximize
+$\Esubarg{z^{(r)} \sim q_{\gamma^{1}}}{\ell_{c}\left(\theta\right)}$, and
+so forth. The final posterior is approximated by $q_{\gamma^{t}}$ for some
+large $t$.
+
+For example, suppose our prior has the form choose
+$w^{(r)} \sim \Mult\left(1, \pi\right)$, as in the clustered regressions
+context. Then, a simple family $\left(q_{\gamma}\right)_{\gamma \in \Gamma}$ is
+$q_{\gamma}\left(\beta^{(r)}, w^{(r)}\right) = \Gsn\left(\beta^{(r)} \mid m, V\right)\Mult\left(w^{(r)} \vert 1, \pi\right)$,
+where the variational family is parameterized by
+$\gamma = \left(m, V, \pi\right)$ and the latent data $\beta^{(r)}$ and $w^{(r)}$
+are independent. Each term in the expected complete data
+loglikehood can now be evaluated straightforwardly, for example, we can
+write $\Esubarg{\beta^{r}, w^{(r)} \sim q_{\gamma}}{\log\Gsn\left(\beta^{(r)} \vert S w^{(r)}, \Psi\right)}$ as
+\begin{align*}
+  &-\frac{p}{2}\log 2\pi - \log \absarg{\Psi} -
+  \frac{1}{2}\Esubarg{q_{\gamma}}{\beta^{(r) T}\Psi^{-1}\beta^{(r)}} +
+  \Esubarg{q_{\gamma}}{s^{(r) T}\Psi^{-1}\beta^{(r)}} -
+  \frac{1}{2}\Esubarg{q_{\gamma}}{w^{(r) T}S^{T}Sw^{(r)}} \\
+  = &-\frac{p}{2}\log 2\pi - \log \absarg{\Psi} - \Psi^{-\frac{1}{2}}\left(V + mm^{T}\right)\Psi^{-\frac{1}{2}} + \pi^{T}S\Psi^{-1}m -\frac{1}{2}S \diag\left(\pi_{i}\right)S^{T}.
+\end{align*}
+Other terms can be calculated similarly. It is now a matter of calculus to find
+the maximizing $\sigma^{2}, \Psi, S$, and $\Phi$ in the variational $M$-step,
+and to find the maximizing $m, V$, and $\pi$ in the variational $E$-step.
+
+\subsubsection{$\ell^{2, 1}$ Multitask learning}
+
+An approach to multitask learning based in the $\ell^{2, 1}$ norm was derived in
+\cite{argyriou2008convex}, who also extended the approach to the kernel setting.
+We only describe a simplified approach here, focusing on the linear model case
+with squared error loss. Denote the data $x_{i}^{(r)}$ and $y_{i}^{(r)}$ as
+before. We can attempt to learn parameters $\beta^{(r)}$ for each task by
+minimizing squared-error loss,
+\begin{align}
+\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}}\left(y_{i}^{r} - \beta^{(r) T}x_{i}\right)^{2},
+\end{align}
+but, as in the naive multiresponse linear regression described in Section
+\ref{sec:r-reg}, this does not share information across problems. The approach
+to pooling information across the tasks proposed by \cite{argyriou2008convex}
+was to use the $\ell^{2, 1}$ matrix norm, defined by
+$\|A\|_{1, 2} = \sum_{i = 1}^{n} \|a_{i \cdot}\|_{2}$, which can be thought of
+as first taking a rowwise two-norm and applying the one-norm on the resulting
+vector. Specifically, they consider the regularized problem
+
+\begin{align}
+\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}}\left(y_{i}^{r} - \beta^{(r) T}x_{i}\right)^{2} + \lambda \|B\|_{2, 1},
+\end{align}
+where $B \in \reals^{p_{2} \times p_{1}}$ has $r^{th}$ column $\beta^{(r)}$. The
+$\ell^{2, 1}$-norm has the effect of sending entire rows of $B$ (features
+measured in the $x_{i}$) two zero across tasks.
+
+As is, this form is relatively well-known; for example, it is implemented in
+\texttt{glmnet} via the "mgaussian" family \cite{friedman2009glmnet}.
+\cite{argyriou2008convex} introduce several novelties, however. For example,
+they consider fitting a model after first learning a lower-dimensional
+representation of the $x_{i}$'s, given by $U^{T}x_{i}\in \reals^{K}$. That is,
+they seek to optimize
+\begin{align}
+\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}}\left(y_{i}^{r} - \beta^{(r) T}U^{T}x_{i}\right)^{2} + \lambda \|B\|_{2, 1},
+\end{align}
+jointly over $U \in \reals^{p_{2} \times K}$ and
+$B \in \reals^{K \times p_{1}}$. It is not clear how to perform this
+optimization. However, \cite{argyriou2008convex} are able to demonstrate
+that this problem has a convex reformulation. The new objective is
+\begin{align}
+\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}}\left(y_{i} - w_{r}^{T}x_{i}^{(r)}\right)^{2} + \lambda \sum_{r = 1}^{p_{1}}w_{r}^{T} D_{+} w^{r},
+\end{align}
+and the minimization is now done over $W \in \reals^{p_{2} \times p_{1}}$ and
+$D_{+} \in S_{+}^{d}$. The relationship between the optimal parameters in the
+two formulations is
+\begin{align}
+\left(\hat{W}, \hat{D}\right) &= \left(\hat{U}\hat{B}, \hat{U}\diag\left(\frac{\|\hat{b}_{i\cdot}\|_{2}}{\|\hat{B}\|_{2, 1}}\right)\hat{U}^{T}\right). \label{eq:reform_argryiou}
+\end{align}
+
+The proposed algorithm is to optimize the reformulated objective using an
+alternating minimization, and then transform back to the original parameters
+of interest via \ref{eq:reform_argryiou}.
+
+\subsubsection{Graph-based Multitask Learning}
+
+\cite{chen2010graph} describe an approach to multitask learning that
+incorporates a priori knowledge on the relationship between different
+regression problems. Specifically, they use a correlation network between
+the responses of interest to induce a structured regularization on the
+regression parameters across tasks.
+
+In this setup, we will assume the features $x_{i}$ are shared across all
+tasks, so that the data can be arranged in two matrices,
+$Y \in \reals^{n \times p_{1}}$ and $X \in \reals^{n \times p_{2}}$, as in
+the reduced-rank regression and C\&W procedure setup. We also assume a
+correlation network between the $p_{2}$ tasks; this is denoted
+$G = \left(V, E\right)$, where $V = \{1, \dots, p_{1}\}$. Each edge $e$ is
+associated with a weight, $r\left(e\right)$, specifying the correlation between
+the linked regression problems. This is assumed given, and is not learned by
+this procedure.
+
+The graph-fused lasso proposal is to obtain a coefficient matrix $B
+\in \reals^{p_{2} \times p_{1}}$ whose columns $\beta^{(r)}$ are the
+regression coefficients across each task, but which have been pooled
+together, with the strength of the pooling depending on the
+independently measured strength of the relationship between
+tasks. This is formalized by defining $\hat{B}^{gf}$ as the solution
+to the optimization,
+\begin{align}
+\minimize_{B \in \reals^{p_{2} \times p_{1}}} \frac{1}{2}\|Y -
+  XB\|_{F}^{2} + \lambda \|B\|_{1} + \gamma \sum_{e \in E} \sum_{j =
+    1}^{p_{2}} \absarg{r_{e}}\absarg{\beta_{j}^{(e^{+})} -
+      \sign\left(r_{e}\right) \beta^{(e^{-})}_{j}}, \label{eq:gflasso_obj}
+\end{align}
+where $\|B\|_{1}$ is the sum of the absolute values of all entries of
+$B$ and $e^{-}$ and $e^{+}$ denote the nodes at the ends of the edge
+$e$. The last regularization term in the objective is called the
+graph fused-lasso penalty, and it is the element that encourages
+pooling of information across regression problems.
+
+To write the graph fused-lasso penalty in matrix form, define a matrix
+$\tilde{H} \in \reals^{p_{1} \times \absarg{E}}$, whose columns index
+edges. For each column, place a 1 at the row corresponding to one
+endpoint of the edge, and place a -1 at the edge corresponding to the
+other. Then, $B\tilde{H}$ has $jl^{th}$ entry $\sum_{j = 1}^{p_{2}} \sum_{e :
+  e^{+} = l}\beta_{j}^{(e^{+})} - \beta_{j}^{(e^{-})}$. In a similar
+spirit, defining $H \in \reals^{p_{1} \times \absarg{E}}$ by, for each
+edge (column of $H$), placing $\absarg{r_{e}}$ at the row
+corresponding to one endpoint of that edge and
+$-\sign\left(r_{e}\right)\absarg{r_{e}}$ gives
+\begin{align}
+\|BH\|_{1} &= \sum_{e \in E}\sum_{j = 1}^{p_{2}}
+\absarg{r_{e}}\absarg{\beta_{j}^{(e^{+})} - \beta_{j}^{(e^{-})}},
+\end{align}
+and in particular we can write the objective \ref{eq:gflasso_obj} as
+\begin{align}
+  \frac{1}{2}\|Y - XB\|_{F}^{2} + \|BC\|_{1}, \label{eq:gflasso_reform}
+\end{align}
+where $C = \left(\lambda I_{p_{1}}, \gamma H\right)$.
+
+At this point, the main question is how to recover the optimal
+$\hat{B}^{\text{gf}}$. There are many ways to solve $\ell^{1}$
+regularization problems -- for example, quadratic programming,
+iterative soft-thresholding, coordinate descent, proximal smoothing,
+and ADMM -- but \cite{chen2010graph} advocates a proximal smoothing
+approach. That is, they apply gradient descent on a smooth surrogate
+loss function; this is similar in spirit to optimizing a Huber loss
+instead of an $\ell^{1}$-penalty. Rather than directly smoothing the
+loss \ref{eq:gflasso_reform}, they first reformulate it as
+\begin{align}
+  \frac{1}{2}\|Y - XB\|_{F}^{2} + \max_{\|A\|_{\infty} \leq 1}
+  \left<A, BC\right>,
+\end{align}
+using the duality between the $l^{1}$ and $\ell^{\infty}$ norms. It is
+for this objective that a family of smooth surrogates is introduced,
+\begin{align}
+f_{\mu}\left(B\right) &:= \max_{\|A\|_{\infty} \leq 1}
+\left[\left<A, BC\right> - \frac{\mu}{2}\|A\|_{F}^{2}\right],
+\end{align}
+and the new objective is to minimize
+\begin{align}
+\frac{1}{2}\|Y - XB\|_{F}^{2} + f_{\mu}\left(B\right).
+\end{align}
+
+When $\mu$ is 0, we recover the objective
+\ref{eq:gflasso_reform}. When $\mu > 0$, the problem is smooth, and
+its gradient can be found in closed form. Towards this, let
+$g\left(X\right) = \frac{1}{2}\|X\|_{F}^{2}$ with domain restricted to
+$\|X\|_{\infty} \leq 1$. Then $g$ has fenchel conjugate
+$g^{\ast}\left(Y\right) = \max_{\|X\|_{\infty}\leq 1}\left<Y,
+  X\right> - \frac{1}{2}\|X\|_{F}^{2}$. In particular,
+\begin{align}
+f_{\mu}\left(B\right) &=  \mu \max_{\|A\|_{\infty} \leq 1}
+\left[\left<A, \frac{1}{\mu}BC\right> - \frac{1}{2}\|A\|_{F}^{2}\right] \\
+&= \mu g^{\ast}\left(BC\right)
+\end{align}
+Using the fact that the derivative of a fenchel conjugate function is
+given by the argmax of the maximization that defines it, we note
+$\nabla g^{\ast}\left(Y\right) = P_{\ell^{\infty}}\left(Y\right)$ the
+projection of $Y$ onto the $\ell^{\infty}$ ball\footnote{This is
+  achieved by taking all entries larger than one and setting them to 1
+  (and setting all entries smaller than -1 to -1).}. Together with the
+  chain rule, this gives
+\begin{align}
+  \nabla f_{\mu}\left(B\right) &= P_{\ell^{\infty}}\left(\frac{1}{\mu}BC\right)C^{T},
+\end{align}
+and so the gradient of the objective \ref{eq:gflasso_reform} has the form
+\begin{align}
+ X^{T}\left(Y - XB\right) + P_{\ell^{\infty}}\left(\frac{1}{\mu}BC\right)C^{T},
+\end{align}
+which be input to any number of gradient-based routines;
+\cite{chen2010graph} uses Nesterov's accelerated method, a version of
+gradient descent with a momentum term.
+
+\subsection{Matrix Factorization}
+
 \bibliographystyle{unsrt}
 \bibliography{microbiome_multitable}
 
 \end{document}
+
