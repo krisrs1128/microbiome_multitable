@@ -182,7 +182,7 @@ small_theme <- function(base_size = 7, base_family = "Helvetica") {
         )
 }
 
-#read_chunk()
+sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
 @
 
 \linespread{1.5}
@@ -1599,7 +1599,7 @@ $v$ are defined to be the optimizers of
 \label{eq:pmd_opt} \minimize_{u \in \reals^{n}, v \in \reals^{p}, d
   \in \reals} &\|X - duv^{T}\|_{2}^{2} \\
   \text{subject to } &\|u\|_{2}^{2} = \|v\|_{2}^{2} = 1 \\
-  & \text{Pen}_{1}\left(u\right) \leq mu_{1} \\
+  & \text{Pen}_{1}\left(u\right) \leq \mu_{1} \\
   & \text{Pen}_{2}\left(v\right) \leq \mu_{2}.
 \end{align}
 
@@ -1656,18 +1656,14 @@ reconstruction errors after holding out random entries in $X$.
 From this form, we can derive a PMD, sparsity-inducing version of
 CCA. Recall the maximal-covariance interpretation of CCA,
 \begin{align}
-  \maximize_{c_{1}^{(1)} \in \reals^{p_{1}}, c_{1}^{(2)} \in
-    \reals^{p_{2}}} &\Covsubarg{\P^{(1)}, \P^{(2)}}{c_{1}^{(1)
-      T}x_{i}^{(1)},
-    c_{1}^{(2) T} x_{i}^{(2)}}, \\
+  \maximize_{u \in \reals^{p_{1}}, v \in \reals^{p_{2}}} &
+  \Covsubarg{\P^{(1)}, \P^{(2)}}{u^{T}x_{i}^{(1)}, v^{T} x_{i}^{(2)}}, \\
   &\Varsubarg{\P^{(1)}}{x_{i}^{(1)}} = \Varsubarg{\P^{(2)}}{x_{i}^{(2)}} = 1,
 \end{align}
 which in practice is approximated by
 \begin{align}
-  \maximize_{c_{1}^{(1)} \in \reals^{p_{1}}, c_{1}^{(2)} \in
-    \reals^{p_{2}}} & c_{1}^{(1) T}\hat{\Sigma}_{12}c_{1}^{(2)} \\
-  \text{subject to } &c_{1}^{(1) T}\hat{\Sigma}_{11} c_{1}^{(1)} =
-  c_{1}^{(2) T}\hat{\Sigma}_{22}c_{1}^{(2)} = 1.
+  \maximize_{u \in \reals^{p_{1}}, v \in \reals^{p_{2}}} & u^{T}\hat{\Sigma}_{12}v \\
+  \text{subject to } &u^{T}\hat{\Sigma}_{11} u &= v^{ T}\hat{\Sigma}_{22}v = 1.
 \end{align}
 
 \cite{witten2009penalized} argues for diagonalized CCA, in which the
@@ -1690,6 +1686,105 @@ the objective with the sum over all pairwise covariances, $\sum_{l,
   l^{\prime} = 1}^{L} c_{1}^{(l) T}X^{(l)
   T}X^{(l^{\prime})}c_{1}^{(l)^{\prime}}$, and introducing constraints
 for each of the $c_{1}^{(l)}$.
+
+\paragraph{Examples}
+
+We first illustrate an application of this method on simulated data. In the
+spirit of the examples in \cite{witten2009penalized}, we generate data from
+the model
+\begin{align}
+  x_{i} &\sim \Gsn\left(S^{x}w^{x}_{i}, \sigma^{2}I_{p}\right) \\
+  y_{i} &\sim \Gsn\left(S^{y}w^{y}_{i}, \sigma^{2}I_{p}\right) \\
+\end{align}
+where
+$S^{x},S^{y} \in \reals^{p \times k}$ are a random orthonormal sources
+specific to each table, and $W^{x}, W^{y} \in \reals^{n \times k}$ are
+sparse weights. We take $n,p$, and $k$ 504, 20, and 2, respectively,
+and set the noise $\sigma^{2}$ to 1.
+
+We set up this simulation in the code below.
+
+<<setup-sparse-sim>>=
+read_chunk(file.path(sim_methods_dir, "sparse_sim.R"))
+@
+
+<<sparse-sim-packages>>=
+@ 
+
+<<sparse-sim-opts>>=
+@ 
+
+<<sparse-sim-source-weights>>=
+
+@ 
+
+<<sparse-sim-generate-data>>=
+@ 
+
+<<sparse-sim-plot-weights-setup>>=
+@ 
+
+We defined sparse weights $W^{X}$ and $W^{Y}$ by hand, these are displayed in
+Figure \ref{fig:sparse_sim_sources}. A few scatterplots of columns in the
+resulting $X$ and $Y$ are plotted against each other in Figures
+\ref{fig:sparse-sim-plot-data-x}, \ref{fig:sparse-sim-plot-data-y}, and
+\ref{fig:sparse-sim-plot-data-xy}, respectively.
+
+Our code for the penalized matrix decomposition (using the \texttt{PMA}
+package in \texttt{R}) is given below. Note that we first center and rescale
+the columns of $X$ and $Y$. Also, we never specify the sparsity parameters
+$\mu_{1}$ and $\mu_{2}$; these are chosen automatically through a matrix-holdout
+cross-validation procedure.
+
+<<sparse-sim-pmd-unordered>>=
+@ 
+
+The recovered weights are displayed in Figure
+\ref{fig:sparse-sim-pmd-unordered-plot}. Note that many weights are set to
+zero. There is some confusion between the latent dimensions -- in particular, it
+finds weights for a nonexistent third latent dimension -- but remember that the
+PMD does not require that the sources be orthogonal. Finally, note that when
+weights are correctly identified as nonzero, they tend to occur scattered
+throughout a range; they are not all concentrated around the true (or even
+slightly shrunk) value.
+
+\begin{figure}
+<<sparse-sim-plot-weights>>=
+@ 
+\caption{These are the sparse underlying weights that we are hoping to recover
+using the penalized matrix decomposition.}
+\label{fig:sparse_sim_sources}
+\end{figure}
+
+\begin{figure}
+<<sparse-sim-plot-data-x>>=
+@ 
+\caption{Pairwise scatterplots of four randomly chosen columns from $X$.}
+\label{fig:sparse-sim-plot-data-x}
+\end{figure}
+
+\begin{figure}
+<<sparse-sim-plot-data-y>>=
+@ 
+\caption{Pairwise scatterplots of four randomly chosen columns from $Y$.}
+\label{fig:sparse-sim-plot-data-y}
+\end{figure}
+
+\begin{figure}
+<<sparse-sim-plot-data-xy>>=
+@ 
+\caption{Pairwise scatterplots of four randomly chosen columns, two
+  from $X$ and two from $Y$.}
+\label{fig:sparse-sim-plot-data-xy}
+\end{figure}
+
+\begin{figure}
+<<sparse-sim-pmd-unordered-plot>>=
+@ 
+\caption{Weights $\hat{W}$ recovered throught the penalized matrix
+  decomposition.}
+\label{fig:sparse-sim-pmd-unordered-plot}
+\end{figure}
 
 \subsubsection{Covariate-assisted Spectral Clustering}
 
@@ -1894,37 +1989,69 @@ complete-data loglikelihood. In our multitask setting, this has the form
 where, for simplicity, we have assumed that the $w^{(r)}$ are independent in the
 prior across problems -- this covers most cases described in
 \cite{zhang2005learning}, though variations can be implemented in the case that
-they are not.
+they are not. See section \label{sec:vi_mb} for an explicit expression.
 
 Now, since the $\beta^{(r)}$ and $w^{(r)}$ are unknown,
 $\ell_{c}\left(\theta\right)$ cannot actually be evaluated. However, for
 different choices of $q_{\gamma}$, it may be possible to evaluate
-$\Esubarg{z^{(r)} \sim q_{\gamma}}{\ell_{c}\left(\theta\right)}$. Further,
-for a fixed choice of $\theta$, it may be possible to choose $\gamma$ to
-maximize this quantity, and vice versa. This is the variational EM strategy
+$\Esubarg{z^{(r)} \sim q_{\gamma}}{\ell_{c}\left(\theta\right)}$. Further, it 
+can be shown that this expected complete data loglikelihood is maximized when 
+the $z^{(r)}$ are drawn from the posterior 
+$p_{\theta}\left(\left(z^{r}\right) \vert \left(x_{i}\right), y_{i}\right)$.
+Since the posterior is intractable (this was the reason for restricting attention
+to a variational vamily $\left(q_{\gamma}\right)_{\gamma \in \Gamma}$ in the first 
+place), we can settle instead for finding the element $q_{\gamma^{\ast}}$ that 
+is closest to the posterior in KL-divergence sense,
+\begin{align}
+q_{\gamma^{\ast}}:= \arg\min_{\gamma \in \Gamma} KL\left(q_{\gamma}\left[\left(z^{(r)}\right)\right] \vert \vert 
+p_{\theta}\left[\left(z^{(r)}\right) \vert \left(x_{i}\right), \left(y_{i}\right)\right]\right).
+\end{align}
+
+This is a convenient measure to use, because it can be rewritten as
+\begin{align}
+&KL\left(q_{\gamma}\left[\left(z^{(r)}\right)\right] \vert \vert 
+p_{\theta}\left[\left(z^{r}\right) \vert \left(x_{i}\right), \left(y_{i}\right)\right]\right) \\
+= &\Esubarg{q_{\gamma}}{\log\frac{q_{\gamma}\left[\left(z^{(r)}\right)\right]}{p_{\theta}\left[\left(z^{(r)}\right) \vert \left(x_{i}\right), \left(y_{i}\right)\right]}} \\
+= &\Esubarg{q_{\gamma}}{\log\frac{q_{\gamma}\left[\left(z^{(r)}\right]\right)}{p_{\theta}\left[\left(z^{(r)}\right), \left(x_{i}\right), \left(y_{i}\right)\right]}} + \log p_{\theta}\left[\left(x_{i}\right), \left(y_{i}\right)\right] \\
+= &\Esubarg{q_{\gamma}}{\log q_{\gamma}\left[\left(z^{(r)}\right)\right]} - \Esubarg{q_{\gamma}}{\ell_{c}\left(\theta\right)} + \log p_{\theta}\left[\left(x_{i}\right), \left(y_{i}\right)\right],
+\end{align}
+so we can equivalently choose the $q_{\gamma^{\ast}}$ to maximize
+\begin{align}
+\F\left(\gamma, \theta\right) := -\Esubarg{q_{\gamma}}{\log q_{\gamma}\left(z^{(r)}\right)} + \Esubarg{q_{\gamma}}{\ell_{c}\left(\theta\right)}, \label{eq:kl_equiv},
+\end{align}
+which can be interpreted as a regularized complete data loglikelihood.
+
+Note that this expression only involves the expected complete data 
+loglikelihood, which is usually simple to compute. In particular, in many cases
+it is easy to find a $\gamma$ to maximize this quantity, when $\theta$ is kept
+fixed.
+
+
+Further, for a fixed choice of $\theta$, it may be possible to choose $\gamma$ 
+to maximize this quantity, and vice versa. This is the variational  strategy
 adopted by \cite{zhang2005learning} -- initialize $\theta^{0}$, then choose
-$\gamma^{1}$ to maximize
-$\Esubarg{z^{(r)} \sim q_{\gamma}}{\ell_{c}\left(\theta^{0}\right)}$, then
-find a $\theta^{1}$ to maximize
-$\Esubarg{z^{(r)} \sim q_{\gamma^{1}}}{\ell_{c}\left(\theta\right)}$, and
+$\gamma^{1}$ to minimize $\F\left(\gamma, \theta^{0}\right)$, then
+find a $\theta^{1}$ to maximize $\F\left(\gamma^{(1)}, \theta\right)$, and
 so forth. The final posterior is approximated by $q_{\gamma^{t}}$ for some
 large $t$.
 
 For example, suppose our prior has the form choose
-$w^{(r)} \sim \Mult\left(1, \pi\right)$, as in the clustered regressions
+$w^{(r)} \sim \Mult\left(1, \Phi\right)$, as in the clustered regressions
 context. Then, a simple family $\left(q_{\gamma}\right)_{\gamma \in \Gamma}$ is
-$q_{\gamma}\left(\beta^{(r)}, w^{(r)}\right) = \Gsn\left(\beta^{(r)} \mid m, V\right)\Mult\left(w^{(r)} \vert 1, \pi\right)$,
+\begin{align}
+q_{\gamma}\left(\left(\beta^{(r)}\right), \left(w^{(r)}\right)\right) = \prod_{r = 1}^{p_{1}}\Gsn\left(\beta^{(r)} \mid m^{(r)}, V^{(r)}\right)\Mult\left(w^{(r)} \vert 1, \pi^{(r)}\right),
+\end{align}
 where the variational family is parameterized by
-$\gamma = \left(m, V, \pi\right)$ and the latent data $\beta^{(r)}$ and $w^{(r)}$
-are independent. Each term in the expected complete data
-loglikehood can now be evaluated straightforwardly, for example, we can
-write $\Esubarg{\beta^{r}, w^{(r)} \sim q_{\gamma}}{\log\Gsn\left(\beta^{(r)} \vert S w^{(r)}, \Psi\right)}$ as
+$\gamma = \left(m^{(r)}, V^{(r)}, \pi^{(r}\right)_{r=1}^{p_{1}}$ and the latent
+data $\beta^{(r)}$ and $w^{(r)}$ are independent. Each term in the expected 
+complete data  loglikehood can now be evaluated straightforwardly, for example,
+we can write
+$\Esubarg{\beta^{r}, w^{(r)} \sim q_{\gamma}}{\log\Gsn\left(\beta^{(r)} \vert S w^{(r)}, \Psi\right)}$ as
 \begin{align*}
-  &-\frac{p}{2}\log 2\pi - \log \absarg{\Psi} -
-  \frac{1}{2}\Esubarg{q_{\gamma}}{\beta^{(r) T}\Psi^{-1}\beta^{(r)}} +
-  \Esubarg{q_{\gamma}}{s^{(r) T}\Psi^{-1}\beta^{(r)}} -
-  \frac{1}{2}\Esubarg{q_{\gamma}}{w^{(r) T}S^{T}Sw^{(r)}} \\
-  = &-\frac{p}{2}\log 2\pi - \log \absarg{\Psi} - \Psi^{-\frac{1}{2}}\left(V + mm^{T}\right)\Psi^{-\frac{1}{2}} + \pi^{T}S\Psi^{-1}m -\frac{1}{2}S \diag\left(\pi_{i}\right)S^{T}.
+  &\Esubarg{q_{\gamma}}{\log\left[\frac{1}{\left(2\pi\right)^{\frac{p}{2}} \absarg{\Psi}^{\frac{1}{2}}}\exp{-\frac{1}{2}\left(\beta^{(r)} - Sw^{(r)}\right)^{T}\Psi^{-1}\left(\beta^{(r)} - Sw^{(r)}\right)}\right]} \\
+  =&-\frac{p}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} -
+  \frac{1}{2}\Esubarg{q_{\gamma}}{\tr\left(\Psi^{-1}\beta^{(r)}\beta^{(r) T} - 2 S^{T}\Psi^{-1}\beta^{(r)}w^{(r) T} + S^{T}\Psi^{-1}S w^{(r)}w^{(r) T}\right)} \\
+  =&-\frac{p}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} -\frac{1}{2}\tr\left(\Psi^{-1}\left(V + mm^{T}\right) - 2S^{T}\Psi^{-1}m\pi^{T} + S^{T}\Psi^{-1}S\diag\left(\pi\right)\right)
 \end{align*}
 Other terms can be calculated similarly. It is now a matter of calculus to find
 the maximizing $\sigma^{2}, \Psi, S$, and $\Phi$ in the variational $M$-step,
@@ -2095,6 +2222,51 @@ which be input to any number of gradient-based routines;
 gradient descent with a momentum term.
 
 \subsection{Matrix Factorization}
+
+\section{Appendix}
+
+\subsection{Variational Inference for Multitask Bayesian Model}
+\label{sec:vi_mb}
+
+Let $N = \sum_{r = 1}^{p_{1}} n_{r}$. Then, the complete data loglikelihood 
+in the multinomial mixing case can be written more explicitly as
+\begin{align}
+  \ell_{c}\left(\theta\right) = &- \frac{N}{2}\log 2\pi\sigma^{2}
+  - \sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}} \left(y_{i}^{(r)} - x_{i}^{(r) T}\beta^{(r)}\right)^{2} 
+- \frac{N}{2}\log\absarg{\Psi} - \frac{Np}{2}\log 2\pi - \\
+&\frac{1}{2}\sum_{r = 1}^{p_{1}}n_{r}\tr\left(\Psi^{-1}\beta^{(r)}\beta^{(r) T} - 2 S^{T}\Psi^{-1}\beta^{(r)}w^{(r) T} + S^{T}\Psi^{-1}Sw^{(r)}w^{(r) T}\right) + \\
+&\sum_{r = 1}^{p_{1}} n_{r}\log \phi_{k\left(r\right)}.
+\end{align}
+where $k\left(r\right)$ denotes the cluster to which the $r^{th}$ task is 
+associated. Under the approximating variational density, this has expectation
+\begin{align*}
+  \Esubarg{q_{\gamma}}{\ell_{c}\left(\theta\right)} = -&\frac{N}{2}\log 2\pi \sigma^{2} - 
+  \sum_{r = 1}^{p_{1}} \sum_{i = 1}^{n_{r}} \frac{1}{2\sigma^{2}}\left(\left(y_{i}^{(r)} - x_{i}^{(r) T} m^{(r)}\right)^{2} + x_{i}^{(r) T}V^{(r)}x_{i}^{(r)}\right) - \\
+  &\frac{N}{2}\log\absarg{\Psi} - \frac{Np}{2}\log 2\pi -\\
+  &\frac{1}{2} \sum_{r = 1}^{p_{1}} n_{r} \tr\left(\Psi^{-1}\left(V^{(r)} + m^{(r)}m^{(r) T}\right) - 2s^{T}\Psi^{-1}m^{(r)}\pi^{(r) T} + S^{T}\Psi^{-1}S\diag\left(\pi^{(r)}\right)\right) + \\
+  &\sum_{r = 1}^{p_{1}} n_{r}\log \phi_{k\left(r\right)}.
+\end{align*}
+
+The log of the variational family density in this case can be written as
+\begin{align}
+  \log q_{\gamma}\left(\left(z^{(r)}\right)\right) = &\frac{-p_{1}p_{2}}{2}\log 2\pi - \frac{1}{2}\sum_{r = 1}^{p_{1}} \log \absarg{V^{(r)}} -\\
+  & \frac{1}{2}\tr\left(\sum_{r = 1}^{p_{1}} \left(V^{(r)}\right)^{-1}\left(\beta^{(r)} - m^{(r)}\right)\left(\beta^{(r)} - m^{(r)}\right)^{T}\right),
+\end{align}
+
+and its expected value (under a draw from itself) can be written 
+\begin{align}
+  \Esubarg{q_{\gamma}}{\log q_{\gamma}\left(\left(z^{(r)}\right)\right)} &= -\frac{p_{1}p_{2}}{2}\left(\log 2\pi + 1\right) - \sum_{r = 1}^{p_{1}} \log \absarg{V^{(r)}} + \sum_{r = 1}^{p_{1}} \pi_{k\left(r\right)}\log \pi_{k\left(r\right)},
+\end{align}
+since the trace term simplifies to $-\frac{p_{1}p_{2}}{2}$.
+
+To derive updates for the E and M steps, differentiate 
+with respect to $\{m, V, \pi\}$ and
+$\{\sigma^{2}, \Psi, S, \Phi\}$, respectively.
+
+The E-step updates have the form
+\begin{align}
+  \hat{V}^{(r)} &= \frac{1}{n_{r}}\left(\Psi^{-1} + \sum_{i = 1}^{n_{r}} \frac{1}{n_{r}\hat{\sigma}^{2}}x_{i}^{(r)}x_{i}^{(r) T}\right)^{-1}
+\end{align}
 
 \bibliographystyle{unsrt}
 \bibliography{microbiome_multitable}
