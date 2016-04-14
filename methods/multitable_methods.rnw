@@ -183,6 +183,7 @@ small_theme <- function(base_size = 7, base_family = "Helvetica") {
 }
 
 sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
+theme_set(small_theme())
 @
 
 \linespread{1.5}
@@ -317,6 +318,7 @@ include \cite{friedman2001elements, mardia1980multivariate,
   pages2014multiple}.
 
 \subsection{CCA}
+\label{sec:cca}
 
 Canonical Correlation Analysis is a close relative of PCA that
 explicitly compares sets of features across multiple tables. While it
@@ -1559,6 +1561,31 @@ An complementary formulation of Kernel CCA was presented in
 \cite{lanckriet2004statistical} (todo: maybe describe this approach
 too?).
 
+\paragraph{Simulation}
+
+Here, we provide two simulations comparing CCA to Kernel CCA,
+\begin{itemize}
+\item Circular data: There are two data sets $X \in \reals^{n \times 2}$ and
+  $Y\in\reals^{n \times 2}$ on the same $n$ samples. Each sample belongs to
+  one of two clusters, indicated by $z_{i} \in \{0, 1\}$. Samples in cluster
+  0 fall closer to the origin for both tables, while the angles are random
+  and unrelated to cluster status. Specifically, using polar coordinates,
+  we draw
+  \begin{align}
+    \omega^{x}_{i} &\sim \Bet\left(1, 4\right) \\
+%    \left(r^{x}_{i}, \theta^{x}_{i}\right) &\sim \left[\Unif\left(\left[\frac{1}{2}, \frac{3}{2}\right]\right)\indic{z_{i} = 0} + \Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]\right)\indic{z_{i} = 1}\right] \times \Unif\left(\left[2 \pi \omega_{i} - \frac{1}{2}, 2 \pi \omega_{i} + \frac{1}{2}\right]\right),
+  \end{align}
+  for table $X$, and
+  \begin{align}
+    \omega^{y}_{i} &\sim \Unif\left(0, 1\right) \\
+%    \left(r^{y}_{i}, \theta^{y}_{i}\right) &\sim \left[\sqrt{\Unif\left(\left[\frac{1}{2}, \frac{3}{2}\right]\right)}\indic{z_{i} = 0} + \sqrt{\Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]}\right)\indic{z_{i} = 1}\right] \times \Unif\left(\left[0, 2\pi\omega_{i}\right]\right),
+  \end{align}
+  for table $Y$.
+\item Nonlinear relation: 
+\end{itemize}
+
+
+
 \subsubsection{Penalized Matrix Decomposition}
 
 In high-dimensional settings, sparsity is a desirable property, both
@@ -1786,6 +1813,84 @@ using the penalized matrix decomposition.}
 \label{fig:sparse-sim-pmd-unordered-plot}
 \end{figure}
 
+Note that the recovered weights $\hat{W}$ do not occur in piecewise constant 
+elements, as in the true weights. To encourage this property in the $\hat{W}$,
+we can impose a fused-lasso penalty on the differences between consecutive
+$w_{i}$. The same PMD machinery applies, because the combined $\ell^{1}$ and
+fused-lasso penalties can still be written as a convex penalty $P$ on the
+latent dimensions $u$ and $v$. Further, the implementation is straightforwards,
+using the same function from above.
+
+<<sparse-sim-pmd-ordered>>=
+@ 
+
+The estimated weights are plotted in Figure
+\ref{fig:sparse-sim-pmd-ordered-plot}. Note that the weights are indeed
+essentially piecewise constant, and the jumps do occur at true changepoints.
+Interestingly, one segment is missed and set to zero. Further, the
+cross-validation procedure returns only a single latent source, when in fact
+there are two.
+
+\begin{figure}
+<<sparse-sim-pmd-ordered-plot>>=
+@
+\caption{Weights $\hat{W}$ recovered by the PMD when a fused lasso penalty is imposed.}
+\label{fig:sparse-sim-pmd-ordered-plot}
+\end{figure}
+
+As a baseline reference, we consider two simple alternatives,
+\begin{itemize}
+\item Ordinary (unpenalized) CCA, as in Section \ref{sec:cca}.
+\item Separate PCAs, as in Section \ref{sec:pca}.
+\end{itemize}
+
+\paragraph{CCA}
+
+The results of this approach are shown in Figure \ref{fig:sparse-sim-cca-plot}.
+THe first latent dimension is very definitively recovered, with the sparse,
+piecewise constant structure being clearly visible (though the weights are not
+exactly 0 or piecewise constant). Three of the four true changepoints are
+found, in the same positions as the fused-lasso PMD.
+
+While there are some shifts in second and third, these are overwhelemed by a
+much high noise level.
+
+<<sparse-sim-cca>>=
+@ 
+
+\begin{figure}
+<<sparse-sim-cca-plot>>=
+@ 
+\caption{Recovered weights, using ordinary CCA.}
+\label{fig:sparse-sim-cca-plot}
+\end{figure}
+
+\paragraph{Separate PCAs}
+
+The results of this approach are shown in Figure
+\ref{fig:sparse-sim-separate-pcas}. Unsurprisingly, the weights are not
+sparse. This aside, however, the results have some desirable properties,
+\begin{itemize}
+\item Since PCA is able to exploit the fact that the sources are orthogonal,
+  it identifies that there are exactly two latent dimensions.
+\item The changepoints occur at the true changepoint locations.
+\end{itemize}
+
+Again, the weights are not identifiable, so we should not criticize the method
+for switching nonzero weights from one latent source to another. Overall, these
+results are not particularly bad, in spite of the method's ignorance of the true
+underlying sparsity, piecewise-constant nature, or the fact that the same
+sources are shared across the separate tables. Perhaps a simple two-step
+alternative to the fused-lasso PMD might be competitive in practice: first run
+separate PCAs, then perform an order-0 spline smoothing.
+
+\begin{figure}
+<<sparse-sim-separate-pcas>>=
+@ 
+\caption{The weights recovered by separate PCAs.}
+\label{fig:sparse-sim-separate-pcas}
+\end{figure}
+
 \subsubsection{Covariate-assisted Spectral Clustering}
 
 Spectral clustering is an approach to clustering samples using ideas
@@ -1982,9 +2087,8 @@ over the $z^{(r)}$, which is generally not available in closed form. The
 loglikelihood assuming that the latent $z^{(r)}$ are known is called the
 complete-data loglikelihood. In our multitask setting, this has the form
 \begin{align*}
-\ell_{c}\left(\theta\right) = &\sum_{r = 1}^{p_{1}}\sum_{i =1 }^{n_{r}} \log p_{\theta}\left(y^{(r)}_{i}, \beta^{(r)}, w^{(r)}\right) \\
-= &\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}} \log p_{\sigma^{2}}\left(y_{i}^{(r)} \mid \beta^{(r)}\right) + \log p_{\Lambda, \Psi}\left(\beta^{(r)} \mid w^{(r)}\right) + \log p_{\Phi}\left(w^{(r)}\right) \\
-  = &\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n} \log \Gsn\left(y_{i}^{(r)} \mid x_{i}^{(r) T}\beta^{(r)}, \sigma^{2}\right) + \sum_{r = 1}^{p_{1}} n_{r}\left[\log \Gsn\left(\beta^{(r)} \mid S w^{(r)}, \Psi\right) + \log p_{\Phi}\left(w^{(r)}\right)\right],
+  \ell_{c}\left(\theta\right) = &\sum_{r = 1}^{p_{1}}\left[\sum_{i = 1}^{n_{r}} \log p\left(y_{i}^{(r)} \mid \beta^{(r)} ; X^{(r)}, \sigma^{2}\right)\right] + \log p\left(\beta^{(r)} \mid w^{(r)}; \Lambda, \Psi\right) + \log p\left(w^{(r)}; \Phi\right) \\
+  = &\sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n} \log \Gsn\left(y_{i}^{(r)} \mid x_{i}^{(r) T}\beta^{(r)}; \sigma^{2}\right) + \sum_{r = 1}^{p_{1}}\log \Gsn\left(\beta^{(r)} \mid S w^{(r)}; \Psi\right) + \log p_{\Phi}\left(w^{(r)}\right),
 \end{align*}
 where, for simplicity, we have assumed that the $w^{(r)}$ are independent in the
 prior across problems -- this covers most cases described in
@@ -2048,11 +2152,13 @@ complete data  loglikehood can now be evaluated straightforwardly, for example,
 we can write
 $\Esubarg{\beta^{r}, w^{(r)} \sim q_{\gamma}}{\log\Gsn\left(\beta^{(r)} \vert S w^{(r)}, \Psi\right)}$ as
 \begin{align*}
-  &\Esubarg{q_{\gamma}}{\log\left[\frac{1}{\left(2\pi\right)^{\frac{p}{2}} \absarg{\Psi}^{\frac{1}{2}}}\exp{-\frac{1}{2}\left(\beta^{(r)} - Sw^{(r)}\right)^{T}\Psi^{-1}\left(\beta^{(r)} - Sw^{(r)}\right)}\right]} \\
-  =&-\frac{p}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} -
+  &\Esubarg{q_{\gamma}}{\log\left[\frac{1}{\left(2\pi\right)^{\frac{p_{1}}{2}} \absarg{\Psi}^{\frac{1}{2}}}\exp{-\frac{1}{2}\left(\beta^{(r)} - Sw^{(r)}\right)^{T}\Psi^{-1}\left(\beta^{(r)} - Sw^{(r)}\right)}\right]} \\
+  =&-\frac{p_{1}}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} -
   \frac{1}{2}\Esubarg{q_{\gamma}}{\tr\left(\Psi^{-1}\beta^{(r)}\beta^{(r) T} - 2 S^{T}\Psi^{-1}\beta^{(r)}w^{(r) T} + S^{T}\Psi^{-1}S w^{(r)}w^{(r) T}\right)} \\
-  =&-\frac{p}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} -\frac{1}{2}\tr\left(\Psi^{-1}\left(V + mm^{T}\right) - 2S^{T}\Psi^{-1}m\pi^{T} + S^{T}\Psi^{-1}S\diag\left(\pi\right)\right)
+  =&-\frac{p_{1}}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} -\frac{1}{2}\tr\left(\Psi^{-1}\left(V^{(r)} + m^{(r}m^{(r) T}\right) - 2S^{T}\Psi^{-1}m^{(r)}\pi^{(r) T} + S^{T}\Psi^{-1}S\diag\left(\pi^{(r)}\right)\right) \\
+  =& -\frac{p_{1}}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} - \frac{1}{2}\tr\left(\Psi^{-1}V^{(r)}\right) - \frac{1}{2}\sum_{k = 1}^{K}\pi_{k}^{(r)}\left(m^{(r)} - s_{\cdot k}\right)^{T}\Psi^{-1}\left(m^{(r)} - s_{\cdot k}\right),
 \end{align*}
+where $s_{\cdot k}$ denotes the $k^{th}$ column of $S$. 
 Other terms can be calculated similarly. It is now a matter of calculus to find
 the maximizing $\sigma^{2}, \Psi, S$, and $\Phi$ in the variational $M$-step,
 and to find the maximizing $m, V$, and $\pi$ in the variational $E$-step.
@@ -2221,6 +2327,10 @@ which be input to any number of gradient-based routines;
 \cite{chen2010graph} uses Nesterov's accelerated method, a version of
 gradient descent with a momentum term.
 
+\paragraph{Examples}
+
+To ground the discussion, consider the following simulation.
+
 \subsection{Matrix Factorization}
 
 \section{Appendix}
@@ -2232,32 +2342,40 @@ Let $N = \sum_{r = 1}^{p_{1}} n_{r}$. Then, the complete data loglikelihood
 in the multinomial mixing case can be written more explicitly as
 \begin{align}
   \ell_{c}\left(\theta\right) = &- \frac{N}{2}\log 2\pi\sigma^{2}
-  - \sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}} \left(y_{i}^{(r)} - x_{i}^{(r) T}\beta^{(r)}\right)^{2} 
-- \frac{N}{2}\log\absarg{\Psi} - \frac{Np}{2}\log 2\pi - \\
-&\frac{1}{2}\sum_{r = 1}^{p_{1}}n_{r}\tr\left(\Psi^{-1}\beta^{(r)}\beta^{(r) T} - 2 S^{T}\Psi^{-1}\beta^{(r)}w^{(r) T} + S^{T}\Psi^{-1}Sw^{(r)}w^{(r) T}\right) + \\
-&\sum_{r = 1}^{p_{1}} n_{r}\log \phi_{k\left(r\right)}.
+  - \sum_{r = 1}^{p_{1}}\sum_{i = 1}^{n_{r}} \frac{1}{2\sigma^{2}}\left(y_{i}^{(r)} - x_{i}^{(r) T}\beta^{(r)}\right)^{2}
+- \frac{p_{1}}{2}\log\absarg{\Psi} - \frac{p_{1}p_{2}}{2}\log 2\pi - \\
+&\frac{1}{2}\sum_{r = 1}^{p_{1}}\tr\left(\Psi^{-1}\beta^{(r)}\beta^{(r) T} - 2 S^{T}\Psi^{-1}\beta^{(r)}w^{(r) T} + S^{T}\Psi^{-1}Sw^{(r)}w^{(r) T}\right) + \\
+&\sum_{r = 1}^{p_{1}} \sum_{k = 1}^{K} \indic{w^{(r)}_{k} = 1}\log \phi_{k}.
 \end{align}
 where $k\left(r\right)$ denotes the cluster to which the $r^{th}$ task is 
 associated. Under the approximating variational density, this has expectation
 \begin{align*}
   \Esubarg{q_{\gamma}}{\ell_{c}\left(\theta\right)} = -&\frac{N}{2}\log 2\pi \sigma^{2} - 
   \sum_{r = 1}^{p_{1}} \sum_{i = 1}^{n_{r}} \frac{1}{2\sigma^{2}}\left(\left(y_{i}^{(r)} - x_{i}^{(r) T} m^{(r)}\right)^{2} + x_{i}^{(r) T}V^{(r)}x_{i}^{(r)}\right) - \\
-  &\frac{N}{2}\log\absarg{\Psi} - \frac{Np}{2}\log 2\pi -\\
-  &\frac{1}{2} \sum_{r = 1}^{p_{1}} n_{r} \tr\left(\Psi^{-1}\left(V^{(r)} + m^{(r)}m^{(r) T}\right) - 2s^{T}\Psi^{-1}m^{(r)}\pi^{(r) T} + S^{T}\Psi^{-1}S\diag\left(\pi^{(r)}\right)\right) + \\
-  &\sum_{r = 1}^{p_{1}} n_{r}\log \phi_{k\left(r\right)}.
+  &\frac{p_{1}}{2}\log\absarg{\Psi} - \frac{p_{1}p_{2}}{2}\log 2\pi -\\
+  &\frac{1}{2}\sum_{r = 1}^{p_{1}}\left[\tr\left(\Psi^{-1}V^{(r)}\right) +\sum_{k = 1}^{K}\pi_{k}^{(r)}\left(m^{(r)} - s_{\cdot k}\right)^{T}\Psi^{-1}\left(m^{(r)} - s_{\cdot k}\right)\right] + \\
+  &\sum_{r = 1}^{p_{1}} \sum_{k = 1}^{K}\pi_{k}^{(r)} \log \phi_{k}.
 \end{align*}
 
 The log of the variational family density in this case can be written as
 \begin{align}
   \log q_{\gamma}\left(\left(z^{(r)}\right)\right) = &\frac{-p_{1}p_{2}}{2}\log 2\pi - \frac{1}{2}\sum_{r = 1}^{p_{1}} \log \absarg{V^{(r)}} -\\
-  & \frac{1}{2}\tr\left(\sum_{r = 1}^{p_{1}} \left(V^{(r)}\right)^{-1}\left(\beta^{(r)} - m^{(r)}\right)\left(\beta^{(r)} - m^{(r)}\right)^{T}\right),
+  & \frac{1}{2}\tr\left(\sum_{r = 1}^{p_{1}} \left(V^{(r)}\right)^{-1}\left(\beta^{(r)} - m^{(r)}\right)\left(\beta^{(r)} - m^{(r)}\right)^{T}\right) + \\
+  &\sum_{r = 1}^{p_{1}}\sum_{k = 1}^{K} \indic{w_{k}^{(r)} = 1}\log \pi_{k}^{(r)},
 \end{align}
 
 and its expected value (under a draw from itself) can be written 
 \begin{align}
-  \Esubarg{q_{\gamma}}{\log q_{\gamma}\left(\left(z^{(r)}\right)\right)} &= -\frac{p_{1}p_{2}}{2}\left(\log 2\pi + 1\right) - \sum_{r = 1}^{p_{1}} \log \absarg{V^{(r)}} + \sum_{r = 1}^{p_{1}} \pi_{k\left(r\right)}\log \pi_{k\left(r\right)},
+  \Esubarg{q_{\gamma}}{\log q_{\gamma}\left(z^{(r)}\right)} &= -\frac{p_{1}p_{2}}{2}\left(\log 2\pi + 1\right) - \frac{1}{2}\sum_{r = 1}^{p_{1}} \log \absarg{V^{(r)}} + \sum_{r = 1}^{p_{1}}\sum_{k= 1}^{K}\pi_{k}^{(r)}\log\pi_{k}^{(r)},
 \end{align}
 since the trace term simplifies to $-\frac{p_{1}p_{2}}{2}$.
+
+Hence, the variational objective is, up to constants,
+\begin{align}
+  &\Esubarg{q_{\gamma}}{\ell_{c}\left(\theta\right)} -   \Esubarg{q_{\gamma}}{\log q_{\gamma}\left(z^{(r)}\right)} \\=& -\frac{N}{2}\log\sigma^{2} -\sum_{r = 1}^{p_{1}} \sum_{i = 1}^{n_{r}} \frac{1}{2\sigma^{2}}\left(\left(y_{i}^{(r)} - x_{i}^{(r) T}m^{(r)}\right)^{2} + x_{i}^{(r) T}V^{(r)}x_{i}^{(r)}\right) - \frac{p_{1}}{2}\log\absarg{\Psi} - \\
+  & \frac{1}{2}\tr\left(\Psi^{-1}\sum_{r = 1}^{p_{1}}V^{(r)}\right) -
+  \frac{1}{2}\sum_{r = 1}^{p_{1}}\sum_{k = 1}^{K}\pi_{k}^{(r)}\left(m^{(r)} - s_{\cdot k}\right)^{T}\Psi^{-1}\left(m^{(r)} - s_{\cdot k}\right) + \\&\sum_{r = 1}^{p_{1}}\sum_{k = 1}^{K} \pi_{k}^{(r)}\log\varphi_{k} + \frac{1}{2}\sum_{r = 1}^{p_{1}}\log\absarg{V^{(r)}} - \sum_{r= 1}^{p_{1}}\sum_{k = 1}^{K}\pi_{k}^{(r)}\log \pi_{k}^{(r)}.
+\end{align}
 
 To derive updates for the E and M steps, differentiate 
 with respect to $\{m, V, \pi\}$ and
@@ -2265,7 +2383,16 @@ $\{\sigma^{2}, \Psi, S, \Phi\}$, respectively.
 
 The E-step updates have the form
 \begin{align}
-  \hat{V}^{(r)} &= \frac{1}{n_{r}}\left(\Psi^{-1} + \sum_{i = 1}^{n_{r}} \frac{1}{n_{r}\hat{\sigma}^{2}}x_{i}^{(r)}x_{i}^{(r) T}\right)^{-1}
+  \hat{V}^{(r)} &= \left(\Psi^{-1} + \frac{1}{\sigma^{2}}X^{(r) T }X^{(r)}\right)^{-1}
+  \hat{m}^{(r)} &= V^{(r)}\left(\Psi^{-1}S\pi + \frac{1}{\sigma^{2}}X^{(r) T}y^{(r)}\right)
+\hat{\pi}_{k}^{(r)} &\propto \varphi_{k}\exp{\left(m^{(r)} - s_{\cdot k}\right)^{T}\Psi^{-1}\left(m^{(r)} - s_{\cdot k}\right)},
+\end{align}
+and the $M$-step updates are
+\begin{align}
+  \hat{\varphi}_{k} &\propto \sum_{r = 1}^{p_{1}} \pi_{k}^{(r)} \\
+  \hat{\Psi} &= \frac{1}{p_{1}}\sum_{r = 1}^{p_{1}}\left(V^{(r)} + \sum_{k = 1}^{K}  \pi_{k}^{(r)}\left(m^{(r)} - s_{\cdot k}\right)\left(m^{(r)} - s_{\cdot k}\right)^{T}\right) \\
+  \hat{s}_{\cdot k} &= \frac{\sum_{r = 1}^{p_{1}}\pi_{k}^{(r)} m^{(r)}}{\sum_{r = 1}^{p_{1}} \pi_{k}^{(r)}} \\
+  \hat{\sigma}^{2} &= \frac{1}{N} \sum_{r = 1}^{p_{1}} \sum_{i = 1}^{n_{r}}\left(y_{i}^{(r)} - x_{i}^{(r) T}m^{(r)}\right)^{2} + x_{i}^{(r) T}V^{(r)}x_{i}^{(r)}
 \end{align}
 
 \bibliographystyle{unsrt}
