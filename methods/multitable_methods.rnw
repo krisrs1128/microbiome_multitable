@@ -2326,7 +2326,8 @@ are easily visible.
 \begin{figure}
 <<plot-B>>=
 @ 
-\caption{}
+\caption{The underlying coefficient matrix. The $\left(j,
+  r\right)^{th}$ cell displays the value of $\beta_{j}^{(r)}$.}
 \label{fig:vb-plot-B}
 \end{figure}
 
@@ -2468,7 +2469,25 @@ estimates are occasionally quite far from the truth.
 \label{fig:vb-plot-fitted-reg}
 \end{figure}
 
+For a final view of the estimated $\hat{beta}_{j}^{(r)}$, we generate
+the analog of Figure \ref{fig:vb-plot-B}, which showed the true
+coefficient matrix across all features and tasks. The result is in
+Figure \ref{fig:vb-plot-betas-image}. This figure again reinforces the
+fact that the linear model estimates can be occasionally be quite
+extreme, while the variational estimates are quite
+regularized. Further, we notice that the task clustering structure was
+recovered by both approaches, even the independent regressions
+approach, which did not specify this structure a priori.
 
+\begin{figure}
+<<plot-betas-image>>=
+@ 
+\caption{The estimated coefficient matrices for the Bayesian multitask
+  and independent linear regressions approaches. Note that the tasks
+  have been reordered to the coefficient clustering structure more
+  visible.}
+\label{fig:vb-plot-betas-image}
+\end{figure}
 
 \subsubsection{$\ell^{2, 1}$ Multitask learning}
 
