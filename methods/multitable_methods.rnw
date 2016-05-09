@@ -164,26 +164,13 @@
 %\newcommand{\ea}{\end{align}}
 %\newcommand{\ba}{\begin{align}}
 
-<<echo = FALSE>>=
+<<overall-setup>>=
 library("knitr")
 library("ggplot2")
-library("grid")
-opts_chunk$set(cache = TRUE, fig.width = 4, fig.height = 4, fig.align = "center")
-
-scale_colour_discrete <- function(...)
-  scale_colour_brewer(..., palette="Set2")
-small_theme <- function(base_size = 7, base_family = "Helvetica") {
-  theme_bw(base_size = base_size, base_family = base_family) %+replace%
-  theme(axis.title = element_text(size = rel(0.8)),
-        legend.title = element_text(size = rel(0.8)),
-        legend.text = element_text(size = rel(0.8)),
-        plot.title = element_text(size = rel(1.1)),
-        plot.margin = unit(c(0.1, .1, .1, .1), "lines")
-        )
-}
-
+opts_chunk$set(fig.width = 7, fig.height = 4, fig.align = "center",
+               fig.show = "hold", size = "small")
 sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
-theme_set(small_theme())
+theme_set(theme_bw())
 @
 
 \linespread{1.5}
@@ -252,22 +239,22 @@ while the associated scores $\left(UD\right)\left[, 1:k\right]$.
 
 While this does not account for the multitable structure of the data,
 it does accomplish two goals,
-\begin{enumerate}
+\begin{itemize}
 \item Through the principal component scores, it provides a
   visualization of the relationships between
   samples, based on all features.
 \item Through the principal component directions, it gives a way of
   relating features within and across the multiple tables.
-\end{enumerate}
+\end{itemize}
 
 However, two important drawbacks of this approach are
-\begin{enumerate}
+\begin{itemize}
   \item It does not provide a summary of the relationship between the
     sets of variables defining the tables -- it can only relate pairs
     of variables. \label{bullet:pca_drawback_one}
   \item If some tables have many more variable than others, they can
     dominate the resulting ordination. \label{bullet:pca_drawback_two}
-\end{enumerate}
+\end{itemize}
 
 These limitations are addressed by CCA and MFA.
 
@@ -746,11 +733,11 @@ scrambled the time ordering for $L$ tables, the algorithm's result
 would not change.
 
 The main idea in PTA is to divide the analysis into two steps,
-\begin{enumerate}
+\begin{itemize}
   \item Combine the $L$ tables into a single so-called compromise
     table.
   \item Apply any standard method, e.g., PCA, on the compromise table.
-\end{enumerate}
+\end{itemize}
 
 Evidently, the only real content in this method is the construction of
 the compromise table. A naive approach would simple average each
@@ -997,7 +984,7 @@ projecting these pooled $Y$ onto the span of the $X$. If the $Y$ had not
 been pooled, then the projection onto the span of the $X$'s is exactly the usual
 independent linear regressions described earlier.
 
-\subsection{Modern multivariate methods}
+\section{Modern multivariate methods}
 
 \subsection{Partial Least Squares (PLS)}
 
@@ -1408,7 +1395,7 @@ $X$. In any case, we see that C\&W pools across regression problems
 through a soft shrinkage weighted along canonical response
 directions.
 
-\subsection{Methods from Machine Learning}
+\section{Methods from Machine Learning}
 
 Several different literatures within machine learning have each
 developed approaches to dimensionality reduction across multiple
@@ -1563,30 +1550,114 @@ too?).
 
 \paragraph{Simulation}
 
-Here, we provide two simulations comparing CCA to Kernel CCA,
-\begin{itemize}
-\item Circular data: There are two data sets $X \in \reals^{n \times 2}$ and
-  $Y\in\reals^{n \times 2}$ on the same $n$ samples. Each sample belongs to
-  one of two clusters, indicated by $z_{i} \in \{0, 1\}$. Samples in cluster
-  0 fall closer to the origin for both tables, while the angles are random
-  and unrelated to cluster status. Specifically, using polar coordinates,
-  we draw
-  \begin{align}
-    \omega^{x}_{i} &\sim \Bet\left(1, 4\right) \\
-%    \left(r^{x}_{i}, \theta^{x}_{i}\right) &\sim \left[\Unif\left(\left[\frac{1}{2}, \frac{3}{2}\right]\right)\indic{z_{i} = 0} + \Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]\right)\indic{z_{i} = 1}\right] \times \Unif\left(\left[2 \pi \omega_{i} - \frac{1}{2}, 2 \pi \omega_{i} + \frac{1}{2}\right]\right),
-  \end{align}
-  for table $X$, and
-  \begin{align}
-    \omega^{y}_{i} &\sim \Unif\left(0, 1\right) \\
-%    \left(r^{y}_{i}, \theta^{y}_{i}\right) &\sim \left[\sqrt{\Unif\left(\left[\frac{1}{2}, \frac{3}{2}\right]\right)}\indic{z_{i} = 0} + \sqrt{\Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]}\right)\indic{z_{i} = 1}\right] \times \Unif\left(\left[0, 2\pi\omega_{i}\right]\right),
-  \end{align}
-  for table $Y$.
-\item Nonlinear relation: 
-\end{itemize}
+In this section, we provide two simulations comparing CCA to Kernel CCA. The 
+first simulation generates data lying on concentric circles around the origin, 
+similar to examples in Chapter 14 of \cite{friedman2001elements}, while the 
+second generates data well suited to the RBF kernel, and is based on an 
+experiment in \cite{fukumizu2007statistical}.
+
+We first discuss the circular data application. The data generating mechanism
+is as follows. There are two data sets $X \in \reals^{n \times 2}$ and
+$Y\in\reals^{n \times 2}$ on the same $n$ samples. Each sample belongs to
+one of two clusters, denoted by $z_{i} \in \{0, 1\}$. Samples in cluster
+0 fall closer to the origin for both tables, while the angles are random
+and unrelated to cluster status. The resulting data is displayed in Figure 
+\ref{fig:kcca-data-concentric}.
+
+Specifically, using polar coordinates, we draw
+\begin{align}
+  \omega^{x}_{i} &\sim \Bet\left(1, 4\right) \\
+  \left(r^{x}_{i}, \theta^{x}_{i}\right) \sim &\left[\Unif\left(\left[\frac{1}{2}, \frac{3}{2}\right]\right)\indic{z_{i} = 0} + \Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]\right)\indic{z_{i} = 1}\right] \times\\ &\Unif\left(\left[2 \pi \omega_{i} - \frac{1}{2}, 2 \pi \omega_{i} + \frac{1}{2}\right]\right),
+\end{align}
+for table $X$, and
+\begin{align*}
+  \omega^{y}_{i} &\sim \Unif\left(0, 1\right) \\
+  \left(r^{y}_{i}, \theta^{y}_{i}\right) &\sim \left[\sqrt{\Unif\left(\left[\frac{1}{2}, \frac{3}{2}\right]\right)}\indic{z_{i} = 0} + \sqrt{\Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]\right)}\indic{z_{i} = 1}\right] \times \\&\Unif\left(\left[0, 2\pi\omega_{i}\right]\right),
+\end{align*}
+for table $Y$.
 
 
+The code below generates this data and produces Figure
+\ref{fig:kcca-data-concentric}.
 
-\subsubsection{Penalized Matrix Decomposition}
+<<kcca-sims>>=
+read_chunk(file.path(sim_methods_dir, "kcca.R"))
+@ 
+
+<<generate-data>>=
+@ 
+
+\begin{figure}
+  \centering
+<<raw-data-plots>>=
+@ 
+\caption{Raw data used in the Kernel CCA experiment based on circular data.}
+\label{fig:kcca-data-concentric}
+\end{figure}
+
+Next, we perform KCCA as described above, using the implementation provided by
+\texttt{kernlab} \cite{zeileis2004kernlab}\footnote{But for an implementation
+  that allows for more than 2 tables, as described in this section, see
+  \url{https://github.com/krisrs1128/kcca\_expers}}.
+Unlike standard CCA, we have to make choices about a few parameters. The first
+is the choice of kernel -- we use the standard RBF kernel,
+$k\left(x, x^{\prime}\right) = \exp{-\sigma\|x- x^{\prime}\|^{2}}$,
+  with $\sigma = 2$, reflecting the scale of the data. We
+  also have to choose the regularization parameter, called $\lambda$ above
+  \footnote{But called $\gamma$ in \texttt{kernlab}.}, we set it to
+  $\gamma = 0.25$. We chose these parameters by manually experimenting with
+  different choices, until the correlation across tables appeared relatively
+  large.
+
+<<kcca>>=
+@
+
+We display the a few views into the results in Figure
+\ref{fig:kcca-concentric-plots}. The left plot displays the scores from the $X$
+table, while the right plot describes the correlation between the top-component
+scores across the two tables (the optimization objective for KCCA).
+
+The results on this data set are somewhat disappointing. On the one hand, KCCA
+was apparently able to meet its objective, since the scores between the top $X$
+and $Y$ score are quite high: 0.976.
+%\Sexpr{round(kcca_res@kcor, 3)}.
+In spite of this, the scores are not particularly useful, since,
+\begin{enumerate}
+\item The scores for the two dimensions are perfectly correlated.
+\item The difference between the two concentric colors is not represented.
+\end{enumerate}
+
+\begin{figure}
+<<kcca-plots>>=
+@ 
+\caption{On the left, the $X$-scores from the first two dimesions of KCCA.
+  On the right, the correlation between the top $X$ and $Y$ scores.}
+\label{fig:kcca-concentric-plots}
+\end{figure}
+
+As a reference point, we also apply standard CCA to this data set. Note that it requires no tuning parameters.
+
+<<usual-cca>>=
+@ 
+
+The results are displayed in Figure \ref{fig:cca-concentric-plots}. Here, we are
+able to clearly distinguish between the two groups, in spite of the less
+standard data generating mechanism. This is in spite of the fact that the top canonical correlation is not as
+high as in KCCA (though it is not too poor either
+: \Sexpr{cor(cancor_scores[[1]][, 1], cancor_scores[[2]][, 1])%>% round(3)}).
+  Further, unlike KCCA, CCA provides
+eigenvectors which can provide more context for the positions of
+scores (todo: plot and interpret eigenvectors). 
+
+\begin{figure}
+<<cca-plots>>=
+@ 
+\caption{$X$-scores from CCA (left), along with the correlation between the
+  top $X$ and $Y$ scores (right).}
+\label{fig:cca-concentric-plots}
+\end{figure}
+
+\subsection{Penalized Matrix Decomposition}
 
 In high-dimensional settings, sparsity is a desirable property, both
 for interpretability and statistical stability. For example, in the
@@ -1732,6 +1803,7 @@ and set the noise $\sigma^{2}$ to 1.
 We set up this simulation in the code below.
 
 <<setup-sparse-sim>>=
+sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
 read_chunk(file.path(sim_methods_dir, "sparse_sim.R"))
 @
 
@@ -1891,7 +1963,7 @@ separate PCAs, then perform an order-0 spline smoothing.
 \label{fig:sparse-sim-separate-pcas}
 \end{figure}
 
-\subsubsection{Covariate-assisted Spectral Clustering}
+\subsection{Covariate-assisted Spectral Clustering}
 
 Spectral clustering is an approach to clustering samples using ideas
 from graph partitioning. A general question is whether supplmental
@@ -2039,7 +2111,7 @@ the $r^{(th)}$ regression problem. Hence, different priors on
 The authors propose special cases corresponding to particular choices for the
 prior $p_{\Phi}\left(\left(w^{(r)}\right)_{r = 1}^{j_{1}}\right)$.
 
-\begin{enumerate}
+\begin{itemize}
   \item $w^{(r)} \equiv 0$ decomposes the problem into independent regressions.
   \item $w^{(r)} = 1$ turns the model into a "contaminated-signal"
     model\footnote{Note the similarity to random effects.}, of the form
@@ -2062,7 +2134,7 @@ prior $p_{\Phi}\left(\left(w^{(r)}\right)_{r = 1}^{j_{1}}\right)$.
     of the regression coefficients. In general, prior information on
     how the coefficients should be related can be incorporated by
     correlating the $w^{(r)}$ across regression problems.
-\end{enumerate}
+\end{itemize}
 
 To perform inference, the author employ a variational strategy. While inference
 of the true posterior jointly over
@@ -2130,7 +2202,6 @@ loglikelihood, which is usually simple to compute. In particular, in many cases
 it is easy to find a $\gamma$ to maximize this quantity, when $\theta$ is kept
 fixed.
 
-
 Further, for a fixed choice of $\theta$, it may be possible to choose $\gamma$ 
 to maximize this quantity, and vice versa. This is the variational  strategy
 adopted by \cite{zhang2005learning} -- initialize $\theta^{0}$, then choose
@@ -2162,6 +2233,57 @@ where $s_{\cdot k}$ denotes the $k^{th}$ column of $S$.
 Other terms can be calculated similarly. It is now a matter of calculus to find
 the maximizing $\sigma^{2}, \Psi, S$, and $\Phi$ in the variational $M$-step,
 and to find the maximizing $m, V$, and $\pi$ in the variational $E$-step.
+
+\paragraph{Simulation Example}
+
+We next describe a small simulation example corresponding to this multinomial
+prior on $w$. Our focus is pedagogy rather than advocacy. That is, our figures 
+are designed to illustrate some of the abstract quantities from the previous 
+section to make them easier to understand, they should not be used to argue that
+the Bayesian multitask is superior to any alternatives -- to investigate this 
+question, we would need a more comprehensive study, using data drawn from 
+mechanisms other than the assumed generative model. 
+
+We generate data according to the clustered regression scheme. We suppose there
+are $p_{1} = 100$ tasks, and each is randomly (and uniformly) assigned to one of
+three task  clusters. These are the $w^{(r)}$ from before. For each task,
+we generate data according to a linear model with its own coefficient, 
+but so that the coefficients are close whenever the tasks belong to the same
+task cluster. Each individual regression problem has 15 samples with 10-dimensional
+measurements. Recalling our earlier notation, we set
+\begin{align}
+\beta^{(r)} = Sw^{(r)} + \Psi,
+\end{align}
+where $\Psi \sim \Gsn\left(0, I_{10}\right)$ and
+$s_{i\cdot} \stackrel{iid}{\sim} \Gsn\left(0, 2^{2}I_{3}\right)$\footnote{Though
+  the model treats $S$ as fixed, we still need some way of simulating it.}. The
+regression data is then $y_{i}^{(r)} = x_{i}^{(r)} T} \beta^{(r)} + \eps_{i}$ for
+  $i = 1, \dots, 15$ and $\eps_{i} \sim \Gsn\left(0, 2^{2}\right)$.
+
+This information is summarized in Figures \ref{fig:...} and \ref{fig:...}
+
+
+
+To interpret this in a microbiome context, for example....
+
+illustrate the setting 
+in which this method is useful
+
+- Describe setup
+    + explain how this might be related to the microbiome
+- Visualize B matrix
+    + explain why clustered
+    + explain why not exactly clustered
+- Visualize example regressions
+    + what are rows and cols
+    + why this should be hard for naive regression problem
+- Explain results
+    + Show fitted vs. true B
+    + they both implicitly recover cluster structure, but bayesian approach
+      regularizes, has somewhat less variance
+    + bayesian approach explicitly returns fitted probabilities, without using 
+      any extra modeling
+- Show the fitted regression lines  
 
 \subsubsection{$\ell^{2, 1}$ Multitask learning}
 
@@ -2329,7 +2451,230 @@ gradient descent with a momentum term.
 
 \paragraph{Examples}
 
-To ground the discussion, consider the following simulation.
+The code below is just boilerplate to set up the simulation.
+
+<<gflasso-setup>>=
+sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
+read_chunk(file.path(sim_methods_dir, "gflasso_sim.R"))
+@ 
+
+<<sparse-sim-packages>>=
+@ 
+
+Here are parameters we will use in the simulation -- they are described below.
+
+<<simdata-params>>=
+@ 
+
+To ground the discussion, consider the following simulation.We imagine a
+regression problem with $J = 100$ features, all shared across
+$K = 50$ tasks. Only $J_{0} = 100$ features are ever relevant for
+any individual task; however, the same features are often relevant across tasks.
+Specifically, we suppose that half of the tasks all use the same set of features,
+while the second half use a different set. This ties the problems together,
+making the multitask approach natural.
+
+The coefficient matrix associated with this setup is visualized in Figure
+\ref{fig:vis-gflasso-B}. Rows and columns correspond to features and tasks,
+respectively. The fact that most rows are blank means that they are irrelevant
+for all tasks. That rows are split in half reflects that features are only
+necessarily relevant for one half of the tasks; in three cases, feature are
+relevant for all tasks.
+
+The nonzero values in this coefficient matrix are drawn i.i.d. from,
+\begin{align}
+  \beta_{j} &\sim \Gsn\left(0, 1\right) \\
+  B_{jk} &\sim \Gsn\left(\beta_{j}, .5\right)
+\end{align}
+The $\beta_{j}$ are shared across all tasks. In summary, there are two levels
+of sharing, within the two groups, the zero-status of coefficient entries is
+shared; conditional on being nonzero, coefficients have similar values across
+tasks.
+
+The feature values are drawn i.i.d $\Gsn\left(0, 1\right)$; this is done for
+\Sexpr{n} samples. A response matrix $Y$ is generated as $XB + E$, where $E$
+is also i.i.d. $\Gsn\left(0, 1\right)$. This setup is visualized in Figure
+\ref{fig:gflasso-reg-lines}.
+
+We are now ready to generate data according to this description.
+
+<<gflasso-simulate-data>>=
+@ 
+
+\begin{figure}
+<<vis-B>>=
+@ 
+\caption{Underlying coefficients for the graph fused lasso simulation example.}
+\label{fig:vis-gflasso-B}
+\end{figure}
+
+<<vis-reg-data>>=
+@ 
+
+\begin{figure}
+<<vis-reg-lines>>=
+@ 
+\caption{Each cell corresponds to a single task-feature pair -- different feature
+  and tasks are arranged along rows and columns, respectively, as in the display
+  of the coefficient matrix. We have subsetted to 10 tasks and 10 features. The
+  points in each cell represent individual samples, the $x$-axis gives the
+  value for the current feature, the $y$-axis gives the response for the current
+  task. Cells are shaded dark purple if the coefficient value is nonzero.}
+\label{fig:gflasso-reg-lines}
+\end{figure}
+
+To run graph-fused lasso on this data, we need to first specify the matrix 
+$R \in \reals^{K \times K}$ relating the tasks together. We will be generous,
+and suppose we know the two true sets of tasks, so set $R$ to be two blocks of
+of ones. Then, after specifying the regularization, smooth-approximation, and
+gradient descent parameters\footnote{In a real application, we would want to
+  search over different parameters to find a combination giving the best
+  generalization error.}, we are able to run the graph-fused lasso.
+
+<<gflasso>>=
+@ 
+
+We proceed to study the results. We can view convergence in Figure
+\ref{fig:gflasso-objective}. It seems that after 850 iterations, a minimum
+for the smoothed objective function has been found; in principle, this could
+be used as a starting point for optimization on a less aggressively smoothed
+objective, to get closer to true sparsity.
+
+To inspect estimation accuracy, Figure \ref{fig:gflasso-beta-compare} plots
+the fitted $\hat{B}$ entries versus the true $B$. Performance is reasonable,
+which is not too surprising, since the simulation is in an ideal setting. More
+interestingly, we can see the shrinkage that the lasso introduces. By comparing
+with the reference identity line, plotted in grey, we see that positive
+$B_{ij}$'s are systematically underestimated, while negative ones are
+overestimated. If we look carefully, we can also see a cluster of fitted
+values near, but not always exactly equal to, zero. That they are near zero
+reflects the $\ell^{1}$ regularization, but that they are not exactly equal to
+zero is due to the proximal smoothing approach to optimization -- less smoothing
+will lead to fitted coefficient values even closer to zero.
+
+Further, we notice a few horizontal striations; these are
+coefficients that are tied together by the graph-fused-lasso penalty for
+coefficients that are neighboring on the graph\footnote{The striation gets
+  stronger with larger values of $\gamma$ in the call to $\texttt{gflasso}$.}.
+
+\begin{figure}
+<<vis-objective, fig.height = 3, fig.width = 4>>=
+@ 
+\caption{The value of the smoothed graph-fused lasso objective function across
+  iterations.}
+\label{fig:gflasso-objective}
+\end{figure}
+
+\begin{figure}
+<<coef-hat-pred>>=
+@ 
+\caption{The fitted $\hat{B}$ against the true $\hat{B}$. The blue points
+  are coefficients across features, but for just the first 25 tasks. The red
+  points are coefficients for the last 25 tasks.}
+\label{fig:gflasso-beta-compare}
+\end{figure}
+
+To more carefully inspect the way coefficients are tied together across tasks, 
+we can create versions of Figures \label{fig:vis-gflasso-B} and
+\ref{fig:gflasso-reg-lines}, but for the estimated $\hat{B}$ -- these are
+displayed in Figures \ref{fig:vis-gflasso-Bhat} and \ref{fig:gflasso-reg-Bhat},
+respectively.
+
+We note that that graph-fused penalty indeed enforced similarity in coefficients
+across tasks within the two groups, as evidenced by the vertical split after
+the $25^{th}$ task in Figure \ref{fig:vis-gflasso-Bhat}. This figure also
+demonstrates the (effective) sparsity of the coefficients more clearly: though
+they may not be exactly zero, they are easy to distinguish from ``truly''
+nonzero estimates.
+
+Figure \ref{fig:gflasso-reg-Bhat} displays the fitted regression lines as dashed
+lines over the true, solid, ones. That they are hard to distinguish demonstrates
+successful estimation. We also plot the regression lines for task-feature pairs
+with zero regression slope (the pink cells), in order to ensure that the
+estimated coefficients are correct in this case as well.
+
+\begin{figure}
+<<vis-Bhat-gflasso>>=
+@ 
+\caption{Fitted coefficient matrix, $\hat{B}$.}
+\label{fig:vis-gflasso-Bhat}
+\end{figure}
+
+\begin{figure}
+<<gflasso-reg-bhat>>=
+@ 
+<<vis-reg-fit>>=
+@ 
+\caption{The fitted regressions for this subset of task-feature
+  combinations are plotted as dashed lines, while the true regression lines are
+  solid.}
+\label{fig:gflasso-reg-Bhat}
+\end{figure}
+
+To honestly assess the utility of this method, it is worth comparing it to
+a simpler approach: perform $K$ independent lasso
+regressions one for each task. We use the \texttt{glmnet} package, which also
+performs cross-validation over the (one) tuning parameter. The graph-fused
+lasso parameters we chosen manually.
+
+<<lasso-baseline>>=
+@ 
+
+Figures
+\ref{fig:lasso-beta-compare}, \ref{fig:lasso-Bhat}, and
+\ref{fig:lasso-reg-Bhat} are the independent lasso analogous to Figures
+\ref{fig:gflasso-beta-compare}, \ref{fig:gflasso-Bhat}, and
+\ref{fig:lasso-reg-Bhat}.
+
+Note that the setup of this problem is \textit{extremely} favorable to the
+graph-fused lasso, for the following reasons,
+\begin{itemize}
+\item The true task structure is exactly provided to the graph-fused lasso,
+  while the independent lasso regression is not even allowed to estimate such
+  structure.
+\item Within each of the two groups, the tasks in fact have very similar
+  coefficient values. Hence, the problem is very amenable to pooling across
+  tasks.
+\item For each task, the ratio of $n$ to $J$ is quite small, so the potential
+  gains from pooling are substantial.
+\end{itemize}
+
+It is unclear whether any of the advantages of the graph-fused approach will
+hold in practice, where tasks may not truly be very related, and where the
+strength of the relationships between tasks has to be estimated.
+
+Indeed, all the figures demonstrate that the sample size seems too small for the
+independent lasso model to identify any many coefficients. Nonetheless, though
+the lasso was not provided information about the relationship between tasks, the
+Figure \ref{fig:lasso-reg-Bhat} shows that it recovered some of the group
+structure.
+
+\begin{figure}
+<<lasso-bhat-b>>=
+@ 
+\caption{The $\hat{B}$ obtained by independent lasso regressions, against the
+  true $\hat{B}$.}
+\label{fig:lasso-beta-compare}
+\end{figure}
+
+\begin{figure}
+<<vis-Bhat-lasso>>=
+@ 
+\caption{Fitted coefficient matrix, $\hat{B}$, using independent lasso
+  regressions.}
+\label{fig:lasso-Bhat}
+\end{figure}
+
+\begin{figure}
+<<lasso-reg-bhat>>=
+@ 
+<<vis-lasso-fit>>=
+@ 
+\caption{The fitted independent lassos applied to a subset of task-feature
+  combinations are plotted as dashed lines, while the true regression lines are
+  solid.}
+\label{fig:lasso-reg-Bhat}
+\end{figure}
 
 \subsection{Matrix Factorization}
 
