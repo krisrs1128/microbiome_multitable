@@ -1,5 +1,6 @@
 \documentclass{scrartcl}
 \usepackage{graphicx, color}
+\usepackage{array}
 \usepackage{eulervm}
 %% maxwidth is the original width if it is less than linewidth
 %% otherwise use linewidth (to make sure the graphics do not exceed the margin)
@@ -167,21 +168,34 @@
 <<overall-setup>>=
 library("knitr")
 library("ggplot2")
-opts_chunk$set(fig.width = 7, fig.height = 4, fig.align = "center",
-               fig.show = "hold", size = "small")
 sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
+opts_knit$set(root.dir = sim_methods_dir)
+opts_chunk$set(fig.width = 7.5, fig.height = 4, fig.align = "center",
+               fig.show = "hold", size = "small", cache = FALSE)
 theme_set(theme_bw())
+min_theme <- theme_update(panel.border = element_blank(),
+                   panel.grid = element_blank(),
+                   axis.ticks = element_blank(),
+                   legend.title = element_text(size = 10),
+                   axis.text = element_text(size = 8),
+                   axis.title = element_text(size = 10),
+                   strip.background = element_blank(),
+                   strip.text = element_text(size = 10),
+                   legend.key = element_blank())
 @
 
 \linespread{1.5}
 
+\title{Multitable Data Analysis for the Microbiome}
+\author{Kris Sankaran}
 \begin{document}
+\maketitle
 
 \section{Classical multivariate methods}
 
-Methods from classical multivariate statistics have become a mainstay
+Methods from classical multivariate statistics are a mainstay
 of single-table microbiome data analysis, so it is natural to revisit
-this literature to identify extensions to the multitable
+this literature before surveying extensions to the multitable
 setting. Here we describe a few of the classically studied multitable
 methods that fit nicely into the modern microbiome data analysis
 toolbox. We first describe a naive approach based on Principal
@@ -192,7 +206,7 @@ characterize covariation across several tables: Canonical Correlation
 Analysis (CCA), Multiple Factor Analysis (MFA), and Principal
 Component Analysis with Instrumental Variables (PCA-IV).
 
-But first, a comment on the setting in which these methods
+But first, a comment on the historical backdrop in which these methods
 emerged. The earliest multitable method (CCA) was published in 1936,
 where the motivating data analysis problem was to relate prices of
 groups of commodities \cite{hotelling1936relations}. There are two notable
@@ -205,22 +219,23 @@ hold in modern statistics:
     few decades, it has become possible to automatically collect a
     large number of features for each sample.
   \item Before electronic computers had been invented, it was
-    important that all statistical quantities be relatively easy to
-    calculate. This is no longer a restriction in an environment with
-    rich computational resources.
+    important that all statistical quantities be easy to
+    calculate, typically necessitating analytical formulas for
+    parameter estimates. This is no longer as important a limitation
+    in an environment with richer computational resources.
 \end{itemize}
 
 These changes have motivated the need for high-dimensional methods and
 facilitated the adoption of iterative, more computationally-intensive
-approaches, respectively, some of which are described in the
-description below.
+approaches, respectively, some of which are described later in this
+review.
 
-Nonetheless, it is important to review these original approaches, both to
+Nonetheless, it is worth reviewing these original approaches, both to
 understand the context for many modern techniques, as well as to have
 an easy starting point for practical data analysis. Indeed, these more
-established, tend to be the most readily available through statistical
-computing packages and can often provide a benchmark with which to
-compare more elaborate, modern methods.
+established methods tend to be the most readily available through
+statistical computing packages and can provide a benchmark with which
+to compare more elaborate, modern methods.
 
 \subsection{PCA}
 \label{sec:pca}
@@ -1581,9 +1596,11 @@ The code below generates this data and produces Figure
 \ref{fig:kcca-data-concentric}.
 
 <<kcca-sims>>=
-read_chunk(file.path(sim_methods_dir, "kcca.R"))
+read_chunk("kcca.R")
 @ 
 
+<<kcca-libraries>>=
+@ 
 <<generate-data>>=
 @ 
 
@@ -1803,8 +1820,7 @@ and set the noise $\sigma^{2}$ to 1.
 We set up this simulation in the code below.
 
 <<setup-sparse-sim>>=
-sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
-read_chunk(file.path(sim_methods_dir, "sparse_sim.R"))
+read_chunk("sparse_sim.R")
 @
 
 <<sparse-sim-packages>>=
@@ -2254,8 +2270,7 @@ written, providing an implementation of Bayesian multitask learning in the
 multinomial case.
 
 <<vb-sims>>=
-sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
-read_chunk(file.path(sim_methods_dir, "clustered_regressions.R"))
+read_chunk("clustered_regressions.R")
 @ 
 <<cr-setup>>=
 @ 
@@ -2291,16 +2306,15 @@ fit.
     tend to be similar to each other. \\
     \hline
     \texttt{sigma\_b} & The entries of the $\Psi$ matrix are drawn i.i.d. from
-    a normal with mean zero and variances \texttt{sigma_{b}^{2}}. It may be more
+    a normal with mean zero and variances $\texttt{sigma\_{b}}^{2}$. It may be more
     appropriate to draw $\Psi$ as a random low-rank matrix instead. \\
     \hline
     \texttt{sigma\_s} & The entries of $S$ are drawn i.i.d. from a normal with
-    mean zero and variances \texttt{sigma_{s}^{2}}. \\
+    mean zero and variances $\texttt{sigma\_{s}}^{2}$. \\
     \hline
     \texttt{sigma\_y} & For each task, the regression data is
-    $y^{(r)}_{i} \sim x^{(r)}_{i}^{T}\beta^{(r)} + \eps_{i}^{(r)}$, where
+    $y^{(r)}_{i} \sim x^{(r) T}_{i}\beta^{(r)} + \eps_{i}^{(r)}$, where
     $\eps_{i}^{(r)}$ is normal with mean zero and variance \texttt{sigma\_y}.
-    \hline
   \end{tabular}
   \caption{Simulation parameters for the clustered regressions experiment.}
   \label{tab:vb-sim-params}
@@ -2351,7 +2365,7 @@ for each feature (i.e., row in the figure).
 @ 
 
 \begin{figure}
-<<vis-reg-lines>>=
+<<vb-vis-reg-lines>>=
 @ 
 \caption{A view of the first 5 features and 10 tasks in the simulated 
   ``clustered regressions'' data, used in the Bayesian multitask regression
@@ -2361,7 +2375,7 @@ for each feature (i.e., row in the figure).
 
 The code below estimates the Bayesian multitask model.
 
-<<>>=
+<<run-vb>>=
 @ 
 
 To begin interpreting the results of the model, we first inspect the estimated
@@ -2380,13 +2394,6 @@ estimation procedure recovered essentially the correct task cluster assignmnts.
 This can also be seen by comparing the estimated cluster assignments with the
 true ones, as in the code chunk below.
 
-<<table-clusters>>=
-@ 
-
-Though not reproduced in this report, we note that when using smaller
-$n$ or larger $\sigma_{b}^{2}$, the estimation procedure often
-collapsed two of the true clusters into one.
-
 \begin{figure}
 <<plot-pi>>=
 @ 
@@ -2395,13 +2402,20 @@ collapsed two of the true clusters into one.
 \label{fig:vb-plot-pi}
 \end{figure}
 
+<<table-clusters>>=
+@ 
+
+Though not reproduced in this report, we note that when using smaller
+$n$ or larger $\sigma\_{b}^{2}$, the estimation procedure often
+collapsed two of the true clusters into one.
+
 Next, we can visualize the $m_{j}^{(r)}$ and $V_{jj}^{(r)}$, the
 variational approximation to the posterior mean and
-variance\footnote{We consider the $V_{jj}^{(r)}$ though it is
-  well-documented that variational bayes systematically underestimates
-  the posterior variance of different parameters
-  \cite{consonni2007mean}.} of the $\beta_{j}^{(r)}$. As a point of
-reference,
+variance\footnote{We use the $V_{jj}^{(r)}$ to construct confidence
+  intervals for estimated parameters, though it is well-documented
+  that variational bayes systematically underestimates the posterior
+  variance of different parameters \cite{consonni2007mean}.} of the
+$\beta_{j}^{(r)}$. As a point of reference,
 we also fit the ``naive'' model, which simply fits a separate
 linear regression for each task. We expect this approach to yield
 relatively variable estimates, since $n = 10$ and $p_{2} = 15$. On the
@@ -2658,8 +2672,7 @@ gradient descent with a momentum term.
 The code below is just boilerplate to set up the simulation.
 
 <<gflasso-setup>>=
-sim_methods_dir <- "~/Documents/programming/simFuns/simMethods/"
-read_chunk(file.path(sim_methods_dir, "gflasso_sim.R"))
+read_chunk("gflasso_sim.R")
 @ 
 
 <<sparse-sim-packages>>=
@@ -2948,4 +2961,3 @@ and the $M$-step updates are
 \bibliography{microbiome_multitable}
 
 \end{document}
-
