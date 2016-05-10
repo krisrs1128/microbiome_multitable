@@ -508,64 +508,66 @@ maximize the sum of cross-covariances $\sum_{l,l^{\prime} = 1}^{L}
 
 \subsection{Co-Inertia Analysis}
 
-Co-Inertia Analysis (CoIA) was motivated by the same problem as
-Canonical Correspondence Analysis, where the main question is how
-groups of species become more or less abundant depending on the
-environmental conditions at the sites they were observed
+Co-Inertia Analysis (CoIA) emerged in ecology to facilitate analysis
+of how groups of species become more or less abundant depending on
+environmental conditions in the sites at which they were observed
 \cite{doledec1994co}. It can be viewed as a slight
 modification\footnote{I might even call it a simplification.} of
-Canonical Correlation Analysis. Again, we seek sets of orthonormal
+CCA. Again, we seek sets of orthonormal
 directions $\left(u_{k}\right)_{k = 1}^{K}$ and $\left(v_{k}\right)_{k
-  = 1}^{K}$ such that the associated projections $X^{(1)}u_{k}$ and
-$X^{(2)}v_{k}$ explain most of the covariation between the
-tables. Unlike Canonical Correlation Analysis, the approach is to
-maximize the covariance between the scores, not the
-correlation. Formally, it chooses the first directions $u_{1}$ and
-$v_{1}$ as the solutions to
+  = 1}^{K}$ such that the associated projections $Xu_{k}$ and
+$Yv_{k}$ explain most of the covariation between the
+tables. Unlike CCA, CoIA 
+maximizes the covariance -- not hte correlation -- between
+scores. Formally, it chooses the first directions $u_{1}$ and $v_{1}$
+as the solutions to
 \begin{align}
 \maximize_{u \in \reals^{p_{1}}, v \in \reals^{p_{2}}} &u^{T}X^{T}Yv \\
-\text{ such that}\medspace &\|u\| = \|v\| = 1,
+\text{ such that}\medspace &\|u\| = 1\\ 
+&\|v\| = 1,
 \end{align}
 and subsequent directions by the same optimization, with the
 additional constraint that they are orthogonal to the previously
-derived directions, $u_{k^{\prime}} \perp
+derived directions, (i.e., $u_{k^{\prime}} \perp
 \text{span}\left(\left(u_{k}\right)_{k = 1}^{k^{\prime} - 1}\right)$
 and $v_{k^{\prime}} \perp \text{span}\left(\left(v_{k}\right)_{k =
-    1}^{k^{\prime} - 1}\right)$.
+    1}^{k^{\prime} - 1}\right)$).
 
-Comparing with the CCA formulation \ref{eq:cancor_optim}, we see that
+Comparing with the CCA formulation \ref{eq:cancor_optim_emp}, we see that
 the only difference is that the norm constraint is imposed on $u$ and
-$v$ directly, rather than their projections. Indeed, forcing their
-projections to be length one makes the CCA objective the correlation
-between scores, while in CoIA it is only the covariance.
+$v$ directly, rather than their transformations
+$\Sigma_{XX}^{\frac{1}{2}}u$ and $\Sigma_{YY}^{\frac{1}{2}}v$. It is
+in this sense that the CCA objective maximizes the correlation between
+scores, while CoIA maximizes the covariance.
 
 The solutions $\left(u_{k}\right)_{k = 1}^{K}$ and
 $\left(v_{k}\right)_{k = 1}^{K}$ can be obtained as the first $K$ left
 and right eigenvectors from the SVD of $X^{T}Y$, as opposed to the
-first $K$ generalized eigenvectors, as in CCA. By essentially the
-same argument as in CCA, but we include it for completeness.
+first $K$ generalized eigenvectors, as in CCA, by essentially the
+same argument as in CCA.
 
 \subsection{MFA}
 \label{sec:mfa}
 
-Multiple factor analysis gives an alternative approach to producing
+MFA gives an alternative approach to producing
 scores and relating features across multiple
 tables\cite{pages2014multiple}. It can be understood as a reweighted
-version of the concatenated PCA described in section \ref{sec:pca}
-that reweights tables in a way that avoids issues
-\ref{bullet:pca_drawback_one} and
-\ref{bullet:pca_drawback_two}. Specifically, perform PCA on the matrix
+version of the concatenated PCA described in Section \ref{sec:pca}
+that reweights tables in a way that prevents any one table from
+dominating the resulting ordination\footnote{Though we have not
+  succeeded in demonstrating this phenomenon empirically, see Section
+  \ref{sec:mfa_motivation_sim}.}. Specifically, MFA is a concatenated
+PCA on the matrix
 \begin{align}
 X := \left[\frac{1}{\lambda_{1}\left(X^{(1)}\right)}X^{(1)} \vert \dots
   \vert \frac{1}{\lambda_{1}\left(X^{(L)}\right)}X^{(L)}\right],
 \end{align}
 which reweights each table by its largest eigenvalue. This procedure
 is the multitable analog of the standard practice of standardizing
-variables before performing PCA, and it resolves issue
-\ref{bullet:pca_drawback_two}.
+variables before performing PCA.
 
 The resulting MFA directions and scores can be interpreted in the same
-way as those from PCA. That is, the MFA directions still specify the
+way as those from PCA, in that, the MFA directions still specify the
 relationship between measured features, and the position of each
 sample's projection describes the relative weight of each feature for
 that sample. Moreover, MFA gives a way of comparing full tables to
@@ -573,7 +575,7 @@ each other, called a ``canonical analysis'' in the MFA literature
 \cite{pages2004multiple}. A $K$-dimensional representation of the
 $l^{th}$ group is given by
 \begin{align}
-\left[\mathcal{L}\left(z_{1}, X^{(l)}\right) \dots,
+\left[\mathcal{L}\left(z_{1}, X^{(l)}\right), \dots,
   \mathcal{L}\left(z_{K}, X^{(l)}\right)\right]
 \end{align}
 where $z_{k} = d_{k}u_{k} \in \reals^{n}$ are the $k^{th}$ column of
@@ -583,61 +585,63 @@ principal component scores and
   \frac{\lambda_{k}\left(X\right)}{\lambda_{1}\left(X^{(l)}\right)}\tr\left(X^{(l)}X^{(l)
       T} z_{k}z_{k}^{T}\right) =
   \frac{\lambda_{k}\left(X\right)}{\lambda_{1}\left(X^{(l)}\right)}\|X^{(l)
-  T} u_{k}\|^{2}_{2}
+  T} z_{k}\|^{2}_{2}
 \end{align}
 is a measure of aggregate similarity between the coordinates in the
-$l^{th}$ table and the $k^{th}$ column of scores. In this definition,
-if the samples, as represented by the $l^{th}$ table, have high
-correlation with the $k^{th}$ dimension of scores, then the summary
-for that group will be projected far in the $k^{th}$ direction.
+$l^{th}$ table and the $k^{th}$ column of scores. According to this
+definition, if the samples, as represented by the $l^{th}$ table, have
+high correlation with the $k^{th}$ dimension of scores, then the
+canonical analysis display positions the $l^{th}$ table far in the
+$k^{th}$ direction.
 
 \subsection{PCA-IV}
 
-Principal components with instrumental variables (PCA-IV)
-\cite{rao1964use} adapts the dimension reduction ideas of PCA to
-multivariate regression setting. It can also be viewed as a
-version of PCA that chooses a dimension reduction of $X^{(2)}$ in
-light of its ability to predict $X^{(1)}$, a kind of supervised
-version of CCA. In this sense, it anticipates methods like partial
-least squares, canonical correspondence analysis, the curd \& whey
-procedure, and various approaches to multitask learning, see the
-discussion below.
+PCA-IV adapts the dimension reduction ideas of PCA to
+multivariate regression setting \cite{rao1964use}. It can also be
+viewed as a version of PCA that chooses a dimension reduction of $X$ in
+light of its ability to predict $Y$, a kind of supervised
+version of CCA. In this sense, it anticipates methods like Partial
+Least Squares (PLS), Canonical Correspondence Analysis (CCpnA), the
+Curd \& Whey procedure, and various approaches to multitask learning,
+which are described in Sections \ref{sec:PLS},
+\ref{sec:canonical-correspondence}, \ref{sec:cw}, and
+\ref{sec:multitask}, respectively.
 
-For the formal setup, suppose we are predicting $x_{i}^{(1)}
-\in \reals^{p_{1}}$ from $x_{i}^{(2)} \in \reals^{p_{2}}$. Since
+Formally, suppose we are predicting $y_{i}
+\in \reals^{p_{1}}$ from $x_{i} \in \reals^{p_{2}}$. Since
 $p_{2}$ may be large, it might be useful to work with a
-lower-dimensional representation $z_{i} = V^{T}x^{(2)}_{i} \in
+lower-dimensional representation $z_{i} = V^{T}x_{i} \in
 \reals^{K}$, that is potentially more interpretable and is still
-predictive of $x^{(1)}$. As in PCA, we want the columns of $V$ to be
+predictive of $y_{i}$. As in PCA, we want the columns of $V$ to be
 orthonormal.
 
 The criterion that PCA-IV uses to identify the weights $V$ and
 scores $Z$ is similar to the maximum variance view of PCA. Instead of
 choosing $V$ to maximize the variance of the $z_{i}$, we choose it to
-minimize the residual covariance of $x_{i}^{(1)}$ given $z_{i}$. That
-is, suppose that $x_{i}^{(1)}$ and $x_{i}^{(2)}$ are normal with mean
-0 (we can always center the data) and joint covariance
+minimize the residual covariance of $y_{i}$ given $z_{i}$. That
+is, suppose that $y_{i}$ and $x_{i}$ are jointly normal with mean
+0 (we can always center the data) and covariance
 \begin{align}
-\Var_{\P}\begin{pmatrix}x_{i}^{(1)} \\ x_{i}^{(2)}\end{pmatrix} &=
+\Var_{\P}\begin{pmatrix}y_{i} \\ x_{i}\end{pmatrix} &=
 \begin{pmatrix}
-  \Sigma_{11} & \Sigma_{12} \\
-  \Sigma_{21} & \Sigma_{22}
+  \Sigma_{YY} & \Sigma_{YX} \\
+  \Sigma_{XY} & \Sigma_{XX}
 \end{pmatrix}.
 \end{align}
 
-If $z_{i} = V^{T}x_{i}^{(2)}$, then the joint covariance of
-$x_{i}^{(1)}$ and $z_{i}$ is
+If $z_{i} = V^{T}x_{i}$, then the joint covariance of
+$y_{i}$ and $z_{i}$ is
 \begin{align}
-  \Var_{\P}\begin{pmatrix} x_{i}^{(1)} \\ z_{i} \end{pmatrix} &=
+  \Var_{\P}\begin{pmatrix} y_{i} \\ z_{i} \end{pmatrix} &=
   \begin{pmatrix}
-    \Sigma_{11} & \Sigma_{12}V \\
-    V^{T}\Sigma_{21} & V^{T}\Sigma_{22}V
+    \Sigma_{YY} & \Sigma_{YX}V \\
+    V^{T}\Sigma_{XY} & V^{T}\Sigma_{XX}V
   \end{pmatrix},
 \end{align}
 and the residual covariance of $x_{i}^{(1)}$ given $z_{i}$ is
 \begin{align}
-  \Sigma_{11} -
-  \Sigma_{12}V\left(V^{T}\Sigma_{22}V\right)^{-1}V^{T}\Sigma_{21}. \label{eq:pca_iv_resid_cov}
+  \Sigma_{YY} -
+  \Sigma_{YX}V\left(V^{T}\Sigma_{XX}V\right)^{-1}V^{T}\Sigma_{XY}. \label{eq:pca_iv_resid_cov}
 \end{align}
 There are several ways to measure the size of this matrix, but
 \cite{rao1964use} uses the trace. The true population covariances are
@@ -645,129 +649,126 @@ unknown to us, so we replace them by their empirical estimates. The
 formal optimization for PCA-IV then becomes
 \begin{align}
   \minimize_{V\in \reals^{p_{2} \times K} \text{ orthonormal}}
-  \tr\left(\hat{\Sigma}_{11} -
-    \hat{\Sigma}_{12}V\left(V^{T}\hat{\Sigma}_{22}V\right)^{-1}V^{T}\hat{\Sigma}_{21}\right). \label{eq:pca_iv_obj},
+  \tr\left(  \Sigma_{YY} -
+  \Sigma_{YX}V\left(V^{T}\Sigma_{XX}V\right)^{-1}V^{T}\Sigma_{XY}\right). \label{eq:pca_iv_obj},
 \end{align}
 or, equivalently,
 \begin{align}
   \maximize_{V\in \reals^{p_{2} \times K} \text{ orthonormal}}
-  \tr\left(\hat{\Sigma}_{12}V\left(V^{T}\hat{\Sigma}_{22}V\right)^{-1}V^{T}\hat{\Sigma}_{21}\right). \label{eq:pca_iv_obj_2},
+  \tr\left(\Sigma_{YX}V\left(V^{T}\Sigma_{XX}V\right)^{-1}V^{T}\Sigma_{XY}\right). \label{eq:pca_iv_obj_2},
 \end{align}
 
 The optimal $V$ are the top $k$ generalized eigenvectors of
-$\hat{\Sigma}_{21}\hat{\Sigma}_{12}$ with respect to $\hat{\Sigma}_{22}$,
-that is, the orthonormal set of $\left(v_{k}\right)$ satisfying
+$\hat{\Sigma}_{XY}\hat{\Sigma}_{YX}$ with respect to
+$\hat{\Sigma}_{XX}$, that is, the orthonormal set of
+$\left(v_{k}\right)$ satisfying
 \begin{align}
-\hat{\Sigma}_{21}\hat{\Sigma}_{12}v_{k} &= \lambda_{k}
-\hat{\Sigma}_{22}v_{k},
+\hat{\Sigma}_{XY}\hat{\Sigma}_{YX}v_{k} &= \lambda_{k}
+\hat{\Sigma}_{XX}v_{k},
 \end{align}
 which can be written more concisely as
 \begin{align}
-\hat{\Sigma}_{21}\hat{\Sigma}_{12}V &= \left( \lambda_{1}
-  \hat{\Sigma}_{22}v_{1} \vert \dots \vert
-  \lambda_{k}\hat{\Sigma}_{22}v_{k}\right) =
-\hat{\Sigma}_{22}V\Lambda,
+\hat{\Sigma}_{XY}\hat{\Sigma}_{YX}V &= \left( \lambda_{1}
+  \hat{\Sigma}_{XX}v_{1} \vert \dots \vert
+  \lambda_{k}\hat{\Sigma}_{XX}v_{k}\right) =
+\hat{\Sigma}_{XX}V\Lambda,
 \end{align}
 where $\Lambda = \diag\left(\lambda_{k}\right) \in \reals^{K \times K}$. In
-particular, $\hat{\Sigma}_{21}\hat{\Sigma}_{12}$ has generalized
-eigendecomposition $\hat{\Sigma}_{21}\hat{\Sigma}_{12} = \hat{\Sigma}_{22} V\Lambda V^{T}$.
+particular, $\hat{\Sigma}_{XY}\hat{\Sigma}_{YX}$ has generalized
+eigendecomposition $\hat{\Sigma}_{XY}\hat{\Sigma}_{YX} =
+\hat{\Sigma}_{XX} V\Lambda V^{T}$.
 
 To see why this is optimal, first consider $k = 1$. Then, for any
 $\tilde{v}$, the objective \ref{eq:pca_iv_obj_2} has the form
 \begin{align}
-  \tr\left(\hat{\Sigma}_{12}\tilde{v}\left(\tilde{v}\hat{\Sigma}_{22}\tilde{v}\right)^{-1}
-    \left(\hat{\Sigma}_{12}\tilde{v}\right)^{T}\right) &=
-  \frac{\tilde{v}^{T}\Sigma_{21}\Sigma_{12}\tilde{v}}{\tilde{v}^{T}\Sigma_{22}\tilde{v}} \label{eq:gev_opt_1}\\
+  \tr\left(\hat{\Sigma}_{YX}\tilde{v}\left(\tilde{v}\hat{\Sigma}_{XX}\tilde{v}\right)^{-1}
+  \left(\hat{\Sigma}_{YX}\tilde{v}\right)^{T}\right) &=
+  \frac{\tilde{v}^{T}\Sigma_{XY}\Sigma_{YX}\tilde{v}}{\tilde{v}^{T}\Sigma_{XX}\tilde{v}} \label{eq:gev_opt_1}\\
   &=
-  \frac{\tilde{w}^{T}\Sigma_{22}^{-\frac{1}{2}}\Sigma_{21}\Sigma_{12}\Sigma_{22}^{-\frac{1}{2}}\tilde{w}}{\|\tilde{w}\|_{2}^{2}}, \label{eq:gev_opt_2}
+  \frac{\tilde{w}^{T}\Sigma_{XX}^{-\frac{1}{2}}\Sigma_{XY}\Sigma_{YX}\Sigma_{XX}^{-\frac{1}{2}}\tilde{w}}{\|\tilde{w}\|_{2}^{2}}, \label{eq:gev_opt_2}
 \end{align}
 where we change variables $\tilde{w} =
-\Sigma_{22}^{\frac{1}{2}}\tilde{v}$. But to maximize
+\Sigma_{XX}^{\frac{1}{2}}\tilde{v}$. But to maximize
   \ref{eq:gev_opt_2}, just choose $\tilde{w}$ to be the top
   eigenvector of
-  $\Sigma_{21}^{-\frac{1}{2}}\Sigma_{21}\Sigma_{12}\Sigma_{21}^{-\frac{1}{2}}$,
+  $\Sigma_{XX}^{-\frac{1}{2}}\Sigma_{XY}\Sigma_{YX}\Sigma_{XX}^{-\frac{1}{2}}$,
 which implies that $\tilde{v}$ is the top generalized eigenvector of
-$\Sigma_{21}\Sigma_{12}$ with respect to $\Sigma_{22}$. Indeed, in
+$\Sigma_{XY}\Sigma_{YX}$ with respect to $\Sigma_{XX}$. Indeed, in
 this case,
 \begin{align}
-  \Sigma_{21}\Sigma_{12}\tilde{v}
-  =\Sigma_{21}\Sigma_{12}\Sigma_{22}^{-\frac{1}{2}}\tilde{w} =
-  \Sigma_{22}^{\frac{1}{2}} \Sigma_{22}^{-\frac{1}{2}}\Sigma_{21}\Sigma_{12} \Sigma_{22}^{\frac{1}{2}}\tilde{w}
-  = \Sigma_{22}^{\frac{1}{2}}\lambda_{1}\tilde{w}
-  = \lambda_{1}\Sigma_{22}\tilde{v}.
+  \Sigma_{XY}\Sigma_{YX}\tilde{v}
+  =\Sigma_{XY}\Sigma_{YX}\Sigma_{XX}^{-\frac{1}{2}}\tilde{w} =
+  \Sigma_{XX}^{\frac{1}{2}} \Sigma_{XX}^{-\frac{1}{2}}\Sigma_{XY}\Sigma_{YX} \Sigma_{XX}^{-\frac{1}{2}}\tilde{w}
+  = \Sigma_{XX}^{\frac{1}{2}}\lambda_{1}\tilde{w}
+  = \lambda_{1}\Sigma_{XX}\tilde{v}.
 \end{align}
 
-So indeed, the criterion is maximized by the top generalized
-eigenvector, in the case that $K = 1$. For larger $K$, recall that the
+Hence, in the case $K = 1$, the criterion is maximized by the top
+generalized eigenvector. For larger $K$, recall that the
 problem of maximizing $\frac{v^{T}Av}{\|v\|^{2}}$ over $v$ subject to
-being orthogonal to the first $k - 1$ eigenvectors of $A$ is solved by
-the $k^{th}$ eigenvector of $A$, so applying this fact in step
+being orthogonal to the first $K - 1$ eigenvectors of $A$ is solved by
+the $K^{th}$ eigenvector of $A$, and applying this fact in step
 \ref{eq:gev_opt_2} of the argument above gives the result for general
 $K$.
 
-For a geometric interpretation of PCA-IV\footnote{I haven't read
-  anything about this so (1) I'm a little proud I came up with
-  something and (2) everything here might be wrong.}, consider each
-column $x_{\cdot j}^{(1)}$ in $X^{(1)}$ and $x_{\cdot j}^{(2)}$ in
-$X^{(2)}$ as a point in $\reals^{n}$. The $\left(x_{\cdot
-    j}^{(2)}\right)_{j = 1}^{p_{2}}$ span some $p^{(2)}$-dimensional
-subspace (we assume full rank). The $\left(x_{\cdot j}^{(1)}\right)$
-are $p^{(1)}$ points in this same space. A set of independent
-regressions of columns of $X^{(2)}$ onto $X^{(1)}$ simply projects the
-$x_{\cdot j}^{(1)}$ onto the span of $\left(x_{\cdot j}^{(2)}\right)$,
-and the residuals are the distance to this span. The PCA-IV procedure
-is an attempt to find a further $K$-dimensional subspace within the
-span of the $\left(x_{\cdot j}^{(2)}\right)$ such that the residuals
-of the regressions from $x_{\cdot j}^{(1)}$ onto this further subspace
-is not much worse.
+For a geometric interpretation of PCA-IV, view each
+column $y_{\cdot j}$ in $Y$ and $x_{\cdot j}$ in
+$X$ as a point in $\reals^{n}$. Assuming $X$ and $Y$ are full rank,
+the collections $\left(y_{ \cdot j}\right)$ adn $\left(x_{\cdot
+  j}\right)$ span $p_{1}$ and $p_{2}$-dimensional subspaces.
+A set of independent regressions of the $X$ onto the $y_{\cdot j}$
+simply projects the $y_{\cdot j}$ onto the span of $\left(x_{\cdot
+  j}\right)$, and the residuals are the distance to this
+span. The PCA-IV procedure is an attempt to find a further
+$K$-dimensional subspace within the span of the $\left(x_{\cdot
+  j}\right)$ such that the residuals of the regressions from
+$x_{\cdot j}^{(1)}$ onto this further subspace is not much worse.
 
 Indeed, write the usual estimates for the covariance matrices of
 interest,
 \begin{align}
-  \Sigma_{11} = \frac{1}{n}X^{(1) T}X^{(1)} \\
-  \Sigma_{12} = \frac{1}{n}X^{(1) T}X^{(2)} \\
-  \Sigma_{22} = \frac{1}{n}X^{(2) T}X^{(2)},
+  \Sigma_{YY} = \frac{1}{n}Y^{T}Y \\
+  \Sigma_{YX} = \frac{1}{n}Y^{T}X \\
+  \Sigma_{XX} = \frac{1}{n}X^{T}X
 \end{align}
 and observe that the residual covariance \ref{eq:pca_iv_resid_cov} can
 be expressed
 \begin{align}
-  &\frac{1}{n}\left[X^{(1) T}X^{(1)} - X^{(1)
-      T}X^{(2)}V\left(V^{T}X^{(2) T}X^{(2)}V\right)^{-1}V^{T}X^{(2)
-      T}X^{(1)}\right] \\
-  = &\frac{1}{n}\left[X^{(1) T}X^{(T)} - X^{(1)
-      T}Z\left(Z^{T}Z\right)^{-1}Z^{T} X^{(1)}\right] \\
-  = &X^{(1)}\left(I - P_{Z}\right)X^{(1)},
+  &\frac{1}{n}\left[Y^{T}Y -
+    Y^{T}XV\left(V^{T}X^{T}XV\right)^{-1}V^{T}X^{T}Y\right] \\
+  = &\frac{1}{n}\left[Y^{T}Y^{(T)} - Y^{T}Z\left(Z^{T}Z\right)^{-1}Z^{T}Y\right] \\
+  = &Y\left(I - P_{Z}\right)Y,
 \end{align}
 where $P_{Z} = Z\left(Z^{T}Z\right)^{-1}Z^{T}$ is the projection
 operator onto the columns of $Z$. Now, minimizing the trace of this
 matrix is equivalent to minimizing
 \begin{align}
-  \tr\left(X^{(1) T}\left(I - P_{Z}\right)X^{(1)}\right) &=
-  \tr\left(X^{(1) T}\left(I - P_{Z}\right)^{T}\left(I -
-      P_{Z}\right)X^{(1)}\right) \\
-  &= \|\left(I - P_{Z}\right)X^{(1)}\|_{F}^{2} \\
-  &= \sum_{j = 1}^{p_{1}}\|\left(I - P_{j}\right)x_{\cdot j}^{(1)}\|^{2}_{2},
+  \tr\left(Y^{T}\left(I - P_{Z}\right)Y\right) &=
+  \tr\left(Y^{T}\left(I - P_{Z}\right)^{T}\left(I -
+      P_{Z}\right)Y\right) \\
+  &= \|\left(I - P_{Z}\right)Y\|_{F}^{2} \\
+  &= \sum_{j = 1}^{p_{1}}\|\left(I - P_{j}\right)y_{\cdot j}\|^{2}_{2},
 \end{align}
 which is exactly the sum of squared residuals from the columns of
-$X^{(1)}$ onto the span of the PCA-IV subspace, justifying the
+$Y$ onto the span of the PCA-IV subspace, justifying the
 geometric picture described earlier.
 
 \subsection{Partial Triadic Analysis}
 
 Partial Triadic Analysis (PTA) gives an approach to working with
-$L$-table data ``cubes'' \cite{thioulouse2011simultaneous}. That is,
+multitable data when each table has the same dimension
+\cite{thioulouse2011simultaneous}. Specifically,
 it gives a way of analyzing data of the form $\left(X_{\cdot\cdot l}\right)_{l
   = 1}^{L}$, where each $X_{\cdot\cdot l} \in \reals^{n \times p}$; this is
-called a data cube because it can be considered a three-dimensional
-array\footnote{sometimes called a tensor when attempting to
-  intimidate biologists.} $X \in \reals^{n \times p   \times
-  L}$. We denote the $j^{th}$ feature measured on the $i^{th}$ sample
+called a data cube because it can also be written as a three-dimensional
+array $X \in \reals^{n \times p   \times L}$. We denote the $j^{th}$
+feature measured on the $i^{th}$ sample 
 in the $l^{th}$ table by $x_{ijl}$, and the slices over fixed $i$,
 $j$, and $l$ by $X_{i \cdot \cdot}$, $X_{\cdot j \cdot}$ and $X_{\cdot
   \cdot l}$. This type of data arises frequently in longitudinal data
 analysis, where the same features are collected for the same samples
 across a series of $L$ times. The canonical application is in ecology:
-we measure the same environmental variables at the same locations at a
+we measure the same environmental variables at the same locations across a
 set of times. However, the actual ordering of the $L$ tables is not
 ever used by this method: in the ecological application, if we
 scrambled the time ordering for $L$ tables, the algorithm's result
@@ -777,11 +778,12 @@ The main idea in PTA is to divide the analysis into two steps,
 \begin{itemize}
   \item Combine the $L$ tables into a single so-called compromise
     table.
-  \item Apply any standard method, e.g., PCA, on the compromise table.
+  \item Apply any standard single-table method, e.g., PCA, on the
+    compromise table.
 \end{itemize}
 
 Evidently, the only real content in this method is the construction of
-the compromise table. A naive approach would simple average each
+the compromise table. A naive approach would simply average each
 entry across the $L$ tables. Instead, PTA upweights tables that are
 more similar to the average table, as these are considered more
 representative. Formally, the compromise is defined as $X^{(c)} =
@@ -800,8 +802,9 @@ this optimization is
 \alpha_{l}\left<\overline{X}, X_{\cdot\cdot l}\right> +
 \lambda\left(\|\alpha\|^{2}_{2} - 1\right),
 \end{align}
-which when differentiated with respect to $\alpha$ gives $\alpha_{l} =
--\frac{1}{2\lambda} \left<\overline{X}, X_{\cdot\cdot l}\right>$. The
+which when differentiated with respect to $\alpha$ yields $\alpha_{l} =
+-\frac{1}{2\lambda} \left<\overline{X}, X_{\cdot\cdot l}\right>$ for
+all $l$. The
 constraint that $\|\alpha\|_{2}^{2} = 1$ implies that
 $\frac{1}{4\lambda^{2}} \sum_{l^{\prime} = 1}^{L}
 \left<\overline{X}, X_{\cdot\cdot l^{\prime}}\right>^{2} = 1$, which gives
@@ -810,7 +813,7 @@ $\lambda = \frac{1}{2} \sqrt{\sum_{l^{\prime} =1 }^{L}
 $\alpha_{l} =
 \frac{\left<\overline{X}, X_{\cdot\cdot l}\right>}{\sqrt{\sum_{l^{\prime}
       =1}^{L}\left<\overline{X},
-      X_{\cdot\cdot l^{\prime}}\right>^{2}}}$. Combining these, we can write
+      X_{\cdot\cdot l^{\prime}}\right>^{2}}}$. Therefore, we can write
 the compromise table as
 \begin{align}
   X_{c} = \sum_{l = 1}^{L} \frac{\left<\overline{X}, X_{\cdot\cdot l}\right>}{\sqrt{\sum_{l^{\prime}
@@ -844,7 +847,7 @@ $\alpha$ to minimize $\|\overline{X} -  \sum_{l =
 objective is the same as the weighted average in PTA,
 \begin{align}
 \|\overline{X} -  \sum_{l =
-  1}^{L}\alpha_{l}X_{\cdot\cdot l}\|_{F}^{2}\|_{F}^{2}
+  1}^{L}\alpha_{l}X_{\cdot\cdot l}\|_{F}^{2}
 &= \|\overline{X}\|_{F}^{2} - 2\sum_{l =
   1}^{L}\alpha_{l}\left<\overline{X}, X_{\cdot\cdot l}\right> + \|\sum_{l =
   1}^{L} \alpha_{l}X_{\cdot\cdot l}\|_{F}^{2} \\
@@ -853,8 +856,8 @@ objective is the same as the weighted average in PTA,
   1}^{L} \alpha_{l}^{2}\|X_{\cdot\cdot l}\|_{F}^{2} + 2 \sum_{l < l^{\prime}}
 \alpha_{l}\alpha_{l}^{\prime}\left<X_{\cdot\cdot l}, X_{\cdot\cdot l^{\prime}}\right>.
 \end{align}
-In contrast to the PTA objective, here there differential penalty on
-the $\alpha_{l}$'s that depends on the norms and inner products of the
+In contrast to the PTA objective, this differentially penalizes
+the $\alpha_{l}$'s depending on the norms and inner products of the
 $X_{\cdot\cdot l}$.
 
 Note that this objective can be optimized by stacking the columns of
@@ -866,33 +869,33 @@ y \in \reals^{Ln} &= \begin{pmatrix} \overline{X} \\ \vdots \\
 and
 \begin{align}
 X \in \reals^{Ln \times p} = \begin{pmatrix} x_{\cdot 1 1} &
-  \dots & x_{\cdot pl} \\ \vdots & & \vdots \\ x{\cdot 1 l}
+  \dots & x_{\cdot pl} \\ \vdots & & \vdots \\ x_{\cdot 1 l}
   & \dots & x_{\cdot p l} \end{pmatrix}.
 \end{align}
 
-Perhaps the reason for avoiding this approach is that, compared to the
-PTA objective, this approach requires inverting an $Ln \times p$
-matrix.
+Perhaps the reason for avoiding this approach is that it requires
+inverting an $Ln \times p$ matrix.
 
-\subsection{Statico and costatis}
+\subsection{Statico and Costatis}
 
 In the multivariate ecology literature, it is common to have pairs of
 data cubes, where one gives species counts at a set of sites
 over time and the other describes quantitative environmental variables
-over time. We write these are $X^{(1)}, X^{(2)} \in \reals^{n \times p
-  \times L}$. Costatis and Statico are two approaches for analyzing
-such data \cite{thioulouse2011simultaneous}. They are easiest to
-understand as divide-and-conquer approaches, where the general problem
-of analyzing a pair of data cubes is divided into steps adapted to
-analyzing single cubes and pairs of (two-dimensional) tables. In
-Statico, the paired aspect of the data is dealt with first and
-followed by a data cube analysis, while in Costatis, the cube element
-of the data are studied first, and followed-up with a paired
-analysis. This is described more precisely below.
+over time. We write these are $Y \in \reals^{n \times p_{1} \times L}$
+and $X \in \reals^{n \times p_{2} \times L}$. Costatis and Statico are
+two approaches for analyzing such data
+\cite{thioulouse2011simultaneous}. They are easiest to understand as
+divide-and-conquer approaches, where the general problem of analyzing
+a pair of data cubes is divided into steps adapted to analyzing single
+cubes and pairs of (two-dimensional) tables. In Statico, the paired
+aspect of the data is dealt with first and followed by a data cube
+analysis, while in Costatis, the cube element of the data are studied
+first, and followed-up with a paired analysis. This is described more
+precisely below.
 
 In Statico, an empirical cross-covariance matrix is constructed at
-each time point, $Z^{l} = \frac{1}{n_{l}}X^{(1) T}_{\cdot\cdot
-  l}X^{(2)}_{\cdot \cdot l}$. This is, for example, the objective
+each time point, $Z^{l} = \frac{1}{n_{l}}Y^{T}_{\cdot\cdot
+  l}X_{\cdot \cdot l}$. This is, for example, the objective
 for a CCA / CoIA for the environmental variables / species count pair
 at a specific timepoint $l$. The $L$ matrices $Z^{(l)}$ are then input
 into a PTA, yielding a compromise table $Z_{c}$ which can then be
@@ -900,29 +903,29 @@ studied with PCA\footnote{But since each $Z^{(l)}$ is a cross-products
   matrix, a PCA on this compromise has the flavor of a being a CoIA.}
 
 Alternatively, in Costatis, a compromise table is constructed for each
-of the data cubes $X^{(1)}$ and $X^{(2)}$, using partial triadic
-analysis, call these $X^{(1)}_{c}$ and $X^{(2)}_{c}$. These are now
-two $n \times p$ matrices, and so can be analyzed by any two-table
+of the data cubes $Y$ and $X$, using PTA, call these $Y_{c}$ and $X_{c}$. These are now
+two matrices each with $n$ rows, and so can be analyzed by any two-table
 dimension reduction method; in Costatis, the standard is to apply CoIA
-to the pair $X^{(1)}_{c}$ and $X^{(2)}_{c}$.
+to the pair $Y_{c}, X_{c}$.
 
 Hence, we see that the only difference between these methods is the
 order between the CoIA and the PTA. Indeed, this is reflected in the
-names of the methods: statis is an abbreviation for a PTA, and Statico
-performs a CoIA before a statis while Costatis reverses the order.
+names of the methods: Statis is an abbreviation for a PTA, and Statico
+performs a CoIA before a Statis while Costatis reverses the order.
 
 \subsection{Reduced-rank regression}
 \label{sec:rr-reg}
 
 Reduced-rank regression is an approach to multiresponse regression
-which ties the different responses together. Compared to treating each
-individual response as its own univariate regression problem, this
-pooling across responses can lead to substantial performance
-improvements. Further, we will see that the reduced-rank point of view
-can aid interpretation as well.
+which ties the different responses
+together\footnote{izenman1975reduced, mukherjee2011reduced}. Compared
+to treating each individual response as its own univariate regression
+problem, this pooling across responses can lead to meanintful
+performanceimprovements. Further, we will see that the reduced-rank
+point of view can aid interpretation as well.
 
-Our setup is that we have collected $p_{1}$ response and $p_{2}$
-variables across $n$ features, $y_{i} \in \reals^{p_{1}}$ and $x_{i} \in
+Our setup is that we have collected $p_{1}$ responses and $p_{2}$
+features across $n$ samples, $y_{i} \in \reals^{p_{1}}$ and $x_{i} \in
 \reals^{p_{2}}$, respectively. Our goal is to use this training data to predict
 the response $y^{\ast}$ given the $x^{\ast}$ from a new sample. We arrange these
 data into two matrices, $Y \in \reals^{n \times p_{1}}$ and
@@ -945,8 +948,8 @@ This is not a very satisfactory solution, because we would have hoped to share
 information across the different response dimensions: we should be able to
 improve performance compared to the univariate regressions. Fortunately, this
 is often the case in many real applications, because the responses are often
-correlated across dimensions. The intuition is that while there may be $p_{1}$
-coefficients, the effective dimension of these may be relatively low.
+correlated. The intuition is that while there may be $p_{1}$
+responses, their effective dimension may be relatively low.
 Reduced-rank regression formalizes this with an explicit constraint on the rank
 of $B$ \cite{izenman1975reduced, mukherjee2011reduced}. The reduced-rank
 regression coefficient $\hat{B}^{\text{rr}}$ is defined as the optimal $B$ in
@@ -957,8 +960,9 @@ the following problem,
 \end{align}
 for some $K < p_{1}\wedge p_{2}$.
 
-The optimal value is given by $\hat{B}^{\text{ols}}V_{K}V_{K}^{-1}$, where
-the columns of $V$ are top $K$ response CCA directions. To see this, consider
+The optimal value is given by $\hat{B}^{\text{ols}}V_{K}V_{K}^{-}$, where
+the columns of $V_{K}$ are the top $K$ response CCA directions and
+$V_{K}^{-1}$ denotes their pseudoinverse. To see this, consider
 the data and parameters in the whitened space,
 $Y^{\ast} = Y\hat{\Sigma}_{YY}^{-\frac{1}{2}}$ and
 $B^{\ast} = B\hat{\Sigma}_{YY}^{-\frac{1}{2}}$, and rewrite the objective
@@ -969,7 +973,7 @@ $B^{\ast} = B\hat{\Sigma}_{YY}^{-\frac{1}{2}}$, and rewrite the objective
 where we used the fact that the residuals are orthogonal to the column space of
 $X$ to remove the cross term. The first term does not involved $B^{\ast}$, so
 we can focus on minimizing the second. Now, consider the SVD
-$\hat{Y}^{\ast \text{ols}} = \dot{U}\dot{D}\dot{V}^{T}$. We know that one
+$\hat{Y}^{\ast \text{ols}} = \dot{U}\dot{D}\dot{V}^{T}$. We know that the
 matrix $A$ of rank $K$ that minimizes
 $\|\hat{Y}^{\ast \text{ols}} - A\|_{F}^{2}$ is
 $A = \dot{U}_{K}\dot{D}_{K}\dot{V}_{K}^{T} = Y^{\ast \text{ols}}\dot{V}_{k}\dot{V}_{k}^{T}$,
@@ -984,8 +988,8 @@ solves the reduced rank regression problem, so in particular we can choose
 \begin{align}
   \hat{B}^{\text{rr}} &= \hat{B}^{\ast \text{ols}}\dot{V}_{k}\dot{V}_{k}^{T}, \label{eq:brr_coef}
 \end{align}
-which involves $\hat{B}^{\ast \text{ols}}$ the OLS fit of $Y^{\ast}$ on $X$ and
-$V_{k}$, the first $K$ right eigenvectors of the resulting fitted vector
+which involves $\hat{B}^{\ast \text{ols}}$, the OLS fit of $Y^{\ast}$ on $X$, and
+$V_{k}$, the top $K$ right eigenvectors of the resulting fitted vector
 $\hat{Y}^{\ast \text{ols}}$.
 
 There is an interesting connection between this fit and the response canonical
@@ -1012,22 +1016,22 @@ can write,
 &= \hat{B}^{\text{ols}}V_{K}V_{K}^{-},
 \end{align}
 
-where $V_{K}^{-}$ is the pseudoinverse of the first $K$ response canonical
-directions. Hence, the reduced-rank coefficients are just the projection of
+Hence, the reduced-rank coefficients are just the projection of
 the original OLS coefficients onto the subspace spanned by the top $K$ response
 canonical directions.
 
 Similarly, we can view directly
-$\hat{Y}^{\text{rr}} = X\hat{B}^{\text{rr}} = P_{X}YV_{k}V_{k}^{-1}$, which
+$\hat{Y}^{\text{rr}} = X\hat{B}^{\text{rr}} = P_{X}YV_{k}V_{k}^{-}$, which
 means that the reduced-rank fits can be obtained by first projecting the data
 columns of $Y$ onto the top $K$ response canonical directions, and then
 projecting these pooled $Y$ onto the span of the $X$. If the $Y$ had not
-been pooled, then the projection onto the span of the $X$'s is exactly the usual
-independent linear regressions described earlier.
+been pooled, then the projection onto the span of the $X$'s is exactly the
+independent linear regressions approach described above.
 
 \section{Modern multivariate methods}
 
 \subsection{Partial Least Squares (PLS)}
+\label{sec:PLS}
 
 PLS is a procedure for sequentially deriving a set of mutually
 orthogonal features $\left(z_{k}\right)_{k = 1}^{K}$ which summarize
@@ -1105,9 +1109,10 @@ statistical methods, neither approach is explicitly model-based, and
 both are iterative, requiring more extensive computation than earlier
 techniques.
 
-\subsubsection{Canonical Correspondence Analysis (CCA)}
+\subsubsection{Canonical Correspondence Analysis (CCpnA)}
+\label{sec:canonical-correspondence}
 
-CCA is a two table method designed to answer questions in ecology
+CCpnA is a two table method designed to answer questions in ecology
 involving joint analysis of count and continuous data. For example
 $X^{(1)}$ might be a table whose rows are ecological sites, and whose
 columns are the counts of different species at those sites, while
@@ -1117,12 +1122,12 @@ goal might be to identify those species that are more abundant in
 sites with more rainfall or higher temperature. If these environmental
 variables were uncorrelated, it would be enough to fit a separate
 regression to each; this however is rarely the case, warranting the
-need for CCA.
+need for CCpnA.
 
-CCA produces low-dimensional representations for both the rows and
+CCpnA produces low-dimensional representations for both the rows and
 columns of $X^{(1)}$ (the sites and species), as well as the latent
 subspaces onto which these representations are
-projected. Algorithmically, CCA proceeds first constructs the
+projected. Algorithmically, CCpnA proceeds first constructs the
 following matrices, where $1_{r}$ denotes a column vector of $r$ ones,
 \begin{enumerate}
   \item An overall frequency matrix,
@@ -1161,7 +1166,7 @@ and define row and column scores $Z$ and $Q$ by
 \end{align}
 
 There are several ways to interpret this procedure. The original
-proposal described CCA as a solution to a fixed-point iteration; they
+proposal described CCpnA as a solution to a fixed-point iteration; they
 also demonstrated that this was the approximate MLE of a probability
 model \cite{ter1986canonical}. Later, \cite{greenacre1987geometric,
   greenacre1984theory}, provided a geometric view, and
@@ -1188,11 +1193,11 @@ Q \propto \diag\left(F^{T} 1_{n}\right)^{-1} P.
 This formulation suggests a method to obtain $Z$ and $Q$ --
 arbitrarily initialize one and iterate until convergence.
 
-As is, this is not quite the setup that leads to CCA\footnote{It in
+As is, this is not quite the setup that leads to CCpnA\footnote{It in
   fact gives the solution to the Correspondence Analysis problem (the
   similarity is the reason for the name \textit{Canonical}
   Correspondence Analysis).} -- it doesn't even use information in the
-environmental variables table $X^{(2)}$. To recover CCA, a projection
+environmental variables table $X^{(2)}$. To recover CCpnA, a projection
 step needs to be inserted before the calculation of row scores,
 \begin{enumerate}
 \item Arbitrarily initialize $Z$.
@@ -1203,7 +1208,7 @@ step needs to be inserted before the calculation of row scores,
 \end{enumerate}
 \end{enumerate}
 
-The iteration now converges to the previously described CCA solution.
+The iteration now converges to the previously described CCpnA solution.
 
 A second, less widely appreciated, interpretation, is due to
 \cite{zhu2005constrained}. Suppose for now that we are only interested
@@ -1240,9 +1245,10 @@ where
 \end{align}
 
 Estimating $\hat{\alpha}$ in this way and writing $z_{i} =
-\hat{\alpha}^{T}x_{i}$ gives the original site scores from CCA.
+\hat{\alpha}^{T}x_{i}$ gives the original site scores from CCpnA.
 
 \subsection{Curds \& Whey (C \& W)}
+\label{sec:cw}
 
 The C\&W procedure is a ``soft'' version of reduced-rank regression,
 differentially shrinking the OLS fits with respect to the response
@@ -2080,6 +2086,7 @@ supplemental data. The parameter $\alpha$ trades off the importance of
 $X^{(1)}$ vs. $X^{(2)}$ in computing these similarities.
 
 \subsection{Multitask learning}
+\label{sec:multitask}
 
 Some of the ideas pioneered in reduced-rank regression and the curds-and-whey
 algorithm have experienced a revival in the machine learning and artificial
