@@ -286,7 +286,7 @@ the principal component directions provide the best $k$-dimensional
 approximation to the data, see Figure \ref{fig:pca-approx}. Formally,
 recall that $VV^{T}x_{i}$ is the projection of $x_{i}$ onto the
 subspace spanned by the columns of $V$. PCA identifies the orthogonal
-matrix $V \in \reals^{p \times K}$ such that  
+matrix $V \in \reals^{p \times K}$ such that
 \begin{align}
 \sum_{i = 1}^{n}\|x_{i} - VV^{T} x_{i}\|_{2}^{2}
 \end{align}
@@ -329,7 +329,7 @@ distance can then be input into any distance-based single-table
 procedure, like multidimensional scaling or hierarchical
 clustering. The primary downside of this approach is that the
 resulting distance only allows a comparison between samples, but not
-across features. 
+across features.
 
 PCA is a very widely used technique, and some standard references
 include \cite{friedman2001elements, mardia1980multivariate,
@@ -342,8 +342,8 @@ methods in earnest.
 
 CCA is a close relative of PCA that
 explicitly compares sets of features across tables. Like PCA, it
-provides low-dimensional representations of samples; however it 
-allows comparisons at the table level. 
+provides low-dimensional representations of samples; however it
+allows comparisons at the table level.
 
 Suppose for now that there are only two tables, $X \in \reals^{n
   \times p_{1}}$ and $Y \in \reals^{n \times p_{2}}$,
@@ -379,7 +379,7 @@ $\hat{\Sigma}_{YY}$. The first canonical correlation directions are
 the pair of points, one lying on each ellipse, such that the angle
 from the origin to those two points is smallest. In this sense, it
 finds a pair of linear combinations of features within the two tables
-so that the two tables appear ``close'' 
+so that the two tables appear ``close''
 to one another. The second pair of canonical correlation directions
 identify a pair of points with similar interpretation, except they are
 required to be orthogonal to the first pair, with respect to the inner
@@ -517,13 +517,13 @@ CCA. Again, we seek sets of orthonormal
 directions $\left(u_{k}\right)_{k = 1}^{K}$ and $\left(v_{k}\right)_{k
   = 1}^{K}$ such that the associated projections $Xu_{k}$ and
 $Yv_{k}$ explain most of the covariation between the
-tables. Unlike CCA, CoIA 
+tables. Unlike CCA, CoIA
 maximizes the covariance -- not hte correlation -- between
 scores. Formally, it chooses the first directions $u_{1}$ and $v_{1}$
 as the solutions to
 \begin{align}
 \maximize_{u \in \reals^{p_{1}}, v \in \reals^{p_{2}}} &u^{T}X^{T}Yv \\
-\text{ such that}\medspace &\|u\| = 1\\ 
+\text{ such that}\medspace &\|u\| = 1\\
 &\|v\| = 1,
 \end{align}
 and subsequent directions by the same optimization, with the
@@ -762,7 +762,7 @@ it gives a way of analyzing data of the form $\left(X_{\cdot\cdot l}\right)_{l
   = 1}^{L}$, where each $X_{\cdot\cdot l} \in \reals^{n \times p}$; this is
 called a data cube because it can also be written as a three-dimensional
 array $X \in \reals^{n \times p   \times L}$. We denote the $j^{th}$
-feature measured on the $i^{th}$ sample 
+feature measured on the $i^{th}$ sample
 in the $l^{th}$ table by $x_{ijl}$, and the slices over fixed $i$,
 $j$, and $l$ by $X_{i \cdot \cdot}$, $X_{\cdot j \cdot}$ and $X_{\cdot
   \cdot l}$. This type of data arises frequently in longitudinal data
@@ -1030,93 +1030,93 @@ independent linear regressions approach described above.
 
 \section{Modern multivariate methods}
 
-\subsection{Partial Least Squares (PLS)}
-\label{sec:PLS}
-
-PLS is a procedure for sequentially deriving a set of mutually
-orthogonal features $\left(z_{k}\right)_{k = 1}^{K}$ which summarize
-the relationship between two tables, $X^{(1)}$ and $X^{(2)}$
-\cite{wold1985partial}. To obtain the first PLS direction, $z_{1}$,
-compute the first left singular vector $u_{1}$ of the cross-covariance
-matrix between the two tables, $\hat{\Sigma}_{12} =
-\frac{1}{n}X^{(1)T}X^{(2)}$. Then, for each of the $p_{2}$ columns of
-$X^{(2)}$, compute the univariate (i.e., partial) regression coefficient
-$\hat{\varphi}_{j}$ from the model $u_{1i} = \alpha_{0j} +
-\varphi_{j}X^{(2)}_{ij}$, for $i = 1, \dots, j_{1}$. The first PLS
-direction is defined as $z_{1} = X^{(2)}\hat{\varphi}_{1}$. To
-generate subsequent directions, orthogonalize both $X^{(1)}$ and
-$X^{(2)}$ with respect to the current directions, and repeat the process.
-
-This procedure is appealing because, like PCA, it reduces a potentially
-high-dimensional matrix $X^{(2)}$ with many correlated columns into a
-smaller set of orthogonal directions. Moreover, it achieves this
-reduction in a way that accounts for correlation with columns in
-x$X^{(1)}$: columns of $X^{(2)}$ that are uncorrelated with $X^{(1)}$
-will have no contribution to the PLS directions, even if they account
-for a large proportion of variation in $X^{(2)}$.
-
-We have stated the procedure in the form it was originally
-proposed; its algorithmic nature makes it difficult to understand
-geometrically or probabilsitically. Subsequently, several authors have
-attempted to provide statistical interpretations for the PLS
-directions. \cite{frank1993statistical} \cite{stone1990continuum} studied
-the case where $p_{1} = 1$, so $X^{(1)}$ is a single column
-vector. They further suppose the rows of $X^{(1)}$ and $X^{(2)}$ are
-drawn i.i.d. from distributions $\P^{(1)}$ and $\P^{(2)}$. They found
-that the $k^{th}$ PLS direction $z_{k}$ is the $z$ that solves the
-optimization
-\begin{align}
-\max_{z} \medspace & \Corrsubarg{\P^{(1)} \times \P^{(2)}}{x_{i}^{(2) T}z_{k},
-x_{i}^{(1)}}\Varsubarg{\P^{(2)}}{z^{T}x_i^{(2)}} \\
-\text{such that }&z^{T}X^{(1) T}X^{(1)}z_{j} = 0 \text{ for all }j
-\leq k - 1 \text{ and }
-\|z\| = 1.
-\end{align}
-If the covariance term is ommitted, the optimization is identical to
-the maximum variance problem that gives the principal component
-directions based on $X^{(2)}$. This formulation makes precise the idea
-that PLS is a version of principal components that accounts for
-correlation with $X^{(1)}$.
-
-An alternative interptetation, due to
-\cite{gustafsson2001probabilistic}, is that PLS is the solution to a
-particular latent variable model. Suppose $\xi_{i} =
-\left(\xi_{i}^{shared}, \xi_{i}^{(2)}\right)$ are drawn i.i.d. from a $K_{1} +
-K_{2} = K$ dimensional spherical normal. The observed tables $X^{(1)}$
-and $X^{(2)}$ have rows drawn i.i.d. from
-\begin{align}
-x_{i}^{(1)} \mid \xi_{i} \sim \Gsn\left(W^{(1)}\xi_{i}^{(shared)} +
-  \mu^{(1)}, \sigma^{2}I_{p_{1}}\right) \\
-x_{i}^{(2)} \mid \xi_{i} \sim \Gsn\left(W^{(2)}\xi_{i}^{(shared)} + W^{(3)}\xi_{i}^{(2)} +
-  \mu^{(2)}, \sigma^{2}I_{p_{2}}\right).
-\end{align}
-
-That is, each table is the sum of two components, one that is a
-table-specific linear combination is a shared latent variable, and
-another that is an arbitrary linear combination of a table-specific
-latent variable. The shared feature $\xi^{shared}$ is the object of
-interest, and is what PLS implictly estimates.
-
 Compared to classical approaches, modern multivariate methods
 are typically designed for more the high-dimensional, heterogeneous
 settings. The two methods reviewed in this section are examples of
-this trend: partial least squares is well-suited for
+this trend: Partial Least Squares (PLS) is well-suited for
 high-dimensional spectra (which explains its popularity in
-chemometrics), while canonical correspondence analysis was
+chemometrics), while Canonical Correspondence Analysis (CCpnA) was
 designed for joint analysis of the heterogeneous continuous / count
 data necessary to answer questions in ecology. Unlike traditional
 statistical methods, neither approach is explicitly model-based, and
 both are iterative, requiring more extensive computation than earlier
 techniques.
 
-\subsubsection{Canonical Correspondence Analysis (CCpnA)}
+\subsection{PLS}
+\label{sec:PLS}
+
+PLS is a procedure for sequentially deriving a set of mutually
+orthogonal features $\left(z_{k}\right)_{k = 1}^{K}$ which summarize
+the relationship between two tables, $Y$ and $X$
+\cite{wold1985partial}. To obtain the first PLS direction, $z_{1}$,
+compute the first left singular vector $u_{1}$ of the cross-covariance
+matrix between the two tables, $\hat{\Sigma}_{YX} =
+\frac{1}{n}Y^{T}X$. Then, for each of the $p_{2}$ columns of
+$X$, compute the univariate (i.e., partial) regression coefficient
+$\hat{\varphi}_{j}$ from the model $u_{1i} = \alpha_{0j} +
+\varphi_{j}x_{ij}$, for $i = 1, \dots, j_{1}$. The first PLS
+direction is defined as $z_{1} = X\hat{\varphi}_{1}$. To
+generate subsequent directions, orthogonalize both $Y$ and
+$X$ with respect to the current directions, and repeat the process.
+
+This procedure is appealing because, like PCA, it reduces a potentially
+high-dimensional matrix $X$ with many correlated columns into a
+smaller set of orthogonal directions. Moreover, it achieves this
+reduction in a way that accounts for correlation with columns in
+$Y$: columns of $X$ that are uncorrelated with $Y$
+will have no contribution to the PLS directions, even if they account
+for a large proportion of variation in $X$.
+
+We have stated the procedure in the form it was originally
+proposed; its algorithmic nature makes it difficult to understand
+geometrically or probabilistically. Subsequently, several authors have
+attempted to provide statistical interpretations for the PLS
+directions. \cite{frank1993statistical} and \cite{stone1990continuum} studied
+the case where $p_{1} = 1$, so $y$ is a single column
+vector. They further suppose the rows of $y$ and $X$ are
+drawn i.i.d. from distributions $\P^{y}$ and $\P^{X}$. They found
+that the $k^{th}$ PLS direction $z_{k}$ is the $z$ that solves the
+optimization
+\begin{align}
+\max_{z} \medspace & \Corrsubarg{\P^{X} \times \P^{y}}{x_{i}^{T}z_{k},
+y_{i}}\Varsubarg{\P^{X}}{z^{T}x_i} \\
+\text{such that }&z^{T}y^{T}y z_{j} = 0 \text{ for all }j
+\leq k - 1 \text{ and }
+\|z\| = 1.
+\end{align}
+If the covariance term is omitted, the optimization is identical to
+the maximum variance problem that gives the principal component
+directions based on $X$. This formulation makes precise the idea
+that PLS is a version of principal components that accounts for
+correlation with $Y$.
+
+An alternative interptetation, due to
+\cite{gustafsson2001probabilistic}, is that PLS is the solution to a
+particular latent variable model. Suppose $\xi_{i} =
+\left(\xi_{i}^{s}, \xi_{i}^{X}\right)$ are drawn i.i.d. from a $K_{1} +
+K_{2} = K$ dimensional spherical normal. The observed tables $Y$
+and $X$ have rows drawn i.i.d. from
+\begin{align}
+y_{i} \mid \xi_{i} \sim \Gsn\left(W_{Y}\xi_{i}^{s} +
+\mu_{Y}, \sigma^{2}I_{p_{1}}\right) \\
+x_{i} \mid \xi_{i} \sim \Gsn\left(W_{X} \xi_{i}^{s} + B_{X}\xi_{i}^{X} +
+\mu_{X}, \sigma^{2}I_{p_{2}}\right).
+\end{align}
+
+That is, each table is the sum of two components, one that is a
+table-specific linear combination is a shared latent variable, and
+another that is an arbitrary linear combination of a table-specific
+latent variable. The shared feature $\xi^{s}$ is the object of
+interest, and is what PLS implictly estimates.
+
+\subsubsection{CCpnA}
 \label{sec:canonical-correspondence}
 
 CCpnA is a two table method designed to answer questions in ecology
 involving joint analysis of count and continuous data. For example
-$X^{(1)}$ might be a table whose rows are ecological sites, and whose
+$Y \in \reals^{n \times p_{1}}$ might be a table whose rows are ecological sites, and whose
 columns are the counts of different species at those sites, while
-$X^{(2)}$ might describe environmental characteristics at those sites
+$X \in \reals^{n \times p_{2}}$ might describe environmental characteristics at those sites
 (e.g., historical rainfall and temperature measurements). A scientific
 goal might be to identify those species that are more abundant in
 sites with more rainfall or higher temperature. If these environmental
@@ -1125,31 +1125,30 @@ regression to each; this however is rarely the case, warranting the
 need for CCpnA.
 
 CCpnA produces low-dimensional representations for both the rows and
-columns of $X^{(1)}$ (the sites and species), as well as the latent
+columns of $Y$ (the sites and species), as well as the latent
 subspaces onto which these representations are
-projected. Algorithmically, CCpnA proceeds first constructs the
+projected. Algorithmically, CCpnA first constructs the
 following matrices, where $1_{r}$ denotes a column vector of $r$ ones,
 \begin{enumerate}
   \item An overall frequency matrix,
     \begin{align}
       F =
-    \frac{1}{n_{\cdot\cdot}^{(1)}} X^{(1)},
+    \frac{1}{n_{\cdot\cdot}^{(1)}} Y,
   \end{align}
   where $n_{\cdot\cdot}^{(1)}$ is the sum of all counts in matrix
-  $X^{(1)}$.
+  $Y$.
 \item A diagonal matrix of row (site) proportions,
   \begin{align}
-    D_{r} &= diag\left(F 1_{p_{1}}\right) \in \reals^{n}.
+    D_{r} &= diag\left(F 1_{p_{1}}\right) \in \reals^{n \times n}.
   \end{align}
 \item A diagonal matrix of column (species) proportions,
   \begin{align}
-    D_{c} &= diag\left(F^{T}1_{n}\right) \in \reals^{p}.
+    D_{c} &= diag\left(F^{T}1_{n}\right) \in \reals^{p_{1} \times p_{1}}.
   \end{align}
 \item A projection onto the columns of the environmental matrix
-  $X^{(2)}$, reweighting sites according to their species counts,
+  $X$, reweighting sites according to their species counts,
   \begin{align}
-    P_{X^{(2)}} &= D_{r}^{\frac{1}{2}}X^{(2)}\left(X^{(2)
-      T}D_{r}X^{(2)}\right)^{-1}X^{(2) T}D_{r}^{\frac{1}{2}} \in
+    P_{X} &= D_{r}^{\frac{1}{2}}X\left(X^{T}D_{r}X\right)^{-1}X^{T}D_{r}^{\frac{1}{2}} \in
   \reals^{n \times n}.
 \end{align}
 \end{enumerate}
@@ -1166,15 +1165,17 @@ and define row and column scores $Z$ and $Q$ by
 \end{align}
 
 There are several ways to interpret this procedure. The original
-proposal described CCpnA as a solution to a fixed-point iteration; they
-also demonstrated that this was the approximate MLE of a probability
+proposal developed CCpnA as a solution to a fixed-point iteration
+called reciprocal averaging; they
+also derived it as the approximate MLE of a probability
 model \cite{ter1986canonical}. Later, \cite{greenacre1987geometric,
-  greenacre1984theory}, provided a geometric view, and
+  greenacre1984theory}, provided a geometric view, \cite{yee2004new}
+designed a method for obtaining the exact MLE, and
 \cite{zhu2005constrained} gave an exact probabilistic
 interpretation. Here, we describe the fixed-point iteration
 motivation, since it was originating idea for the method, and also the
 exact probabilistic interpretation, to continue the theme of
-describing implicit probability models behind different algorithmic
+describing implicit probability models behind different
 dimensionality reduction procedures.
 
 The intuition for the reciprocal averaging procedure is simple: the
@@ -1195,12 +1196,13 @@ arbitrarily initialize one and iterate until convergence.
 
 As is, this is not quite the setup that leads to CCpnA\footnote{It in
   fact gives the solution to the Correspondence Analysis problem (the
-  similarity is the reason for the name \textit{Canonical}
-  Correspondence Analysis).} -- it doesn't even use information in the
-environmental variables table $X^{(2)}$. To recover CCpnA, a projection
+  similarity is the reason for the name Canonical
+  \textit{Correspondence Analysis}).} -- it doesn't even use information in the
+environmental variables table $X$. To recover CCpnA, a projection
 step needs to be inserted before the calculation of row scores,
 \begin{enumerate}
 \item Arbitrarily initialize $Z$.
+\item While not converged,
 \begin{enumerate}
 \item Solve $Q^{\prime} \propto \diag\left(F^{T}1_{n}\right)^{-1}F^{T}Z$.
 \item Project $Q = P_{X^{(2)}}Q^{\prime}$.
@@ -1208,15 +1210,15 @@ step needs to be inserted before the calculation of row scores,
 \end{enumerate}
 \end{enumerate}
 
-The iteration now converges to the previously described CCpnA solution.
+The fixed point of this iteration is the previously described CCpnA solution.
 
 A second, less widely appreciated, interpretation, is due to
 \cite{zhu2005constrained}. Suppose for now that we are only interested
-in a one-dimensional score for rows and columns. Suppose $\alpha$ is a
+in a one-dimensional score for rows and columns. Let $\alpha$ be a
 latent environmental gradient, for example, between warm-dry and
 cold-wet sites. For each of the $p_{1}$ species, define a normal
 density over the environmental variables,
-$f_{j}\left(x_{i}^{(2)}\right) = \Gsn_{p_{(2)}}\left(\mu_{j},
+$f_{j}\left(x_{i}\right) = \Gsn_{p^{(2)}}\left(\mu_{j},
   \Sigma_{j}\right)$. The mode of this density represents the
 preferred environmental conditions for species $j$.  Next, project
 these densities onto the environmental gradient, giving a univariate
@@ -1247,7 +1249,7 @@ where
 Estimating $\hat{\alpha}$ in this way and writing $z_{i} =
 \hat{\alpha}^{T}x_{i}$ gives the original site scores from CCpnA.
 
-\subsection{Curds \& Whey (C \& W)}
+\subsection{Curds \& Whey (C\&W)}
 \label{sec:cw}
 
 The C\&W procedure is a ``soft'' version of reduced-rank regression,
@@ -1255,10 +1257,10 @@ differentially shrinking the OLS fits with respect to the response
 canonical correlation directions, with weights depending on the
 associated canonical correlations \cite{breiman1997predicting}. This
 is in contrast to reduced-rank regression, whose projection onto the
-first $K$ response canonical correlation directions can be viewed as a
-hard-thresholding of canonical correlation decomposition. In this way,
-C\&W is to reduced-rank regression what ridge regression is to
-principal component regression.
+first $K$ response canonical correlation directions can be viewed as the
+hard-thresholding analog. In this way, C\&W is to reduced-rank
+regression what ridge regression is to principal component
+regression.
 
 More precisely, the C\&W algorithm fits a table $Y$ according to
 \begin{align}
@@ -1271,14 +1273,14 @@ diagonal matrix the determines the degree of shrinkage for the
 different canonical directions.
 
 The main difficulty in C\&W is the choice of $\Lambda$, and
-\cite{breiman1997predicting} provide several alternatives. One nice
+\cite{breiman1997predicting} provide several options. One nice
 choice can be derived from a generalized cross-validation point of
 view; it is nice because shrinkage towards the response canonical
 correlation directions emerges automatically, without assuming the
 form \ref{eq:cw_yhat} a priori. We describe this approach below.
 
 One way to pool information across the response dimensions is to
-define new fitted values from a linear combination of the independent
+define new fitted values from a linear combination of independent
 OLS fits. That is, to predict any the response $y_{i} \in
 \reals^{p_{1}}$ for any particular sample, we can set
 $\hat{y}^{\text{cw}}_{i} = B\hat{y}^{\text{ols}}_{i}$ for some square
@@ -1287,19 +1289,21 @@ matrix $B \in \reals^{p_{1} \times
 $B$ that has the best performance in a full leave-one-out
 cross-validation (LOOCV),
 \begin{align}
-  \hat{B}^{\text{cw}} := \arg\min_{B} \sum_{ = 1}^{n} \|y_{i} - B
+  \hat{B}^{\text{cw}} := \arg\min_{B} \sum_{i = 1}^{n} \|y_{i} - B
   \hat{y}_{-i}\|_{2}^{2}. \label{eq:cv_looc}
 \end{align}
 
 Here, $\hat{y}_{-i}$ is the OLS fitted value for $y_{i}$ when training
-on all samples but the $i^{th}$.
+on all samples but the $i^{th}$. For ease of notation, we write
+$\hat{y}$ instead of $\hat{y}^{\text{ols}}$, referring explicitly to
+$\hat{y}^{\text{c\&w}}$ when needed.
 
 It is well known that $\hat{y}_{-i}$ can be decomposed as
 \begin{align}
   \hat{y}_{-i} &= \left(1 - g_{i}\right)y_{i} + g_{i} \hat{y}_{i}, \label{eq:cv_looc_trick}
 \end{align}
 where $g_{i} = \frac{1}{1 - h_{ii}}$ and $h_{ii}$ are the diagonal
-elements of the projection matrix $\hat{y} = Hy$ and $\hat{y}_{i}$ is
+elements of the projection matrix $P_{X}$ and $\hat{y}_{i}$ is
 the fitted value on the $i^{th}$ sample, both computed using all the
 data.
 
@@ -1307,19 +1311,17 @@ The advantage of the representation \ref{eq:cv_looc_trick} is that it
 makes it possible to perform a full LOOCV without actually computing
 $n$ regression models: only a single full regression using all the
 data needs to be computed, and all the LOOCV fits $\hat{y}_{-i}$ can
-be deduced directly. This can dramatically speed up computation of
-\ref{eq:cv_looc}.
-
-This does not resolve the question of how to manage the search over
-possible $B$; but concrete proposals are discussed in
-\cite{breiman1997predicting}.
+be deduced directly. This can dramatically speed up computation of the
+sum in \ref{eq:cv_looc}. While this does not resolve the question of how to
+manage the search over possible $B$, concrete proposals are discussed
+in \cite{breiman1997predicting}.
 
 An alternative is to use generalized cross-validation (GCV). This
 approach suggests a form for $B$ based on the response canonical
 correlation directions. The GCV approximation is that the $h_{ii}$ can
 be approximated by their average across all diagonal elements of $H$:
-$h_{ii} \approx h := \frac{1}{n}\tr\left(H\right)$ for all $i$. In the
-same spirit, define $g = \frac{1}{1 - h}$, and approximate
+$h_{ii} \approx h := \frac{1}{n}\tr\left(H\right)$ for all $i$. In
+this spirit, define $g = \frac{1}{1 - h}$, and approximate
 \begin{align}
   \hat{y}_{-i} \approx \left(1 - g\right)y_{i} + g\hat{y}_{i}.
 \end{align}
@@ -1359,11 +1361,10 @@ of CCA,
   Y^{T}Y &= n \hat{\Sigma}_{YY} \\
   \hat{Y}^{T}Y &= Y^{T}HY = Y^{T}X\left(X^{T}X\right)^{-1}X^{T}Y =
   n\hat{\Sigma}_{YX}\hat{\Sigma}_{XX}^{-1} \hat{\Sigma}_{XY} \\
-  \hat{Y}^{T}\hat{Y} &= Y^{T}H^2 Y = Y^{T}HY=
+  \hat{Y}^{T}\hat{Y} &= Y^{T}P_{X}^2 Y = Y^{T}P_{X}Y=
   n\hat{\Sigma}_{YX}\hat{\Sigma}_{XX}^{-1} \hat{\Sigma}_{XY},
 \end{align}
-where we used that $H^{2} = H$, since it is a projection
-matrix. Substituting this notation into \ref{eq:gcv_mat_form} and
+Substituting this notation into \ref{eq:gcv_mat_form} and
 ignoring the scaling $n$ yields
 \begin{align}
 \left(1 - g\right)\hat{\Sigma}_{YY} + g
@@ -1385,7 +1386,7 @@ where,
 \end{align}
 Now, we claim that we can decompose $\hat{Q} = VD^{2}V^{-1}$, where $V
 \in \reals^{p_{1} \times p_{1}}$ is the full matrix of CCA response
-directions,  $D$ is diagonal with the canonical correlations. Indeed,
+directions and  $D$ is diagonal with the canonical correlations. Indeed,
 the usual CCA response directions $V$ can be recovered by setting $V =
 \hat{\Sigma}_{YY}^{-\frac{1}{2}}\tilde{V}$, where $\tilde{V}$ comes
 from the SVD of $A :=
@@ -1403,8 +1404,7 @@ full (untruncated) matrix of eigenvectors, so $\tilde{V}\tilde{V}^{T}
 = I$ in addition to the usual $\tilde{V}^{T}\tilde{V} =I$, which holds
 even for the truncated SVD.
 
-For now, take this for granted, then \ref{eq:cca_gcv_id} can be
-expressed as
+Therefore, \ref{eq:cca_gcv_id} can be expressed as
 \begin{align}
   V^{-T}\left[\left(1 - g\right)I_{p_{1}} + gD^{2}\right]V^{T} &=
   BV^{-T}\left[\left(1 - g\right)I_{p_{1}} + \left(2g -
@@ -1419,8 +1419,8 @@ where $\Lambda$ is a diagonal matrix with entries
 \lambda_{jj} = \frac{1 - g + d_{jj}^{2}g}{1 - g + \left(2g -
     g^{2}\right)d_{jj}^{2}}.
 \end{align}
-Notice that when $n$ is large, $\frac{1}{n}\tr H$ will be small, so $g
-\approx 0$ and less shrinkage will be applied.
+Notice that when $n$ is large, $\frac{1}{n}\tr P_{X}$ will be small,
+so $g \approx 0$ and less shrinkage will be applied.
 
 Recall that $\hat{B}^{\text{cw}}$ is used to pool across OLS fits,
 $\hat{y}_{i}^{\text{cw}} = \hat{B}^{\text{cw}}\hat{y}_{i}^{\text{ols}}$. That is,
@@ -1444,8 +1444,8 @@ directions.
 
 \section{Methods from Machine Learning}
 
-Several different literatures within machine learning have each
-developed approaches to dimensionality reduction across multiple
+Several different literatures within machine learning have developed
+approaches to dimensionality reduction across multiple
 tables, each relying on the tools studied in that literature. In this
 section, we will study some methods that have arisen in the kernel
 learning, spectral clustering, regularized modeling, and probabilistic
@@ -1455,7 +1455,8 @@ data model; these literatures emphasize tools that can be adapted to
 the structure of a specific dataset, rather than algorithms that
 should be applied generally. However, as these methods have typically
 not been applied to ecological or microbiome studies, it is not yet
-clear what their overall utility will be.
+clear what their overall utility will be in the data analysis we care
+most about.
 
 \subsubsection{Kernel Canonical Correlation Analysis (KCCA)}
 
@@ -1467,74 +1468,71 @@ associations in the original space become linear associations in the
 richer space. Informaly, KCCA is the algorithm that emerges after
 applying the kernel trick to CCA.
 
-More formally, let $\varphi^{\left(l\right)}: \reals^{p_{l}}\mapsto
-H^{(l)}$ be a mapping from the space associated with table $l$ to a
-richer Hilbert space. For example, $\varphi^{l}$ might map vectors
-into an expansion of all polynomial products of coordinates, up to
-some fixed kernel; this is mapping is called the polynomial
-kernel. As in CCA, let $\P^{(1)}$ and $\P^{(2)}$ denote the sampling
-distributions associated with the two tables; let $x_{i}^{(1)}$ and
-$x_{i}^{(2)}$ denote generic draws from these tables.
+More precisely, let $\varphi^{Y}: \reals^{p_{1}} \to H^{Y}$ and
+$\varphi^{X}: \reals^{p_{2}} \to H^{X}$ be mappings from the space
+associated with table $l$ to a richer Hilbert space. For example,
+the $\varphi$'s might map vectors into an expansion of all polynomial
+products of coordinates, up to some fixed kernel; this is mapping is
+called the polynomial kernel. As in CCA, let $\P^{X}$ and $\P^{Y}$
+denote the sampling distributions associated with the two tables; let
+$x_{i}$ and $y_{i}$ denote generic draws from these tables.
 
 In the same way that the first CCA direction maximizes the covariance
-between linear combinations $c_{1}^{(1) T}x_{i}^{(1)}$ and $c_{1}^{(2)
-  T}x_{i}^{(2)}$ (subject to a variance constraint), KCCA maximizes
-the correlation between linear functionals, $z_{i1}^{(1)} =
-\left<c_{1}^{(1)}, x_{i}^{(1)}\right>$ and $z_{i1}^{(2)} =
-\left<c_{1}^{(2)}, x_{i}^{(2)}\right>$.
+between linear combinations $u^{T}x_{i}$ and  $v^{T}y_{i}$ (subject to
+a variance constraint), KCCA maximizes the correlation between linear
+functionals, $z_{i}\left(u\right) = \left<u, x_{i}\right>$ and
+$z_{i}\left(v\right) = \left<v, y_{i}\right>$.
 \begin{align}
-  \argmax_{c_{1}^{(1)} \in H^{(1)}, c_{1}^{(2)} \in H^{(2)}}
-  &\Covsubarg{\P^{(1)} \times \P^{(2)}}{z_{i1}^{(1)}, z_{i1}^{(2)}} \\
-\text{subject to }\Varsubarg{P^{(1)}}{z_{i1}^{(1)}} &=
-\Varsubarg{P^{(2)}}{z_{i1}^{(2)}} = 1. \label{eq:optim_kcca}
+  \argmax_{u \in H^{X}, v \in H^{Y}}
+  &\Covsubarg{\P^{X} \times \P^{Y}}{z_{i}\left(u\right), z_{i}\left(v\right)} \\
+\text{subject to } &\Varsubarg{P^{X}}{z_{i}\left(u\right)} &=
+\Varsubarg{P^{Y}}{z_{i}\left(v\right)} = 1. \label{eq:optim_kcca}
 \end{align}
 
 As is, the problem is not well-posed, and it is necessarily to
 regularize. The regularized Lagrangian associated with the
 optimization \ref{eq:optim_kcca} is
-\begin{align*}
-&\Covsubarg{\P^{(1)} \times \P^{(2)}}{z_{i1}^{(1)}, z_{i1}^{(2)}} - \\
-&\frac{\rho^{(1)}}{2}\Varsubarg{P^{(1)}}{z_{i1}^{(1)}} -
-\frac{\rho^{(2)}}{2}\Varsubarg{P^{(2)}}{z_{i1}^{(2)}} \\+
-&\frac{\lambda^{(1)}}{2}Pen\left(c_{1}^{(1)}\right) +
-\frac{\lambda^{(2)}}{2}Pen\left(c_{1}^{(2)}\right) \label{eq:lagrangian_kcca}
-\end{align*}
+\begin{align}
+  \Covsubarg{\P^{X} \times \P^{Y}}{z_{i}\left(u\right), z_{i}\left(v\right)} -
+  \frac{\rho^{X}}{2}\Varsubarg{P^{X}}{z_{i}\left(u\right)} -
+  \frac{\rho^{Y}}{2}\Varsubarg{P^{Y}}{z_{i}\left(v\right)} +
+  \frac{\lambda^{X}}{2}Pen\left(u\right) +
+  \frac{\lambda^{(Y)}}{2}Pen\left(v\right) \label{eq:lagrangian_kcca}
+\end{align}
 
-Now, note that the optimal $c_{1}^{(1)}$ and $c_{1}^{(2)}$ must lie in
-the spans of $\left(\varphi^{(1)}\left(x_{i}\right)\right)_{i =1
-}^{n}$ and $\left(\varphi^{(2)}\left(x_{i}\right)\right)_{i =1 }^{n}$, respectively,
+Now, note that the optimal $u$ and $v$ must lie in
+the spans of $\left(\varphi^{X}\left(x_{i}\right)\right)_{i =1
+}^{n}$ and $\left(\varphi^{Y}\left(y_{i}\right)\right)_{i =1 }^{n}$, respectively,
 since directions orthogonal to this subspace cannot improve the
 correlation in the objective. Therefore, we can write
 \begin{align}
-c_{1}^{(1)} &= \Phi^{(1)} \alpha^{(1)} \\
-c_{1}^{(2)} &= \Phi^{(2)} \alpha^{(2)},
+u &= \Phi^{X} \alpha^{X} \\
+v &= \Phi^{Y} \alpha^{Y},
 \end{align}
-where $\Phi^{(l)} \in \reals^{n \times
-  \text{dim}\left(H^{(l)}\right)}$ has $i^{th}$ row
-$\varphi^{(l)}\left(x_{i}\right)$.
+where $\Phi^{X} \in \reals^{n \times
+  \text{dim}\left(H^{X}\right)}$ has $i^{th}$ row
+$\varphi^{Y}\left(x_{i}\right)$ and $\Phi^{Y}$ is defined similarly.
 
 Substituting this into the Lagrangian \ref{eq:lagrangian_kcca}, it
-becomes clear that only the cross-products $\Phi^{(1) T}\Phi^{(1)}$,
-and $\Phi^{(2) T}\Phi^{(2)}$ appear. Since these inner products can be
-written as kernel matrices $K^{(l) (l)} \in \reals^{n \times n}$ with
-entries $\varphi^{(l)
-  T}\left(x^{(1)}_{i}\right)\varphi^{\left(l\right)}\left(x^{(2)}_{j}\right)$,
+becomes clear that only the cross-products $\Phi^{X T}\Phi^{X}$,
+and $\Phi^{Y T}\Phi^{Y}$ appear. Since these inner products can be
+written as kernel matrices -- call them $K^{X}$ and $K^{Y}$ --
 we have that the optimization can be fully kernelized.  It can then be
-shown that the optimal $\alpha^{(1)}$ and $\alpha^{(2)}$ are the
+shown that the optimal $\alpha^{X}$ and $\alpha^{Y}$ are the
 solutions to the generalized eigenvalue problem,
 \begin{align}
   \begin{pmatrix}
-    0 & K^{(1)}K^{(2)} \\
-    K^{(2)}K^{(1)} & 0
+    0 & K^{X}K^{Y} \\
+    K^{Y}K^{X} & 0
   \end{pmatrix}
   \begin{pmatrix}
-    \alpha^{(1)} \\
-    \alpha^{(2)}
+    \alpha^{X} \\
+    \alpha^{Y}
   \end{pmatrix}
 &= \rho
 \begin{pmatrix}
-  \left(K^{(1)} + \lambda^{(1)}I_{p_{1}}\right)^{2} & 0 \\
-  0 & \left(K^{(2)} + \lambda^{(2)}I_{p_{2}}\right)^{2}
+  \left(K^{X} + \lambda^{X}I_{p_{1}}\right)^{2} & 0 \\
+  0 & \left(K^{Y} + \lambda^{Y}I_{p_{2}}\right)^{2}
 \end{pmatrix}
 \begin{pmatrix}
   \alpha^{(1)} \\
@@ -1544,23 +1542,24 @@ solutions to the generalized eigenvalue problem,
 
 The contribution of \cite{yamanishi2003extraction} was to extend this
 procedure to more than 2 tables. The approach is similar to the idea
-of average pairwise covariance, discussed in the section about
-CCA. Formally, if we let $z_{i1}^{(l)} = \left<c_{1}^{(l)|},
-  x_{i}^{(l)}\right>$ and try to optimize
+of average pairwise covariance, discussed at the end of Section
+\ref{sec:cca}. Formally, we let $z_{i1}^{(l)} = \left<c^{l},
+x_{i}^{(l)}\right>$ and try to optimize
 
-\begin{align*}
+\begin{align}
 &\sum_{l, l^{\prime} = 1}^{L}\Covsubarg{\P^{(l)} \times \P^{(l^{\prime})}}{z_{i1}^{(l)}, z_{i1}^{(l^{\prime})}} -
 \sum_{l = 1}^{L}\frac{\rho^{(l)}}{2}\Varsubarg{P^{(l)}}{z_{i1}^{(l)}} -
- \sum_{l = 1}^{L} \frac{\lambda^{(1)}}{2}Pen\left(c_{1}^{(l)}\right) \label{eq:lagrangian_mkcca}
-\end{align*}
+ \sum_{l = 1}^{L} \frac{\lambda^{(1)}}{2}Pen\left(c^{l}\right) \label{eq:lagrangian_mkcca},
+\end{align}
+over different values for the $c^{l}$.
 
 Replacing the inner products $\Phi^{(l)}\Phi^{(l)}$ as before leads to
 an analogous generalized eigenvalue problem,
 \begin{align}
 \begin{pmatrix}
-0 & \dots & K_{1}K_{L} \\
+0 & \dots & K^{(1)}K^{(L)} \\
 \vdots & \ddots & \vdots \\
-K_{L}K_{1} & \dots  & 0
+K^{(L)}K^{(1)} & \dots  & 0
 \end{pmatrix}
 \begin{pmatrix}
   \alpha_{1} \\
@@ -1568,9 +1567,9 @@ K_{L}K_{1} & \dots  & 0
   \alpha_{L}
 \end{pmatrix} &=
 \rho \begin{pmatrix}
-  \left(K_{1} + \lambda_{1}I_{p_{1}}\right)^{2} & \dots & 0 \\
+  \left(K^{(1)} + \lambda_{1}I_{p_{1}}\right)^{2} & \dots & 0 \\
   \vdots & \ddots & \vdots \\
-  0 & \dots & \left(K_{L} + \lambda_{L}I_{p_{L}}\right)^{2}
+  0 & \dots & \left(K^{(L)} + \lambda_{L}I_{p_{L}}\right)^{2}
 \end{pmatrix}
 \begin{pmatrix}
   \alpha_{1} \\
@@ -1578,85 +1577,104 @@ K_{L}K_{1} & \dots  & 0
   \alpha_{L}
 \end{pmatrix}
 \end{align}
-whose solution is called ``multiple kernel canonical correlation
-analysis'' by \cite{yamanishi2003extraction}.
+whose solution \cite{yamanishi2003extraction}calls ``multiple kernel
+canonical correlation analysis''.
 
 A geometric interpretation of Kernel CCA was described in
 \cite{kuss2003geometry}. The core idea is to translate the Euclidean
 picture associated with CCA to the more general RKHS setting. Often,
 however, KCCA results can be difficult to study, because the only
 output are the scores relating samples (eigenvectors are never
-computed in the Hilbert spaces $H^{(l)}$, so it's impossible to make a
-biplot). However, the KCCA scores can be interpreted using
-supplementary features, as in any other dimensionality reduction
-method.
+computed in the Hilbert spaces $H^{X}$ and $H^{Y}$, so it's
+impossible to make a biplot). However, the KCCA scores can be
+interpreted using supplementary features, as in any other
+dimensionality reduction method.
 
-An complementary formulation of Kernel CCA was presented in
-\cite{lanckriet2004statistical} (todo: maybe describe this approach
-too?).
+For the record, we note that \cite{lanckriet2004statistical} developed
+a complementary formulation of Kernel CCA.
 
 \paragraph{Simulation}
 
-In this section, we provide two simulations comparing CCA to Kernel CCA. The 
-first simulation generates data lying on concentric circles around the origin, 
-similar to examples in Chapter 14 of \cite{friedman2001elements}, while the 
-second generates data well suited to the RBF kernel, and is based on an 
-experiment in \cite{fukumizu2007statistical}.
+To ground this discussion, we provide two simulations comparing CCA to
+Kernel CCA. The first simulation generates data lying on concentric
+circles around the origin, similar to examples in Chapter 14 of
+\cite{friedman2001elements}, while the second generates data well
+suited to the RBF kernel, and is based on an experiment in
+\cite{fukumizu2007statistical}.
 
-We first discuss the circular data application. The data generating mechanism
-is as follows. There are two data sets $X \in \reals^{n \times 2}$ and
-$Y\in\reals^{n \times 2}$ on the same $n$ samples. Each sample belongs to
-one of two clusters, denoted by $z_{i} \in \{0, 1\}$. Samples in cluster
-0 fall closer to the origin for both tables, while the angles are random
-and unrelated to cluster status. The resulting data is displayed in Figure 
-\ref{fig:kcca-data-concentric}.
+We first discuss the circular data example. The data generating
+mechanism is as follows. There are two data sets $X \in \reals^{n
+  \times 2}$ and $Y\in\reals^{n \times 2}$ on the same $n = 100$
+samples. Each sample belongs to one of two clusters, denoted by $z_{i}
+\in \{0, 1\}$. Samples in cluster 0 fall closer to the origin for both
+tables, while the angles are random and unrelated to cluster
+status. The resulting data is displayed in Figure \ref{fig:kcca-data-concentric}.
 
-Specifically, using polar coordinates, we draw
+Specifically, we draw from a hierarchical model,
 \begin{align}
-  \omega^{x}_{i} &\sim \Bet\left(1, 4\right) \\
-  \left(r^{x}_{i}, \theta^{x}_{i}\right) \sim &\left[\Unif\left(\left[\frac{1}{2}, \frac{3}{2}\right]\right)\indic{z_{i} = 0} + \Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]\right)\indic{z_{i} = 1}\right] \times\\ &\Unif\left(\left[2 \pi \omega_{i} - \frac{1}{2}, 2 \pi \omega_{i} + \frac{1}{2}\right]\right),
+  \omega^{X}_{i} &\sim \Bet\left(1, 4\right) \\
+  r_{i}^{X} &\sim \Unif\left(\left[\frac{1}{2},
+    \frac{3}{2}\right]\right)\indic{z_{i} = 0} +
+  \Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]\right)\indic{z_{i}
+    = 1} \\
+  \theta_{i}^{X} \sim \Unif\left(\left[2 \pi \omega_{i} - \frac{1}{2},
+    2 \pi \omega_{i} + \frac{1}{2}\right]\right)
 \end{align}
 for table $X$, and
 \begin{align*}
   \omega^{y}_{i} &\sim \Unif\left(0, 1\right) \\
-  \left(r^{y}_{i}, \theta^{y}_{i}\right) &\sim \left[\sqrt{\Unif\left(\left[\frac{1}{2}, \frac{3}{2}\right]\right)}\indic{z_{i} = 0} + \sqrt{\Unif\left(\left[\frac{3}{2}, \frac{5}{2}\right]\right)}\indic{z_{i} = 1}\right] \times \\&\Unif\left(\left[0, 2\pi\omega_{i}\right]\right),
+  r^{Y}_{i} & \sim \sqrt{\Unif\left(\left[\frac{1}{2},
+      \frac{3}{2}\right]\right)}\indic{z_{i} = 0} +
+  \sqrt{\Unif\left(\left[\frac{3}{2},
+      \frac{5}{2}\right]\right)}\indic{z_{i} = 1} \\
+  \theta^{Y}_{i} &\sim \Unif\left(\left[0, 2\pi\omega_{i}\right]\right),
 \end{align*}
-for table $Y$.
+for table $Y$. The resulting points are plotted in polar coordinates
+as $\left(r_{i}^{\cdot}, \theta_{i}^{\cdot}\right)$.
 
+We highlight one subtlety with preparing kernel CCA experiments that
+is not an issue with kernel PCA experiments --
+nonlinearity within each tables does not imply nonlinearity in the
+relationship across tables. Although the concentric circles make the
+data within tables very nonlinear, it is the nonlinear relationship
+across tables induced by the associated generation mechanism that is
+of primary interest.
 
-The code below generates this data and produces Figure
+The code below generates the simulation data and produces Figure
 \ref{fig:kcca-data-concentric}.
 
 <<kcca-sims>>=
 read_chunk("kcca.R")
-@ 
+@
 
 <<kcca-libraries>>=
-@ 
+@
 <<generate-data>>=
-@ 
+@
 
 \begin{figure}
   \centering
 <<raw-data-plots>>=
-@ 
+@
 \caption{Raw data used in the Kernel CCA experiment based on circular data.}
 \label{fig:kcca-data-concentric}
 \end{figure}
 
-Next, we perform KCCA as described above, using the implementation provided by
-\texttt{kernlab} \cite{zeileis2004kernlab}\footnote{But for an implementation
-  that allows for more than 2 tables, as described in this section, see
-  \url{https://github.com/krisrs1128/kcca\_expers}}.
+Next, we perform KCCA as described above, using the implementation in
+\texttt{kernlab}\footnote{But for an implementation
+  that allows for more than two tables see our experiments at
+  \url{https://github.com/krisrs1128/kcca\_expers}}
+\cite{zeileis2004kernlab}.
 Unlike standard CCA, we have to make choices about a few parameters. The first
 is the choice of kernel -- we use the standard RBF kernel,
 $k\left(x, x^{\prime}\right) = \exp{-\sigma\|x- x^{\prime}\|^{2}}$,
   with $\sigma = 2$, reflecting the scale of the data. We
   also have to choose the regularization parameter, called $\lambda$ above
-  \footnote{But called $\gamma$ in \texttt{kernlab}.}, we set it to
+  \footnote{But called $\lambda$ in \texttt{kernlab}.}, we set it to
   $\gamma = 0.25$. We chose these parameters by manually experimenting with
-  different choices, until the correlation across tables appeared relatively
-  large.
+  different choices until the correlation across tables appeared relatively
+  large; we are not aware of any nonsubjective ways for parameter
+  tuning in unsupervised kernel methods.
 
 <<kcca>>=
 @
@@ -1678,16 +1696,16 @@ In spite of this, the scores are not particularly useful, since,
 
 \begin{figure}
 <<kcca-plots>>=
-@ 
+@
 \caption{On the left, the $X$-scores from the first two dimesions of KCCA.
   On the right, the correlation between the top $X$ and $Y$ scores.}
 \label{fig:kcca-concentric-plots}
 \end{figure}
 
-As a reference point, we also apply standard CCA to this data set. Note that it requires no tuning parameters.
+As a reference point, we also apply standard CCA to this data set. Note that it requires no tuning.
 
 <<usual-cca>>=
-@ 
+@
 
 The results are displayed in Figure \ref{fig:cca-concentric-plots}. Here, we are
 able to clearly distinguish between the two groups, in spite of the less
@@ -1696,15 +1714,20 @@ high as in KCCA (though it is not too poor either
 : \Sexpr{cor(cancor_scores[[1]][, 1], cancor_scores[[2]][, 1])%>% round(3)}).
   Further, unlike KCCA, CCA provides
 eigenvectors which can provide more context for the positions of
-scores (todo: plot and interpret eigenvectors). 
+scores (todo: plot and interpret eigenvectors).
 
 \begin{figure}
 <<cca-plots>>=
-@ 
+@
 \caption{$X$-scores from CCA (left), along with the correlation between the
   top $X$ and $Y$ scores (right).}
 \label{fig:cca-concentric-plots}
 \end{figure}
+
+We have also implemented a second simulation using KCCA, based on the
+experiment discussed in \cite{fukumizu2007statistical}. As it is
+similar to the example discussed here, we relegate it to Section
+\ref{sec:kcca_second} in the Appendix.
 
 \subsection{Penalized Matrix Decomposition}
 
@@ -1856,20 +1879,20 @@ read_chunk("sparse_sim.R")
 @
 
 <<sparse-sim-packages>>=
-@ 
+@
 
 <<sparse-sim-opts>>=
-@ 
+@
 
 <<sparse-sim-source-weights>>=
 
-@ 
+@
 
 <<sparse-sim-generate-data>>=
-@ 
+@
 
 <<sparse-sim-plot-weights-setup>>=
-@ 
+@
 
 We defined sparse weights $W^{X}$ and $W^{Y}$ by hand, these are displayed in
 Figure \ref{fig:sparse_sim_sources}. A few scatterplots of columns in the
@@ -1884,7 +1907,7 @@ $\mu_{1}$ and $\mu_{2}$; these are chosen automatically through a matrix-holdout
 cross-validation procedure.
 
 <<sparse-sim-pmd-unordered>>=
-@ 
+@
 
 The recovered weights are displayed in Figure
 \ref{fig:sparse-sim-pmd-unordered-plot}. Note that many weights are set to
@@ -1897,7 +1920,7 @@ slightly shrunk) value.
 
 \begin{figure}
 <<sparse-sim-plot-weights>>=
-@ 
+@
 \caption{These are the sparse underlying weights that we are hoping to recover
 using the penalized matrix decomposition.}
 \label{fig:sparse_sim_sources}
@@ -1905,21 +1928,21 @@ using the penalized matrix decomposition.}
 
 \begin{figure}
 <<sparse-sim-plot-data-x>>=
-@ 
+@
 \caption{Pairwise scatterplots of four randomly chosen columns from $X$.}
 \label{fig:sparse-sim-plot-data-x}
 \end{figure}
 
 \begin{figure}
 <<sparse-sim-plot-data-y>>=
-@ 
+@
 \caption{Pairwise scatterplots of four randomly chosen columns from $Y$.}
 \label{fig:sparse-sim-plot-data-y}
 \end{figure}
 
 \begin{figure}
 <<sparse-sim-plot-data-xy>>=
-@ 
+@
 \caption{Pairwise scatterplots of four randomly chosen columns, two
   from $X$ and two from $Y$.}
 \label{fig:sparse-sim-plot-data-xy}
@@ -1927,13 +1950,13 @@ using the penalized matrix decomposition.}
 
 \begin{figure}
 <<sparse-sim-pmd-unordered-plot>>=
-@ 
+@
 \caption{Weights $\hat{W}$ recovered throught the penalized matrix
   decomposition.}
 \label{fig:sparse-sim-pmd-unordered-plot}
 \end{figure}
 
-Note that the recovered weights $\hat{W}$ do not occur in piecewise constant 
+Note that the recovered weights $\hat{W}$ do not occur in piecewise constant
 elements, as in the true weights. To encourage this property in the $\hat{W}$,
 we can impose a fused-lasso penalty on the differences between consecutive
 $w_{i}$. The same PMD machinery applies, because the combined $\ell^{1}$ and
@@ -1942,7 +1965,7 @@ latent dimensions $u$ and $v$. Further, the implementation is straightforwards,
 using the same function from above.
 
 <<sparse-sim-pmd-ordered>>=
-@ 
+@
 
 The estimated weights are plotted in Figure
 \ref{fig:sparse-sim-pmd-ordered-plot}. Note that the weights are indeed
@@ -1976,11 +1999,11 @@ While there are some shifts in second and third, these are overwhelemed by a
 much high noise level.
 
 <<sparse-sim-cca>>=
-@ 
+@
 
 \begin{figure}
 <<sparse-sim-cca-plot>>=
-@ 
+@
 \caption{Recovered weights, using ordinary CCA.}
 \label{fig:sparse-sim-cca-plot}
 \end{figure}
@@ -2006,7 +2029,7 @@ separate PCAs, then perform an order-0 spline smoothing.
 
 \begin{figure}
 <<sparse-sim-separate-pcas>>=
-@ 
+@
 \caption{The weights recovered by separate PCAs.}
 \label{fig:sparse-sim-separate-pcas}
 \end{figure}
@@ -2219,22 +2242,22 @@ they are not. See section \label{sec:vi_mb} for an explicit expression.
 Now, since the $\beta^{(r)}$ and $w^{(r)}$ are unknown,
 $\ell_{c}\left(\theta\right)$ cannot actually be evaluated. However, for
 different choices of $q_{\gamma}$, it may be possible to evaluate
-$\Esubarg{z^{(r)} \sim q_{\gamma}}{\ell_{c}\left(\theta\right)}$. Further, it 
-can be shown that this expected complete data loglikelihood is maximized when 
-the $z^{(r)}$ are drawn from the posterior 
+$\Esubarg{z^{(r)} \sim q_{\gamma}}{\ell_{c}\left(\theta\right)}$. Further, it
+can be shown that this expected complete data loglikelihood is maximized when
+the $z^{(r)}$ are drawn from the posterior
 $p_{\theta}\left(\left(z^{r}\right) \vert \left(x_{i}\right), y_{i}\right)$.
 Since the posterior is intractable (this was the reason for restricting attention
-to a variational vamily $\left(q_{\gamma}\right)_{\gamma \in \Gamma}$ in the first 
-place), we can settle instead for finding the element $q_{\gamma^{\ast}}$ that 
+to a variational vamily $\left(q_{\gamma}\right)_{\gamma \in \Gamma}$ in the first
+place), we can settle instead for finding the element $q_{\gamma^{\ast}}$ that
 is closest to the posterior in KL-divergence sense,
 \begin{align}
-q_{\gamma^{\ast}}:= \arg\min_{\gamma \in \Gamma} KL\left(q_{\gamma}\left[\left(z^{(r)}\right)\right] \vert \vert 
+q_{\gamma^{\ast}}:= \arg\min_{\gamma \in \Gamma} KL\left(q_{\gamma}\left[\left(z^{(r)}\right)\right] \vert \vert
 p_{\theta}\left[\left(z^{(r)}\right) \vert \left(x_{i}\right), \left(y_{i}\right)\right]\right).
 \end{align}
 
 This is a convenient measure to use, because it can be rewritten as
 \begin{align}
-&KL\left(q_{\gamma}\left[\left(z^{(r)}\right)\right] \vert \vert 
+&KL\left(q_{\gamma}\left[\left(z^{(r)}\right)\right] \vert \vert
 p_{\theta}\left[\left(z^{r}\right) \vert \left(x_{i}\right), \left(y_{i}\right)\right]\right) \\
 = &\Esubarg{q_{\gamma}}{\log\frac{q_{\gamma}\left[\left(z^{(r)}\right)\right]}{p_{\theta}\left[\left(z^{(r)}\right) \vert \left(x_{i}\right), \left(y_{i}\right)\right]}} \\
 = &\Esubarg{q_{\gamma}}{\log\frac{q_{\gamma}\left[\left(z^{(r)}\right]\right)}{p_{\theta}\left[\left(z^{(r)}\right), \left(x_{i}\right), \left(y_{i}\right)\right]}} + \log p_{\theta}\left[\left(x_{i}\right), \left(y_{i}\right)\right] \\
@@ -2246,12 +2269,12 @@ so we can equivalently choose the $q_{\gamma^{\ast}}$ to maximize
 \end{align}
 which can be interpreted as a regularized complete data loglikelihood.
 
-Note that this expression only involves the expected complete data 
+Note that this expression only involves the expected complete data
 loglikelihood, which is usually simple to compute. In particular, in many cases
 it is easy to find a $\gamma$ to maximize this quantity, when $\theta$ is kept
 fixed.
 
-Further, for a fixed choice of $\theta$, it may be possible to choose $\gamma$ 
+Further, for a fixed choice of $\theta$, it may be possible to choose $\gamma$
 to maximize this quantity, and vice versa. This is the variational  strategy
 adopted by \cite{zhang2005learning} -- initialize $\theta^{0}$, then choose
 $\gamma^{1}$ to minimize $\F\left(\gamma, \theta^{0}\right)$, then
@@ -2267,7 +2290,7 @@ q_{\gamma}\left(\left(\beta^{(r)}\right), \left(w^{(r)}\right)\right) = \prod_{r
 \end{align}
 where the variational family is parameterized by
 $\gamma = \left(m^{(r)}, V^{(r)}, \pi^{(r}\right)_{r=1}^{p_{1}}$ and the latent
-data $\beta^{(r)}$ and $w^{(r)}$ are independent. Each term in the expected 
+data $\beta^{(r)}$ and $w^{(r)}$ are independent. Each term in the expected
 complete data  loglikehood can now be evaluated straightforwardly, for example,
 we can write
 $\Esubarg{\beta^{r}, w^{(r)} \sim q_{\gamma}}{\log\Gsn\left(\beta^{(r)} \vert S w^{(r)}, \Psi\right)}$ as
@@ -2278,7 +2301,7 @@ $\Esubarg{\beta^{r}, w^{(r)} \sim q_{\gamma}}{\log\Gsn\left(\beta^{(r)} \vert S 
   =&-\frac{p_{1}}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} -\frac{1}{2}\tr\left(\Psi^{-1}\left(V^{(r)} + m^{(r}m^{(r) T}\right) - 2S^{T}\Psi^{-1}m^{(r)}\pi^{(r) T} + S^{T}\Psi^{-1}S\diag\left(\pi^{(r)}\right)\right) \\
   =& -\frac{p_{1}}{2}\log 2\pi - \frac{1}{2}\log \absarg{\Psi} - \frac{1}{2}\tr\left(\Psi^{-1}V^{(r)}\right) - \frac{1}{2}\sum_{k = 1}^{K}\pi_{k}^{(r)}\left(m^{(r)} - s_{\cdot k}\right)^{T}\Psi^{-1}\left(m^{(r)} - s_{\cdot k}\right),
 \end{align*}
-where $s_{\cdot k}$ denotes the $k^{th}$ column of $S$. 
+where $s_{\cdot k}$ denotes the $k^{th}$ column of $S$.
 Other terms can be calculated similarly. It is now a matter of calculus to find
 the maximizing $\sigma^{2}, \Psi, S$, and $\Phi$ in the variational $M$-step,
 and to find the maximizing $m, V$, and $\pi$ in the variational $E$-step.
@@ -2286,40 +2309,40 @@ and to find the maximizing $m, V$, and $\pi$ in the variational $E$-step.
 \paragraph{Simulation Example}
 
 We next describe a small simulation example corresponding to this multinomial
-prior on $w$. Our focus is pedagogy rather than advocacy. That is, our figures 
-are designed to illustrate some of the abstract quantities from the previous 
+prior on $w$. Our focus is pedagogy rather than advocacy. That is, our figures
+are designed to illustrate some of the abstract quantities from the previous
 section to make them easier to understand, they should not be used to argue that
-the Bayesian multitask is superior to any alternatives -- to investigate this 
-question, we would need a more comprehensive study, using data drawn from 
-mechanisms other than the assumed generative model. 
+the Bayesian multitask is superior to any alternatives -- to investigate this
+question, we would need a more comprehensive study, using data drawn from
+mechanisms other than the assumed generative model.
 
 We generate data according to the clustered regression scheme. The code chunk
 below specifies parameters for this simulation.
 
 Before starting the simulation in earnest, we clear our previous environment and
 load required packages. Note that
-\href{http://github.com/krisrs1128/bayesMult}{\texttt{bayesMult}} is a package we have 
-written, providing an implementation of Bayesian multitask learning in the 
+\href{http://github.com/krisrs1128/bayesMult}{\texttt{bayesMult}} is a package we have
+written, providing an implementation of Bayesian multitask learning in the
 multinomial case.
 
 <<vb-sims>>=
 read_chunk("clustered_regressions.R")
-@ 
+@
 <<cr-setup>>=
-@ 
+@
 
 There are a number of parameters needed simply to simulate data. These are
-collected in the \texttt{opts} parameter printed below and summarized in 
+collected in the \texttt{opts} parameter printed below and summarized in
 Table \ref{tab:vb-sim-params}.
 
 <<opts>>=
 @
 
-The values of $n$ and $p$ were chosen to demonstrate a case where pooling 
-across tasks can be advantageous -- if the $\frac{n}{p}$ ratio were larger, 
+The values of $n$ and $p$ were chosen to demonstrate a case where pooling
+across tasks can be advantageous -- if the $\frac{n}{p}$ ratio were larger,
 each individual task regression might be good enough, without any need for
 additional pooling. Also, if $n < p$, we would not be able to run the baseline
-independent regressions model, though the multitask model could still be 
+independent regressions model, though the multitask model could still be
 fit.
 
 \begin{table}
@@ -2331,7 +2354,7 @@ fit.
     \texttt{n} & The total number of samples within each task. \\
     \hline
     \texttt{p} & A vector $\left(p_{1}, p_{2}\right)$, where $p_{1}$ gives the
-    total number of tasks and $p_{2}$ gives the number of features for each 
+    total number of tasks and $p_{2}$ gives the number of features for each
     task. \\
     \hline
     \texttt{k} & The number of task clusters. Coefficients $\beta^{(r)}$ within
@@ -2354,11 +2377,11 @@ fit.
 \end{table}
 
 The code below generates the parameters that are assumed fixed. We don't impose
-low-rank structure on the $\Psi$ matrix, as the authors describe in the 
+low-rank structure on the $\Psi$ matrix, as the authors describe in the
 motivation for this model; we leave this for future work.
 
 <<fixed-params>>=
-@ 
+@
 
 We next simulate the random parameters in the model, which are the primary
 targets for inference. The resulting coefficient matrix $B$ is plotted in
@@ -2368,39 +2391,39 @@ have been reordered by their task membership so that the three task clusters
 are easily visible.
 
 <<random-params>>=
-@ 
+@
 
 \begin{figure}
 <<plot-B>>=
-@ 
+@
 \caption{The underlying coefficient matrix. The $\left(j,
   r\right)^{th}$ cell displays the value of $\beta_{j}^{(r)}$.}
 \label{fig:vb-plot-B}
 \end{figure}
 
-The chunk below generates the regression data using these coefficients. 
+The chunk below generates the regression data using these coefficients.
 The data for each task is contained in its own list element.
 
 <<generate-data>>=
-@ 
+@
 
-To visualize this data, we first combine these lists into a merged data frame; 
-this is the content of the code below. Figure \ref{fig:vb-vis-reg-lines} 
+To visualize this data, we first combine these lists into a merged data frame;
+this is the content of the code below. Figure \ref{fig:vb-vis-reg-lines}
 displays the regression data for the first 10 tasks (columns) and 5 features
 (rows). The $\left(r, j\right)^{th}$ cell has 15 points
 $\left(x_{ij}^{(r)}, y_{i}^{(r)}\right)$ and a line through it with slope
-$\beta^{(r)}_{j}$. The colors in each column represent the cluster to which 
+$\beta^{(r)}_{j}$. The colors in each column represent the cluster to which
 that task belongs. Consistent with the task-clustering interpretation, the the
-slopes for a specific cluster tend to be close -- but not exactly the same --  
+slopes for a specific cluster tend to be close -- but not exactly the same --
 for each feature (i.e., row in the figure).
 
 <<join-data>>=
-@ 
+@
 
 \begin{figure}
 <<vb-vis-reg-lines>>=
-@ 
-\caption{A view of the first 5 features and 10 tasks in the simulated 
+@
+\caption{A view of the first 5 features and 10 tasks in the simulated
   ``clustered regressions'' data, used in the Bayesian multitask regression
   experiment.}
 \label{fig:vb-vis-reg-lines}
@@ -2409,34 +2432,34 @@ for each feature (i.e., row in the figure).
 The code below estimates the Bayesian multitask model.
 
 <<run-vb>>=
-@ 
+@
 
 To begin interpreting the results of the model, we first inspect the estimated
-cluster probabilities $\hat{\pi}_{r} \in S^{2}$. Each $\hat{\pi}_{rk}$ is 
-thought of as the contribution of the $k^{th}$ task cluster to the $r^{th}$ 
+cluster probabilities $\hat{\pi}_{r} \in S^{2}$. Each $\hat{\pi}_{rk}$ is
+thought of as the contribution of the $k^{th}$ task cluster to the $r^{th}$
 task. These are displayed in Figure \ref{fig:vb-plot-pi}. This figure is a jitter
 plot; each column corresponds to an estimated task cluster, and points give the
 weight of each task in the specified cluster. The colors represent the true
 cluster assignment for each task.
 
-The estimated probabilities are generally near one or zero, which is not 
-surprising considering the data generating mechanism -- the task clustering 
-is a hard (not soft) clustering. That the points near the top of each column 
-are mostly the same color reflects the fact that in this simulation, the 
+The estimated probabilities are generally near one or zero, which is not
+surprising considering the data generating mechanism -- the task clustering
+is a hard (not soft) clustering. That the points near the top of each column
+are mostly the same color reflects the fact that in this simulation, the
 estimation procedure recovered essentially the correct task cluster assignmnts.
 This can also be seen by comparing the estimated cluster assignments with the
 true ones, as in the code chunk below.
 
 \begin{figure}
 <<plot-pi>>=
-@ 
-\caption{The $\hat{\pi}_{r}$ parameters estimated by the Bayesian multitask 
+@
+\caption{The $\hat{\pi}_{r}$ parameters estimated by the Bayesian multitask
   model.}
 \label{fig:vb-plot-pi}
 \end{figure}
 
 <<table-clusters>>=
-@ 
+@
 
 Though not reproduced in this report, we note that when using smaller
 $n$ or larger $\sigma\_{b}^{2}$, the estimation procedure often
@@ -2456,13 +2479,13 @@ other hand, the implementation is very straightforward, and is
 entirely contained in the code chunk.
 
 <<naive-model>>=
-@ 
+@
 
 To compare the estimated fits, we need to reshape the data
 appropriately; this is the content of the following chunk.
 
 <<merge-fits>>=
-@ 
+@
 
 Figure \ref{fig:vb-plot-betas} plots the estimated
 $\hat{\beta}_{j}^{(r)}$ against the true $\beta_{j}^{(r)}$. The red
@@ -2480,7 +2503,7 @@ short; this is consistent with \cite{consonni2007mean}.
 
 \begin{figure}
 <<plot-betas>>=
-@ 
+@
 \caption{A comparison between the true and estimated parameters
   $\hat{\beta}_{j}^{(r)}$, using both the Bayesian multitask and independent
   linear regressions approaches.}
@@ -2509,7 +2532,7 @@ estimates are occasionally quite far from the truth.
 
 \begin{figure}
 <<plot-fitted-reg>>=
-@ 
+@
 \caption{A version of Figure \ref{fig:vb-vis-reg-lines} showing the
   Bayesian multitask and linear regression fits, and their standard
   errors.}
@@ -2528,7 +2551,7 @@ approach, which did not specify this structure a priori.
 
 \begin{figure}
 <<plot-betas-image>>=
-@ 
+@
 \caption{The estimated coefficient matrices for the Bayesian multitask
   and independent linear regressions approaches. Note that the tasks
   have been reordered to the coefficient clustering structure more
@@ -2614,7 +2637,7 @@ together, with the strength of the pooling depending on the
 independently measured strength of the relationship between
 tasks. This is formalized by defining $\hat{B}^{gf}$ as the solution
 to the optimization,
-\begin{align}
+o\begin{align}
 \minimize_{B \in \reals^{p_{2} \times p_{1}}} \frac{1}{2}\|Y -
   XB\|_{F}^{2} + \lambda \|B\|_{1} + \gamma \sum_{e \in E} \sum_{j =
     1}^{p_{2}} \absarg{r_{e}}\absarg{\beta_{j}^{(e^{+})} -
@@ -2706,15 +2729,15 @@ The code below is just boilerplate to set up the simulation.
 
 <<gflasso-setup>>=
 read_chunk("gflasso_sim.R")
-@ 
+@
 
 <<sparse-sim-packages>>=
-@ 
+@
 
 Here are parameters we will use in the simulation -- they are described below.
 
 <<simdata-params>>=
-@ 
+@
 
 To ground the discussion, consider the following simulation.We imagine a
 regression problem with $J = 100$ features, all shared across
@@ -2749,21 +2772,21 @@ is also i.i.d. $\Gsn\left(0, 1\right)$. This setup is visualized in Figure
 We are now ready to generate data according to this description.
 
 <<gflasso-simulate-data>>=
-@ 
+@
 
 \begin{figure}
 <<vis-B>>=
-@ 
+@
 \caption{Underlying coefficients for the graph fused lasso simulation example.}
 \label{fig:vis-gflasso-B}
 \end{figure}
 
 <<vis-reg-data>>=
-@ 
+@
 
 \begin{figure}
 <<vis-reg-lines>>=
-@ 
+@
 \caption{Each cell corresponds to a single task-feature pair -- different feature
   and tasks are arranged along rows and columns, respectively, as in the display
   of the coefficient matrix. We have subsetted to 10 tasks and 10 features. The
@@ -2773,7 +2796,7 @@ We are now ready to generate data according to this description.
 \label{fig:gflasso-reg-lines}
 \end{figure}
 
-To run graph-fused lasso on this data, we need to first specify the matrix 
+To run graph-fused lasso on this data, we need to first specify the matrix
 $R \in \reals^{K \times K}$ relating the tasks together. We will be generous,
 and suppose we know the two true sets of tasks, so set $R$ to be two blocks of
 of ones. Then, after specifying the regularization, smooth-approximation, and
@@ -2782,7 +2805,7 @@ gradient descent parameters\footnote{In a real application, we would want to
   generalization error.}, we are able to run the graph-fused lasso.
 
 <<gflasso>>=
-@ 
+@
 
 We proceed to study the results. We can view convergence in Figure
 \ref{fig:gflasso-objective}. It seems that after 850 iterations, a minimum
@@ -2809,7 +2832,7 @@ coefficients that are neighboring on the graph\footnote{The striation gets
 
 \begin{figure}
 <<vis-objective, fig.height = 3, fig.width = 4>>=
-@ 
+@
 \caption{The value of the smoothed graph-fused lasso objective function across
   iterations.}
 \label{fig:gflasso-objective}
@@ -2817,14 +2840,14 @@ coefficients that are neighboring on the graph\footnote{The striation gets
 
 \begin{figure}
 <<coef-hat-pred>>=
-@ 
+@
 \caption{The fitted $\hat{B}$ against the true $\hat{B}$. The blue points
   are coefficients across features, but for just the first 25 tasks. The red
   points are coefficients for the last 25 tasks.}
 \label{fig:gflasso-beta-compare}
 \end{figure}
 
-To more carefully inspect the way coefficients are tied together across tasks, 
+To more carefully inspect the way coefficients are tied together across tasks,
 we can create versions of Figures \label{fig:vis-gflasso-B} and
 \ref{fig:gflasso-reg-lines}, but for the estimated $\hat{B}$ -- these are
 displayed in Figures \ref{fig:vis-gflasso-Bhat} and \ref{fig:gflasso-reg-Bhat},
@@ -2845,16 +2868,16 @@ estimated coefficients are correct in this case as well.
 
 \begin{figure}
 <<vis-Bhat-gflasso>>=
-@ 
+@
 \caption{Fitted coefficient matrix, $\hat{B}$.}
 \label{fig:vis-gflasso-Bhat}
 \end{figure}
 
 \begin{figure}
 <<gflasso-reg-bhat>>=
-@ 
+@
 <<vis-reg-fit>>=
-@ 
+@
 \caption{The fitted regressions for this subset of task-feature
   combinations are plotted as dashed lines, while the true regression lines are
   solid.}
@@ -2868,7 +2891,7 @@ performs cross-validation over the (one) tuning parameter. The graph-fused
 lasso parameters we chosen manually.
 
 <<lasso-baseline>>=
-@ 
+@
 
 Figures
 \ref{fig:lasso-beta-compare}, \ref{fig:lasso-Bhat}, and
@@ -2901,7 +2924,7 @@ structure.
 
 \begin{figure}
 <<lasso-bhat-b>>=
-@ 
+@
 \caption{The $\hat{B}$ obtained by independent lasso regressions, against the
   true $\hat{B}$.}
 \label{fig:lasso-beta-compare}
@@ -2909,7 +2932,7 @@ structure.
 
 \begin{figure}
 <<vis-Bhat-lasso>>=
-@ 
+@
 \caption{Fitted coefficient matrix, $\hat{B}$, using independent lasso
   regressions.}
 \label{fig:lasso-Bhat}
@@ -2917,9 +2940,9 @@ structure.
 
 \begin{figure}
 <<lasso-reg-bhat>>=
-@ 
+@
 <<vis-lasso-fit>>=
-@ 
+@
 \caption{The fitted independent lassos applied to a subset of task-feature
   combinations are plotted as dashed lines, while the true regression lines are
   solid.}
@@ -2930,10 +2953,25 @@ structure.
 
 \section{Appendix}
 
+\subsection{A Second KCCA Simulation}
+\label{sec:kcca_second}
+
+<<fukumizu-example>>=
+@
+
+<<cca-fukumizu>>=
+@
+
+<<kcca-fukumizu>>=
+@
+
+<<kcca-fukumizu-plots>>=
+@
+
 \subsection{Variational Inference for Multitask Bayesian Model}
 \label{sec:vi_mb}
 
-Let $N = \sum_{r = 1}^{p_{1}} n_{r}$. Then, the complete data loglikelihood 
+Let $N = \sum_{r = 1}^{p_{1}} n_{r}$. Then, the complete data loglikelihood
 in the multinomial mixing case can be written more explicitly as
 \begin{align}
   \ell_{c}\left(\theta\right) = &- \frac{N}{2}\log 2\pi\sigma^{2}
@@ -2942,10 +2980,10 @@ in the multinomial mixing case can be written more explicitly as
 &\frac{1}{2}\sum_{r = 1}^{p_{1}}\tr\left(\Psi^{-1}\beta^{(r)}\beta^{(r) T} - 2 S^{T}\Psi^{-1}\beta^{(r)}w^{(r) T} + S^{T}\Psi^{-1}Sw^{(r)}w^{(r) T}\right) + \\
 &\sum_{r = 1}^{p_{1}} \sum_{k = 1}^{K} \indic{w^{(r)}_{k} = 1}\log \phi_{k}.
 \end{align}
-where $k\left(r\right)$ denotes the cluster to which the $r^{th}$ task is 
+where $k\left(r\right)$ denotes the cluster to which the $r^{th}$ task is
 associated. Under the approximating variational density, this has expectation
 \begin{align*}
-  \Esubarg{q_{\gamma}}{\ell_{c}\left(\theta\right)} = -&\frac{N}{2}\log 2\pi \sigma^{2} - 
+  \Esubarg{q_{\gamma}}{\ell_{c}\left(\theta\right)} = -&\frac{N}{2}\log 2\pi \sigma^{2} -
   \sum_{r = 1}^{p_{1}} \sum_{i = 1}^{n_{r}} \frac{1}{2\sigma^{2}}\left(\left(y_{i}^{(r)} - x_{i}^{(r) T} m^{(r)}\right)^{2} + x_{i}^{(r) T}V^{(r)}x_{i}^{(r)}\right) - \\
   &\frac{p_{1}}{2}\log\absarg{\Psi} - \frac{p_{1}p_{2}}{2}\log 2\pi -\\
   &\frac{1}{2}\sum_{r = 1}^{p_{1}}\left[\tr\left(\Psi^{-1}V^{(r)}\right) +\sum_{k = 1}^{K}\pi_{k}^{(r)}\left(m^{(r)} - s_{\cdot k}\right)^{T}\Psi^{-1}\left(m^{(r)} - s_{\cdot k}\right)\right] + \\
@@ -2959,7 +2997,7 @@ The log of the variational family density in this case can be written as
   &\sum_{r = 1}^{p_{1}}\sum_{k = 1}^{K} \indic{w_{k}^{(r)} = 1}\log \pi_{k}^{(r)},
 \end{align}
 
-and its expected value (under a draw from itself) can be written 
+and its expected value (under a draw from itself) can be written
 \begin{align}
   \Esubarg{q_{\gamma}}{\log q_{\gamma}\left(z^{(r)}\right)} &= -\frac{p_{1}p_{2}}{2}\left(\log 2\pi + 1\right) - \frac{1}{2}\sum_{r = 1}^{p_{1}} \log \absarg{V^{(r)}} + \sum_{r = 1}^{p_{1}}\sum_{k= 1}^{K}\pi_{k}^{(r)}\log\pi_{k}^{(r)},
 \end{align}
@@ -2972,7 +3010,7 @@ Hence, the variational objective is, up to constants,
   \frac{1}{2}\sum_{r = 1}^{p_{1}}\sum_{k = 1}^{K}\pi_{k}^{(r)}\left(m^{(r)} - s_{\cdot k}\right)^{T}\Psi^{-1}\left(m^{(r)} - s_{\cdot k}\right) + \\&\sum_{r = 1}^{p_{1}}\sum_{k = 1}^{K} \pi_{k}^{(r)}\log\varphi_{k} + \frac{1}{2}\sum_{r = 1}^{p_{1}}\log\absarg{V^{(r)}} - \sum_{r= 1}^{p_{1}}\sum_{k = 1}^{K}\pi_{k}^{(r)}\log \pi_{k}^{(r)}.
 \end{align}
 
-To derive updates for the E and M steps, differentiate 
+To derive updates for the E and M steps, differentiate
 with respect to $\{m, V, \pi\}$ and
 $\{\sigma^{2}, \Psi, S, \Phi\}$, respectively.
 
