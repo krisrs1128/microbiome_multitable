@@ -1,0 +1,622 @@
+\documentclass[10pt]{beamer}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{eulervm}
+\usepackage{amsmath,amssymb,amsfonts,graphicx,mathtools,setspace}
+\usepackage{hyperref}
+\hypersetup{colorlinks,urlcolor=red}
+\usetheme{PaloAlto}
+
+\def\reals{\mathbb{R}} % Real number symbol
+\def\integers{\mathbb{Z}} % Integer symbol
+\def\rationals{\mathbb{Q}} % Rational numbers
+\def\naturals{\mathbb{N}} % Natural numbers
+\def\complex{\mathbb{C}} % Complex numbers
+%~~~~~~~~~~~~~~~
+% Common functions
+%~~~~~~~~~~~~~~~
+\renewcommand{\exp}[1]{\operatorname{exp}\left(#1\right)} % Exponential
+\newcommand\mbb[1]{\mathbb{#1}}
+\def\indic#1{\mbb{I}\left({#1}\right)} % Indicator function
+\providecommand{\argmax}{\mathop\mathrm{arg max}} % Defining math symbols
+\providecommand{\argmin}{\mathop\mathrm{arg min}}
+\providecommand{\arccos}{\mathop\mathrm{arccos}}
+\providecommand{\dom}{\mathop\mathrm{dom}} % Domain
+\providecommand{\range}{\mathop\mathrm{range}} % Range
+\providecommand{\diag}{\mathop\mathrm{diag}}
+\providecommand{\tr}{\mathop\mathrm{tr}}
+\providecommand{\abs}{\mathop\mathrm{abs}}
+\providecommand{\card}{\mathop\mathrm{card}}
+\providecommand{\sign}{\mathop\mathrm{sign}}
+\def\rank#1{\mathrm{rank}({#1})}
+\def\supp#1{\mathrm{supp}({#1})}
+%~~~~~~~~~~~~~~~
+% Common probability symbols
+%~~~~~~~~~~~~~~~
+\def\mrm#1{\mathrm{#1}}
+
+\def\E{\mathbb{E}} % Expectation symbol
+\def\Earg#1{\E\left[{#1}\right]}
+\def\Esubarg#1#2{\E_{#1}\left[{#2}\right]}
+\def\P{\mathbb{P}} % Probability symbol
+\def\Parg#1{\P\left({#1}\right)}
+\def\Psubarg#1#2{\P_{#1}\left[{#2}\right]}
+\def\Cov{\mrm{Cov}} % Covariance symbol
+\def\Covarg#1{\Cov\left[{#1}\right]}
+\def\Covsubarg#1#2{\Cov_{#1}\left[{#2}\right]}
+\def\Var{\mrm{Var}}
+\def\Vararg#1{\Var\left(#1\right)}
+\def\Varsubarg#1#2{\Var_{#1}\left(#2\right)}
+\newcommand{\family}{\mathcal{P}} % probability family
+\newcommand{\eps}{\epsilon}
+\def\absarg#1{\left|#1\right|}
+\def\msarg#1{\left(#1\right)^{2}}
+\def\logarg#1{\log\left(#1\right)}
+\providecommand{\maximize}{\mathop\mathrm{maximize\quad}} % Defining math symbols
+\providecommand{\minimize}{\mathop\mathrm{minimize\quad}} % Defining math symbols
+%~~~~~~~~~~~~~~~
+% Distributions
+%~~~~~~~~~~~~~~~
+\def\Gsn{\mathcal{N}}
+\def\Ber{\textnormal{Ber}}
+\def\Bin{\textnormal{Bin}}
+\def\Unif{\textnormal{Unif}}
+\def\Mult{\textnormal{Mult}}
+\def\NegMult{\textnormal{NegMult}}
+\def\Dir{\textnormal{Dir}}
+\def\Bet{\textnormal{Beta}}
+\def\Poi{\textnormal{Poi}}
+\def\HypGeo{\textnormal{HypGeo}}
+\def\GEM{\textnormal{GEM}}
+\def\BP{\textnormal{BP}}
+\def\DP{\textnormal{DP}}
+\def\BeP{\textnormal{BeP}}
+%~~~~~~~~~~~~~~~
+% Theorem-like environments
+%~~~~~~~~~~~~~~~
+
+%-----------------------
+% Probability sets
+%-----------------------
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+%-----------------------
+% vector notation
+%-----------------------
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\xbar}{\overline{x}}
+\newcommand{\Xbar}{\overline{X}}
+\newcommand{\tolaw}{\xrightarrow{\mathcal{L}}}
+\newcommand{\toprob}{\xrightarrow{\mathbb{P}}}
+\newcommand{\laweq}{\overset{\mathcal{L}}{=}}
+\newcommand{\F}{\mathcal{F}}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\title{Some Experiments with Multitable Methods}
+\author{Kris Sankaran}
+
+\begin{document}
+
+\section{Introduction}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}
+  \frametitle{Context}
+  \begin{itemize}
+  \item There are quite few methods relevant to analyzing multiple tables in
+    the microbiome context, and I wanted to share a few that I like and haven't
+    talked about before.
+  \item It seemed useful to explore the methodological landscape surrounding
+    the kinds of (latent factor) methods I applied to the perturbation study.
+  \item It can be useful to get a glimpse of how many communities solve the same
+    problem (``Multitable Data Analysis'').
+  \end{itemize}
+\end{frame}
+  
+\begin{frame}
+  \frametitle{Perturbation Study Analysis}
+  \begin{figure}
+    \includegraphics[scale=0.3]{latent-basis-lm-1.pdf}
+    \caption{Latent basis recovered in (spline) latent-factor hurdle model.}
+  \end{figure}
+  \begin{figure}
+    \includegraphics[scale=0.3]{latent-basis-coords-2.pdf}
+    \caption{Coordinates associated with those latent factors.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  We'll try to cover the methods below.
+  \begin{itemize}
+  \item \textbf{CCA} and \textbf{KCCA}: The most basic multitable method, and
+    a nonlinear generalization.
+  \item \textbf{Reduced Rank Regression}: The simplest nontrivial ``multitask''
+    method.
+    \begin{itemize}
+    \item We use the term multitask to refer to the supervised version of the
+      multitable problem.
+    \end{itemize}
+  \item \textbf{Graph-fused Lasso}: An optimization-based view of the multitask
+    problem, when additional information is available. 
+\item \textbf{Variational Bayes Multitask Learning}: A probabilistic approach to 
+  incorporating structure in multitask problems.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Philosophizing...}
+  Some high level ideas to keep in mind are,
+  \begin{itemize}
+  \item Think of rows of tables as timepoints at which samples are collected,
+    and columns as different sets of features, like OTUs, genes, or metabolites.
+  \item At the end of the day, we want an accessible but expressive
+    representation of the data -- models give one approach.
+  \item Studying the derivations is useful for adapting the methods.
+  \end{itemize}
+  \end{frame}
+
+\section{(Kernel) Canonical Correlation}
+
+\begin{frame}
+\frametitle{Canonical Correlation Analysis (CCA)}
+CCA is the PCA analog for ordinating multiple tables, and it solves the 
+problem \cite{hotelling1936relations},
+\begin{align}
+  \maximize_{u \in \reals^{p_{1}}, v \in \reals^{p_{2}}}
+  &\Covsubarg{\P^{\X\Y}}{z_{i}^{(1)}\left(u\right),
+    z_{i}^{(2)}\left(v\right)} \label{eq:cancor_optim} \\
+\text{subject to } &\Varsubarg{\P^{\X}}{z_{i}^{(1)}\left(u\right)} = 1 \\
+&\Varsubarg{\P^{\Y}}{z_{i}^{(2)}\left(v\right)} = 1,
+\end{align}
+where $z_{i}^{(1)}\left(u\right) = u^{T}x_{i}$ and
+$z_{i}^{(2)}\left(v\right) = v^{T}y_{i}$ are the (one dimensional) scores
+(coordinates) of samples for the $x_{i}$ and $y_{i}$ based on the
+CCA directions $u, v$.
+\end{frame}
+
+\begin{frame}
+  \frametitle{CCA}
+This is empirically approximated by,
+\begin{align}
+  \maximize_{u \in \reals^{p_{1}}, v \in \reals^{p_{2}}}
+  &u^{T}\hat{\Sigma}_{XY}v \label{eq:cancor_optim_emp}\\
+  \text{subject to } & u^{T}\hat{\Sigma}_{XX}u = 1 \\
+  & v^{T}\hat{\Sigma}_{YY}v = 1.
+\end{align}
+(Derive CCA Solution)
+\end{frame}
+
+\begin{frame}
+  \frametitle{Geometry}
+  \begin{itemize}
+  \item View columns $x_{\cdot j}, y_{\cdot j}$ of $X$ and $Y$ as points
+    in $\reals^{n}$.
+  \item Maximizing a correlation $\iff$ maximizing a cosine $\iff$ minimizing
+    an angle.
+  \end{itemize}
+  \begin{figure}
+    \includegraphics[scale=0.4]{cca_picture}
+    \caption{The geometric view of CCA. Each plane corresponds to the span of
+      one table. CCA finds points that minimize the angle between these planes,
+      under the constraint that they lie on a circle of fixed radius.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Kernel CCA}
+  \begin{itemize}
+  \item The kernel trick can be used to get nonlinear versions of standard linear methods.
+  \item A modification of CCA gives the KCCA objective \cite{yamanishi2003extraction},
+    \begin{align}
+      \maximize_{u \in \mathcal{H}^{(1)}, v \in \mathcal{H}^{(2)}}
+      &\Covsubarg{\P^{\X\Y}}{z_{i}^{(1)}\left(u\right),
+        z_{i}^{(2)}\left(v\right)} \label{eq:cancor_optim} \\
+      \text{subject to } &\Varsubarg{\P^{\X}}{z_{i}^{(1)}\left(u\right)} = 1 \\
+      &\Varsubarg{\P^{\Y}}{z_{i}^{(2)}\left(v\right)} = 1,
+    \end{align}
+    where now $z_{i}^{(1)} = \left<u, \varphi^{(1)}\left(x_{i}\right)\right>$
+    and $z_{i}^{(2)} = \left<v, \varphi^{(2)}\left(y_{i}\right)\right>$, for some
+    richer feature spaces $H^{(1)}, H^{(2)}$ and kernel mapping $\varphi$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+  \item The point is that nonlinear functions of $x$ and $y$ can be treated
+    as linear objects in $\mathcal{H}$.
+    \begin{itemize}
+    \item Samples can be similar without being linearly correlated
+      (e.g., in RBF kernel, it's enough to be close by).
+    \end{itemize}
+  \item In reality, some regularization is necessary, since the $\mathcal{H}$
+    are high dimensional.
+  \item The optimizer only involves inner products in this space, which
+    can be accessed through the a kernel function.
+  \item I use the \texttt{kernlab} package for experiments below, and have
+    written a version that applies to more than two tables at \url{github.com/krisrs1128/kcca_expers}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Simulation}
+  The left table has samples from $X$, the right has samples from $Y$.
+  \begin{figure}
+    \includegraphics[scale=0.5]{raw-data-plots-1.png}
+    \includegraphics[scale=0.5]{raw-data-plots-2.png}
+    \caption{Raw data used in the Kernel CCA experiment.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Learned Scores (CCA vs. KCCA)}
+    \begin{figure}
+      \includegraphics[scale=0.5]{cca-plots-1.png}
+      \includegraphics[scale=0.5]{kcca-plots-1.png}
+      \caption{Scores learned by CCA (left) and KCCA (right) for the $X$ table.
+        Only the CCA scores distinguish between the inner and
+        outer circles.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Correlation between scores}
+    \begin{figure}
+      \includegraphics[scale=0.5]{cca-plots-2.png}
+      \includegraphics[scale=0.5]{kcca-plots-2.png}
+      \caption{Correlation between the sets of scores is higher in KCCA than in CCA.}
+    \end{figure}
+\end{frame}
+
+\section{Reduced-Rank Regression}
+
+\begin{frame}
+\frametitle{Reduced-Rank Regression: Setup}
+\begin{itemize}
+\item How do we predict $Y \in \reals^{n \times p_{1}}$ from $X \in \reals^{n \times p_{2}}$?
+\item The least squares solution $\|Y - XB\|_{F}^{2}$ decouples across columns of $Y$.
+\item What if the columns of $Y$ represent measurements that we expect to be
+  related?
+  \begin{itemize}
+  \item Many stocks, maybe in similar industries.
+  \item Concentrations of possibly related chemicals.
+  \item Abundances of similar OTUs.
+  \end{itemize}
+\item We should be able to pool information across separate problems.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Formulation}
+
+The RR objective ties the responses together by imposing a rank constraint
+on the coefficients. The reduced rank coefficients $\hat{B}^{rr}$ are obtained
+as the optimizer of the following problem \cite{izenman1975reduced},
+\begin{align}
+\minimize_{B \in \reals^{p_{2} \times p_{1}}} &\|\left(Y - XB\right)\hat{\Sigma}_{YY}^{-\frac{1}{2}}\|_{F}^{2} \label{eq:rr_obj}\\
+\text{such that } &\text{ rank}\left(B\right) \leq K,
+\end{align}
+which can be obtained in closed form as
+\begin{align}
+  \hat{B}^{rr} &= \hat{B}^{\text{ols}}V_{K}V_{K}^{-},
+\end{align}
+where $V_{k}$ are the top $K$ CCA $Y$-directions.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Geometry}
+\begin{figure}
+  \includegraphics[scale=0.6]{reduced_rank_picture}
+  \caption{A geometric interpretation of reduced-rank regression. First, project
+    the different responses to the top $Y$-CCA direction, and then project onto
+    the span of the columns of $X$.}
+\end{figure}
+\end{frame}
+
+\section{Graph-fused Lasso}
+
+\begin{frame}
+  \frametitle{Graph-fused Lasso: Motivation}
+\begin{itemize}
+\item Can we leverage specific information on the relationship between the
+  responses (columns of $Y$)?
+  \begin{itemize}
+  \item Specifically, an independently learned network encoding the strength
+    and sign of the relationships.
+  \item Motivating application: Changes in phenotype caused by different SNPs.
+  \end{itemize}
+\item \cite{chen2012smoothing} developed a solution using convex optimization.
+\item I made a package at \url{github.com/krisrs1128/gflasso}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Formulation}
+  \begin{itemize}
+  \item The idea is to penalize the difference in coefficients for tasks that should be similar, this is written as
+    \begin{align}
+      \minimize_{B \in \reals^{p_{2} \times p_{1}}} &\frac{1}{2}\|Y -
+  XB\|_{F}^{2} + \lambda \|B\|_{1} + \\ &\gamma \sum_{e \in E} \sum_{j =
+    1}^{p_{2}} \absarg{r_{e}}\absarg{\beta_{j}^{(e^{+})} -
+    \sign\left(r_{e}\right) \beta^{(e^{-})}_{j}}, \label{eq:gflasso_obj}
+    \end{align}
+    \begin{itemize}
+      \item $r_{e}$ is the strength of relationship between tasks, assumed
+        known (e.g., an independently derived correlation network).
+      \item $e, e^{-}, e^{+}$ are the edges in the network, and their endpoints.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Reformulation}
+  \begin{itemize}
+  \item You can find a matrix $C$ so that the objective can be reexpressed,
+    \begin{align}
+      \|Y - XB\|_{F}^{2} + \|BC\|_{1},
+    \end{align}
+    which makes it clear that it is a convex optimization problem.
+  \item There are many ways to obtain $\hat{B}$, but they propose a method
+    related to proximal gradient descent.
+  \item Using the dual norm representation, write
+    \begin{align}
+      \|Y - XB\|_{F}^{2} + \max_{\|A\|_{\infty} \leq 1}
+      \left<A, BC\right>,
+  \end{align}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Optimization}
+  \begin{itemize}
+  \item This representation suggests a way to approximate the problem by a smooth proxy: relate it to the Fenchel conjugate,
+    \begin{align}
+      \|Y - XB\|_{F}^{2} + \max_{\|A\|_{\infty} \leq 1}\left[\left<A, BC\right> - \mu\|A\|_{F}^{2}\right]
+    \end{align}
+    \item This trick is sometimes called ``Moreau-Yoshida regularization.''
+  \item Since the derivative of the conjugate is the arg max of the expression defining it, we can write the gradient of the specified objective in closed form,
+    \begin{align}
+      X^{T}\left(Y - XB\right) + P_{\ell^{\infty}}\left(\frac{1}{\mu}BC\right)C^{T}.
+    \end{align}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Simulation}
+  \begin{itemize}
+  \item Generate $Y = XB + E$, all from gaussian, and send all but 10 columns
+    of $B$ to zero.
+  \item Make $R$ block diagonal, with two equally sized blocks.
+  \end{itemize}
+  \begin{figure}
+    \includegraphics[scale=0.2]{vis-coefs-1}
+    \caption{True coefficient matrix $B$, witih features along rows and tasks
+      along columns. A more interesting simulation might have
+    different banding associated with sets of tasks.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{True vs. Fitted $\hat{B}$}
+  \begin{itemize}
+  \item Notice the effect of soft-thresholding.
+  \item The smoothing has led to many terms close to, but not exactly,
+    zero (can try to decrease the smoothing, using warm starts).
+  \end{itemize}
+  \begin{figure}
+    \includegraphics[scale=0.4]{coef_pred_hat_tesst}
+    \caption{The true $B$ values are along the $x$-axis, the fitted $\hat{B}$ are along the $y$-axis.}
+  \end{figure}
+\end{frame}
+\begin{frame}
+  \frametitle{Recovered $\hat{B}$}
+  \begin{figure}
+    \includegraphics[scale=0.25]{vis-coefs-2}
+    \caption{The two sets of tasks get different groups of coefficients (though the
+    true model has only one set).}
+  \end{figure}
+\end{frame}
+
+\section{Variational Bayesian Multitask}
+
+\begin{frame}
+  \frametitle{Formulation}
+  \begin{itemize}
+  \item \cite{zhang2005learning} formulates a probabilistic approach to multitask learning.
+  \item Again, the main idea is to pool coefficients across otherwise
+    independent regression problems.
+  \item For simplicity, we focus on the regession case, where for the $r^{th}$
+    task, we model
+    \begin{align}
+      y_{i}^{(r)} &\sim \Gsn\left(x_{i}^{(r) T}\beta^{(r)}, \sigma^{2}\right) \\
+      \beta^{(r)} &\sim \Gsn\left(S w^{(r)}, \Psi\right), \label{eq:beta_r_zhang}
+    \end{align}
+  \item Interpretation
+    \begin{itemize}
+    \item $S$: Sources shared \textbf{across} all tasks.
+    \item $w^{(r)}$: Weights for the $r^{th}$ task.
+    \item $\Psi$: A source of variation \textbf{within} tasks.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Special Cases}
+  Different models for the weights $w^{(r)}$ lead to different multlitask
+  structure.
+  \begin{itemize}
+  \item $w^{(r)} \equiv 0$ decomposes the problem into independent regressions.
+  \item $w^{(r)} = 1$ turns the model into a "contaminated-signal"
+    model, $\beta^{(r)} \sim \Gsn\left(\mu, \Psi\right)$.
+  \item Drawing $w^{(r)} \sim \Mult\left(1, \Phi\right)$ clusters the regression
+    problem into subproblems that each share the same coefficient.
+  \item Drawing $w^{(r)} \sim \text{Lap}\left(0, \Phi\right)$
+    encourages sparse weights.
+  \item Drawing $w^{(r)} \sim DP\left(\alpha, G_{0}\right)$ has a similar effect
+    as the clustered-regressions model, but with the number of clusters left
+    unspecified.
+  \item Drawing the $w^{(r)}$ according to a dynamical system, for example
+    $w^{(r)} = \Phi w^{(r - 1)} + \eps_{r}$, links problems across time.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Inference?}
+  Call the latent random parameters
+  \begin{align}
+    \left(z^{(r)}\right)_{r = 1}^{p_{1}} := \left(\beta^{(r)}, w^{(r)}\right)_{r = 1}^{p_{1}}.
+  \end{align}
+
+  Ideally, we would be able to compute (or sample from) the posterior,
+  \begin{align}
+    p\left[\left(z^{(r)}\right)_{r = 1}^{p_{1}} \vert \left(X^{(r)}\right), \left(y^{(r)}\right); \hat{S}, \hat{\Phi}, \hat{\Psi}\right], 
+  \end{align}
+  but this is intractable. Noting the ``latent data'' structure of this problem
+  (think mixture of gaussians), we adopt a variational strategy.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Inference.}
+  The strategy is to minimize the ``distance'' between the true posterior and
+  a simple family within which analytical calculations are possible.
+  Specifically, define 
+\begin{align*}
+  q_{\gamma}\left[\left(\beta^{(r)}\right), \left(w^{(r)}\right)\right] = \prod_{r = 1}^{p_{1}}\Gsn\left(\beta^{(r)} \mid m^{(r)}, V^{(r)}\right)\Mult\left(w^{(r)} \vert 1, \pi^{(r)}\right),
+\end{align*}
+indexed by $\gamma \in \Gamma$ and look for
+\begin{align*}
+  q_{\gamma^{\ast}}:= \arg\min_{\gamma \in \Gamma} KL\left(q_{\gamma}\left[\left(z^{(r)}\right)\right] \vert \vert 
+  p_{\theta}\left[\left(z^{(r)}\right) \vert \left(x_{i}\right), \left(y_{i}\right)\right]\right).
+\end{align*}
+In practice, people usually look for a minimizing $\gamma$ by performing
+coordinate descent.
+\end{frame}
+
+\begin{frame}
+  \frametitle{(In case that seemed vague)}
+  Basically, look at $\left(m\right), \left(V\right), \pi, S, \Phi$, and $\Psi$ one at a time, and each time try to maximize
+  \begin{align}
+    & -\sum_{r = 1}^{p_{1}} \sum_{i = 1}^{n_{r}} \frac{1}{2\sigma^{2}}\left(\left(y_{i}^{(r)} - x_{i}^{(r) T}m^{(r)}\right)^{2} + x_{i}^{(r) T}V^{(r)}x_{i}^{(r)}\right) - \\
+    &\frac{p_{1}}{2}\log\absarg{\Psi} -
+     \frac{1}{2}\tr\left(\Psi^{-1}\sum_{r = 1}^{p_{1}}V^{(r)}\right) - \\
+     &\frac{1}{2}\sum_{r = 1}^{p_{1}}\sum_{k = 1}^{K}\pi_{k}^{(r)}\left(m^{(r)} - s_{\cdot k}\right)^{T}\Psi^{-1}\left(m^{(r)} - s_{\cdot k}\right) + \\&\sum_{r = 1}^{p_{1}}\sum_{k = 1}^{K} \pi_{k}^{(r)}\log\varphi_{k} + \frac{1}{2}\sum_{r = 1}^{p_{1}}\log\absarg{V^{(r)}} - \sum_{r= 1}^{p_{1}}\sum_{k = 1}^{K}\pi_{k}^{(r)}\log \pi_{k}^{(r)}
+  \end{align}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Simulations}
+  \begin{itemize}
+  \item One last package: \url{https://github.com/krisrs1128/bayesMult}.
+  \item Draw $\beta^{(r)}$ from a mixture of three gaussians.
+  \item The $y^{(r)}$'s are a combination of the same two $x_{\cdot j}$'s, across all tasks, with
+    coordinates given by $\beta^{(r)}$.
+    \begin{figure}
+      \includegraphics[scale=0.25]{plot-x-1}
+      \caption{The two $x_{\cdot j}$'s used for each task.}
+    \end{figure}
+  \end{itemize}
+\end{frame}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[scale=0.3]{plot-y-1}
+    \caption{The $y^{(r)}$'s generated across all tasks.}
+  \end{figure}
+\end{frame}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[scale=0.3]{plot-y-3}
+    \caption{The clustering of the coefficients induces a clustering on the observed series as well.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \includegraphics[scale=0.3]{coord-desc-1}
+    \caption{The objective must be monotone.}
+  \end{figure}
+\end{frame}
+\begin{frame}
+\begin{figure}
+  \includegraphics[scale=0.3]{plot-clusters-1}
+  \caption{The fitted $\hat{B}$ across the tasks, colored according to inferred
+    cluster membership.}
+\end{figure}
+\end{frame}
+\begin{frame}
+\begin{figure}
+  \includegraphics[scale=0.4]{plot-b-hat-1}
+  \caption{The value of the first OTU $x_{\cdot 1}$ against the observed gene series $y_{\cdot j}$ for a few tasks.
+    The lines represent true (purple), linear model (blue),
+    and fitted variational multitask (red) fits.}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Conclusion}
+  \begin{itemize}
+  \item There are many methods I've skipped over, either because I've talked
+    about them before, or I just didn't have time: MFA, PLS, PTA, PCA-IV, PMD,
+    Canonical Correspondence, Assisted Spectral Clustering, Curds \& Whey, Kernel ICA.
+  \item But hopefully we've gotten a sense of how a few broad communities think
+    about working with multiple tables.
+  \item There are not too many guides on which methos to use in
+    what settings, though at least in the multlitask setting the
+    cross-validation errors can be compared.
+  \end{itemize}
+\end{frame}
+
+\bibliographystyle{unsrt}
+\bibliography{04132015_multitable_presentation}
+
+\end{document}
